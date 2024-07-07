@@ -8,7 +8,7 @@ using ImGuiNET;
 using Microsoft.Xna.Framework.Input;
 using System.Diagnostics;
 
-using System.Reflection;
+using MonoEditorEndless.Engine;
 
 namespace ProjectRunnerTest
 {
@@ -23,18 +23,20 @@ namespace ProjectRunnerTest
         private Texture2D _xnaTexture;
         private IntPtr _imGuiTexture;
 
+        private bool isFreeCamera = false;
+
         private Engine.Camera _camera;
 
         private Vector2 _lastMouse;
 
         // Example Model
         private Model model;
+        private Actor actor;
+
+        private Vector3 translation = Vector3.Zero;
 
         // Transforming matrices
         private Matrix world = Matrix.CreateTranslation(new Vector3(0, 10, 0));
-        float cameraHeight = 20;
-        float cameraWidth = 0;
-        private Matrix view;
         private Matrix projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45), 800f / 480f, 0.1f, 1000f);
 
         public Game1()
@@ -52,13 +54,13 @@ namespace ProjectRunnerTest
             _imGuiRenderer = new ImGuiRenderer(this);
             _imGuiRenderer.RebuildFontAtlas();
 
-
+            actor = new Actor();
+            actor.SetVelocity(2f);
+            actor.SetForward(Vector3.UnitX);
             _camera = new Engine.Camera();
 
             _lastMouse = new Vector2(Mouse.GetState().X, Mouse.GetState().Y);
 
-
-            //_assimpContext = new AssimpContext();
 
             base.Initialize();
         }
@@ -67,12 +69,7 @@ namespace ProjectRunnerTest
         {
             // Texture loading example
             model = Content.Load<Model>("Content/flag-wide");
-
-            var ss = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            String fileName = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Content", "Walking.fbx");
-
-            //var scene = _assimpContext.ImportFile(fileName);
-
+            actor.LoadModel(model);
 
             foreach (ModelBone bone in model.Bones)
             {
@@ -99,9 +96,8 @@ namespace ProjectRunnerTest
         {
             GraphicsDevice.Clear(new Color(clear_color.X, clear_color.Y, clear_color.Z));
 
-            view = Matrix.CreateLookAt(new Vector3(0, cameraWidth, cameraHeight), new Vector3(0, 0, 0), -Vector3.UnitY);
-
-            DrawModel(model, world, _camera.GetView(), projection);
+            DrawModel(model, world,
+                _camera.GetView(), projection);
 
             // Call BeforeLayout first to set things up
             _imGuiRenderer.BeforeLayout(gameTime);
@@ -155,11 +151,39 @@ namespace ProjectRunnerTest
             // 1. Show a simple window
             // Tip: if we don't call ImGui.Begin()/ImGui.End() the widgets appears in a window automatically called "Debug"
             {
-                ImGui.Text("Hello, world!");
+                float old = ImGui.GetFont().Scale;
+                ImGui.GetFont().Scale *= 1.4f;
+                ImGui.PushFont(ImGui.GetFont());
+                ImGui.Text("Game Settings");
+                ImGui.GetFont().Scale = old;
+                ImGui.PopFont();
+                ImGui.Separator();
+                if (ImGui.CollapsingHeader("Game Details"))
+                {
+                    ImGui.Text("Hello from game setting!");
+                }
+                if (ImGui.CollapsingHeader("Camera"))
+                {
+                    ImGui.Text("Hello from camera setting!");
+                }
+                if (ImGui.CollapsingHeader("Gameplay"))
+                {
+                    ImGui.SliderFloat("float", ref f, 0.0f, 1.0f, string.Empty);
+                    ImGui.ColorEdit3("clear color", ref clear_color);
+                    ImGui.Text("Hello from camera setting!");
+                }
+                if (ImGui.CollapsingHeader("Lights"))
+                {
+                    ImGui.SliderFloat("float", ref f, 0.0f, 1.0f, string.Empty);
+                    ImGui.ColorEdit3("clear color", ref clear_color);
+                    ImGui.Text("Hello from camera setting!");
+                }
+                ImGui.Text(actor.GetPosition().ToString());
+
                 ImGui.Text(Mouse.GetState().X.ToString());
                 ImGui.Text(Mouse.GetState().Y.ToString());
-                ImGui.SliderFloat("float", ref f, 0.0f, 1.0f, string.Empty);
-                ImGui.ColorEdit3("clear color", ref clear_color);
+                
+               
                 if (ImGui.Button("Test Window")) show_test_window = !show_test_window;
                 if (ImGui.Button("Another Window")) show_another_window = !show_another_window;
                 ImGui.Text(string.Format("Application average {0:F3} ms/frame ({1:F1} FPS)", 1000f / ImGui.GetIO().Framerate, ImGui.GetIO().Framerate));
@@ -297,44 +321,54 @@ namespace ProjectRunnerTest
         protected override void Update(GameTime gameTime)
         {
             // ------------ Editor Controls ----------- //
-
-            if (Keyboard.GetState().IsKeyDown(Keys.D))
+            // Free Camera Control
+            if (isFreeCamera)
             {
-                _camera.MoveLeft(.1f * (float)gameTime.ElapsedGameTime.Milliseconds);
-            }
-            if (Keyboard.GetState().IsKeyDown(Keys.A))
-            {
-                _camera.MoveLeft(-.1f * (float)gameTime.ElapsedGameTime.Milliseconds);
-            }
-            if (Mouse.GetState().RightButton == ButtonState.Pressed)
-            {
-                _camera.Rotate(Mouse.GetState().X - _lastMouse.X, Mouse.GetState().Y - _lastMouse.Y);
-            }
-            if (Mouse.GetState().LeftButton == ButtonState.Pressed)
-            {
-                if (Keyboard.GetState().IsKeyDown(Keys.W))
+                if (Keyboard.GetState().IsKeyDown(Keys.D))
                 {
-                    _camera.MoveUp(.1f * (float)gameTime.ElapsedGameTime.Milliseconds);
+                    _camera.MoveLeft(.1f * (float)gameTime.ElapsedGameTime.Milliseconds);
                 }
-                if (Keyboard.GetState().IsKeyDown(Keys.S))
+                if (Keyboard.GetState().IsKeyDown(Keys.A))
                 {
-                    _camera.MoveUp(-.1f * (float)gameTime.ElapsedGameTime.Milliseconds);
+                    _camera.MoveLeft(-.1f * (float)gameTime.ElapsedGameTime.Milliseconds);
+                }
+                if (Mouse.GetState().RightButton == ButtonState.Pressed)
+                {
+                    _camera.Rotate(Mouse.GetState().X - _lastMouse.X, Mouse.GetState().Y - _lastMouse.Y);
+                }
+                if (Mouse.GetState().LeftButton == ButtonState.Pressed)
+                {
+                    if (Keyboard.GetState().IsKeyDown(Keys.W))
+                    {
+                        _camera.MoveUp(.1f * (float)gameTime.ElapsedGameTime.Milliseconds);
+                    }
+                    if (Keyboard.GetState().IsKeyDown(Keys.S))
+                    {
+                        _camera.MoveUp(-.1f * (float)gameTime.ElapsedGameTime.Milliseconds);
+                    }
+                }
+                else
+                {
+                    if (Keyboard.GetState().IsKeyDown(Keys.W))
+                    {
+                        _camera.MoveForward(.1f * (float)gameTime.ElapsedGameTime.Milliseconds);
+                    }
+                    if (Keyboard.GetState().IsKeyDown(Keys.S))
+                    {
+                        _camera.MoveForward(-.1f * (float)gameTime.ElapsedGameTime.Milliseconds);
+                    }
                 }
             }
+            // Else third person camera
             else
             {
-                if (Keyboard.GetState().IsKeyDown(Keys.W))
-                {
-                    _camera.MoveForward(.1f * (float)gameTime.ElapsedGameTime.Milliseconds);
-                }
-                if (Keyboard.GetState().IsKeyDown(Keys.S))
-                {
-                    _camera.MoveForward(-.1f * (float)gameTime.ElapsedGameTime.Milliseconds);
-                }
+                _camera.LookAtTarget(actor.GetPosition() + 50 * actor.GetForward(), actor.GetForward(), 200f, 150f);
             }
 
             _lastMouse.X = Mouse.GetState().X;
             _lastMouse.Y = Mouse.GetState().Y;
+            actor.Update(gameTime);
+            world = Matrix.CreateTranslation(actor.GetPosition());
         }
     }
 }
