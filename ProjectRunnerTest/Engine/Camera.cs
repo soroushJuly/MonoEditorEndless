@@ -9,7 +9,6 @@ namespace ProjectRunnerTest.Engine
         float _yaw = -90.0f;
         float _pitch = 0.0f;
         float _speed = 1.0f;
-        const float SPEED = 2.5f;
         const float SENSITIVITY = 0.1f;
         const float ZOOM = 45.0f;
 
@@ -32,14 +31,14 @@ namespace ProjectRunnerTest.Engine
 
         public void MoveLeft(float amount)
         {
-            _cameraPosition += _rightVector * amount;
+            _cameraPosition += _rightVector * amount * _speed;
 
             // TODO: Move to camera update
             _view = Matrix.CreateLookAt(_cameraPosition, _cameraPosition + _frontVector, _upVector);
         }
         public void MoveUp(float amount)
         {
-            _cameraPosition += _upVector * amount;
+            _cameraPosition += _upVector * amount * _speed;
             // TODO: Move to camera update
             _view = Matrix.CreateLookAt(_cameraPosition, _cameraPosition + _frontVector, _upVector);
         }
@@ -69,5 +68,10 @@ namespace ProjectRunnerTest.Engine
             _upVector = Vector3.Normalize(Vector3.Cross(_rightVector, _frontVector));
             _view = Matrix.CreateLookAt(_cameraPosition, _cameraPosition + _frontVector, _upVector);
         }
+        public void LookAtTarget(Vector3 targetPosition, Vector3 targetForward, float offset = 2f, float height = 0f)
+        {
+            _view = Matrix.CreateLookAt(targetPosition + height * Vector3.UnitY - targetForward * offset, targetPosition + targetForward, _upVector);
+        }
+
     }
 }
