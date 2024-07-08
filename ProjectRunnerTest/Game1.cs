@@ -23,11 +23,13 @@ namespace ProjectRunnerTest
         private Texture2D _xnaTexture;
         private IntPtr _imGuiTexture;
 
-        private bool isFreeCamera = false;
+        private bool isFreeCamera = true;
 
         private Engine.Camera _camera;
 
         private Vector2 _lastMouse;
+
+        private string _gameTitle = "Untitled";
 
         // Example Model
         private Model model;
@@ -42,8 +44,8 @@ namespace ProjectRunnerTest
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
-            _graphics.PreferredBackBufferWidth = 1024;
-            _graphics.PreferredBackBufferHeight = 768;
+            _graphics.PreferredBackBufferWidth = 1600;
+            _graphics.PreferredBackBufferHeight = 900;
             _graphics.PreferMultiSampling = true;
 
             IsMouseVisible = true;
@@ -148,11 +150,19 @@ namespace ProjectRunnerTest
 
         protected virtual void ImGuiLayout()
         {
+            var io = ImGui.GetIO();
+            io.ConfigFlags = ImGuiConfigFlags.DockingEnable;
+            //int windowFlags =| ImGuiWindowFlags.
+            //io.ConfigFlags
+            // Left panel - Game Setting
             // 1. Show a simple window
             // Tip: if we don't call ImGui.Begin()/ImGui.End() the widgets appears in a window automatically called "Debug"
+            ImGui.SetNextWindowPos(new Num.Vector2(0f, ImGui.GetFrameHeight()));
+            ImGui.SetNextWindowSize(new Num.Vector2(350f, _graphics.PreferredBackBufferHeight));
+            if (ImGui.Begin("Game Settings", ImGuiWindowFlags.NoTitleBar))
             {
                 float old = ImGui.GetFont().Scale;
-                ImGui.GetFont().Scale *= 1.4f;
+                ImGui.GetFont().Scale *= 1.25f;
                 ImGui.PushFont(ImGui.GetFont());
                 ImGui.Text("Game Settings");
                 ImGui.GetFont().Scale = old;
@@ -161,6 +171,8 @@ namespace ProjectRunnerTest
                 if (ImGui.CollapsingHeader("Game Details"))
                 {
                     ImGui.Text("Hello from game setting!");
+                    ImGui.InputText("Game Title", ref _gameTitle, 100);
+                    ImGui.Text("Game Icon:");
                 }
                 if (ImGui.CollapsingHeader("Camera"))
                 {
@@ -178,12 +190,50 @@ namespace ProjectRunnerTest
                     ImGui.ColorEdit3("clear color", ref clear_color);
                     ImGui.Text("Hello from camera setting!");
                 }
+                if (ImGui.CollapsingHeader("Character"))
+                {
+                    ImGui.SliderFloat("float", ref f, 0.0f, 1.0f, string.Empty);
+                    ImGui.ColorEdit3("clear color", ref clear_color);
+                    ImGui.Text("Hello from camera setting!");
+                }
+                if (ImGui.CollapsingHeader("HUD"))
+                {
+                    ImGui.SliderFloat("float", ref f, 0.0f, 1.0f, string.Empty);
+                    ImGui.ColorEdit3("clear color", ref clear_color);
+                    ImGui.Text("Hello from camera setting!");
+                }
+                if (ImGui.CollapsingHeader("MenuMaker"))
+                {
+                    ImGui.SliderFloat("float", ref f, 0.0f, 1.0f, string.Empty);
+                    ImGui.ColorEdit3("clear color", ref clear_color);
+                    ImGui.Text("Hello from camera setting!");
+                }
+                if (ImGui.CollapsingHeader("Audio"))
+                {
+                    ImGui.SliderFloat("float", ref f, 0.0f, 1.0f, string.Empty);
+                    ImGui.ColorEdit3("clear color", ref clear_color);
+                    ImGui.Text("Hello from camera setting!");
+                }
+                if (ImGui.CollapsingHeader("Environemnt"))
+                {
+                    ImGui.Text("Skybox");
+                    ImGui.SeparatorText("fdf");
+                    ImGui.Text("Sourandings");
+                    ImGui.Separator();
+                    ImGui.Text("Road Generator");
+                    ImGui.Separator();
+                    ImGui.Text("Road Models");
+                    ImGui.Separator();
+                    ImGui.Text("Pickups/Obstacle Models");
+                    ImGui.ColorEdit3("clear color", ref clear_color);
+                    ImGui.Text("Hello from camera setting!");
+                }
                 ImGui.Text(actor.GetPosition().ToString());
 
                 ImGui.Text(Mouse.GetState().X.ToString());
                 ImGui.Text(Mouse.GetState().Y.ToString());
-                
-               
+
+
                 if (ImGui.Button("Test Window")) show_test_window = !show_test_window;
                 if (ImGui.Button("Another Window")) show_another_window = !show_another_window;
                 ImGui.Text(string.Format("Application average {0:F3} ms/frame ({1:F1} FPS)", 1000f / ImGui.GetIO().Framerate, ImGui.GetIO().Framerate));
@@ -192,14 +242,31 @@ namespace ProjectRunnerTest
 
                 ImGui.Text("Texture sample");
                 ImGui.Image(_imGuiTexture, new Num.Vector2(300, 150), Num.Vector2.Zero, Num.Vector2.One, Num.Vector4.One, Num.Vector4.One); // Here, the previously loaded texture is used
+                ImGui.End();
             }
 
-            // 2. Show another simple window, this time using an explicit Begin/End pair
-            if (show_another_window)
+
+            // Right panel - Editor
+            ImGui.SetNextWindowPos(new Num.Vector2(_graphics.PreferredBackBufferWidth - 350f, ImGui.GetFrameHeight()));
+            ImGui.SetNextWindowSize(new Num.Vector2(350f, _graphics.PreferredBackBufferHeight));
+            if (ImGui.Begin("Editor", ImGuiWindowFlags.NoTitleBar))
             {
-                ImGui.SetNextWindowSize(new Num.Vector2(200, 100), ImGuiCond.FirstUseEver);
-                ImGui.Begin("Another Window", ref show_another_window);
-                ImGui.Text("Hello");
+                float old = ImGui.GetFont().Scale;
+                ImGui.GetFont().Scale *= 1.25f;
+                ImGui.PushFont(ImGui.GetFont());
+                ImGui.Text("Editor");
+                ImGui.GetFont().Scale = old;
+                ImGui.PopFont();
+                ImGui.ImageButton("Play", _imGuiTexture, new Num.Vector2(10, 10));
+                ImGui.Separator();
+                ImGui.Text("swithch view");
+                ImGui.Text("Build");
+                //ImGui.ArrowButton("Play", ImGuiDir.Left);
+                if (ImGui.CollapsingHeader("Game Details"))
+                {
+                    ImGui.Text("Hello from game setting!");
+                    ImGui.InputText("Game Title", ref _gameTitle, 100);
+                }
                 ImGui.End();
             }
 
@@ -214,27 +281,6 @@ namespace ProjectRunnerTest
             if (ImGui.BeginMainMenuBar())
             {
                 if (ImGui.BeginMenu("File"))
-                {
-                    ShowExampleMenuFile();
-                    ImGui.EndMenu();
-                }
-                if (ImGui.BeginMenu("Edit"))
-                {
-                    if (ImGui.MenuItem("Undo", "CTRL+Z")) { }
-                    if (ImGui.MenuItem("Redo", "CTRL+Y", false, false)) { }  // Disabled item
-                    ImGui.Separator();
-                    if (ImGui.MenuItem("Cut", "CTRL+X")) { }
-                    if (ImGui.MenuItem("Copy", "CTRL+C")) { }
-                    if (ImGui.MenuItem("Paste", "CTRL+V")) { }
-                    ImGui.EndMenu();
-                }
-                ImGui.EndMainMenuBar();
-            }
-
-            // Create the secondary main Manu bar
-            if (ImGui.BeginMainMenuBar())
-            {
-                if (ImGui.BeginMenu("Fildde"))
                 {
                     ShowExampleMenuFile();
                     ImGui.EndMenu();
