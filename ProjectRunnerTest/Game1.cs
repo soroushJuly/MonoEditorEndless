@@ -23,7 +23,7 @@ namespace ProjectRunnerTest
         private Texture2D _xnaTexture;
         private IntPtr _imGuiTexture;
 
-        private bool isFreeCamera = true;
+        private bool isFreeCamera = false;
 
         private Engine.Camera _camera;
 
@@ -34,12 +34,14 @@ namespace ProjectRunnerTest
         // Example Model
         private Model model;
         private Actor actor;
+        private Model roadModel;
+        private Actor road;
 
         private Vector3 translation = Vector3.Zero;
 
         // Transforming matrices
-        private Matrix world = Matrix.CreateTranslation(new Vector3(0, 10, 0));
-        private Matrix projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45), 800f / 480f, 0.1f, 1000f);
+        private Matrix world = Matrix.CreateTranslation(new Vector3(0, 0, 0));
+        private Matrix projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45), 800f / 480f, 0.1f, 4000f);
 
         public Game1()
         {
@@ -59,6 +61,8 @@ namespace ProjectRunnerTest
             actor = new Actor();
             actor.SetVelocity(2f);
             actor.SetForward(Vector3.UnitX);
+            road = new Actor();
+
             _camera = new Engine.Camera();
 
             _lastMouse = new Vector2(Mouse.GetState().X, Mouse.GetState().Y);
@@ -71,7 +75,10 @@ namespace ProjectRunnerTest
         {
             // Texture loading example
             model = Content.Load<Model>("Content/flag-wide");
+            //roadModel = Content.Load<Model>("Content/FBX/Ship");
+
             actor.LoadModel(model);
+            road.LoadModel(Content.Load<Model>("Content/bridge-straight"));
 
             foreach (ModelBone bone in model.Bones)
             {
@@ -98,8 +105,13 @@ namespace ProjectRunnerTest
         {
             GraphicsDevice.Clear(new Color(clear_color.X, clear_color.Y, clear_color.Z));
 
-            DrawModel(model, world,
-                _camera.GetView(), projection);
+
+            DrawModel(model, world, _camera.GetView(), projection);
+            DrawModel(road.GetModel(), Matrix.CreateTranslation(new Vector3(0, -road.GetDimentions().Y, 0)), _camera.GetView(), projection);
+            DrawModel(road.GetModel(), Matrix.CreateTranslation(new Vector3(road.GetDimentions().X, -road.GetDimentions().Y, 0)), _camera.GetView(), projection);
+            DrawModel(road.GetModel(), Matrix.CreateTranslation(new Vector3(2 * road.GetDimentions().Z, -road.GetDimentions().Y, 0)), _camera.GetView(), projection);
+            DrawModel(road.GetModel(), Matrix.CreateTranslation(new Vector3(3 * road.GetDimentions().Z, -road.GetDimentions().Y, 0)), _camera.GetView(), projection);
+            DrawModel(road.GetModel(), Matrix.CreateTranslation(new Vector3(4 * road.GetDimentions().Z, -road.GetDimentions().Y, 0)), _camera.GetView(), projection);
 
             // Call BeforeLayout first to set things up
             _imGuiRenderer.BeforeLayout(gameTime);
@@ -115,26 +127,24 @@ namespace ProjectRunnerTest
 
         private void DrawModel(Model model, Matrix world, Matrix view, Matrix projection)
         {
+            Matrix[] transforms = new Matrix[model.Bones.Count];
+            model.CopyAbsoluteBoneTransformsTo(transforms);
 
             foreach (ModelMesh mesh in model.Meshes)
             {
                 foreach (BasicEffect effect in mesh.Effects)
                 {
-                    effect.World = world;
+                    //effect.World = world;
+                    //effect.AmbientLightColor = new Vector3(1f, 0, 0);
+                    effect.World = transforms[mesh.ParentBone.Index] * world;
+
+                    // Use the matrices provided by the chase camera
                     effect.View = view;
                     effect.Projection = projection;
+
                     effect.TextureEnabled = true;
                     effect.EnableDefaultLighting();
-                    //effect.LightingEnabled = true; // turn on the lighting subsystem.
-
-                    //effect.DirectionalLight0.DiffuseColor = new Vector3(0.5f, 0, 0); // a red light
-                    //effect.DirectionalLight0.Direction = new Vector3(1, 0, 0);  // coming along the x-axis
-                    //effect.DirectionalLight0.SpecularColor = new Vector3(0, 1, 0); // with green highlights
-
-                    //effect.AmbientLightColor = new Vector3(0.2f, 0.2f, 0.2f);
-                    //effect.EmissiveColor = new Vector3(1, 0, 0);
                 }
-
                 mesh.Draw();
             }
         }
@@ -144,7 +154,6 @@ namespace ProjectRunnerTest
         private float f = 0.0f;
 
         private bool show_test_window = false;
-        private bool show_another_window = false;
         private Num.Vector3 clear_color = new Num.Vector3(114f / 255f, 144f / 255f, 154f / 255f);
         private byte[] _textBuffer = new byte[100];
 
@@ -235,7 +244,6 @@ namespace ProjectRunnerTest
 
 
                 if (ImGui.Button("Test Window")) show_test_window = !show_test_window;
-                if (ImGui.Button("Another Window")) show_another_window = !show_another_window;
                 ImGui.Text(string.Format("Application average {0:F3} ms/frame ({1:F1} FPS)", 1000f / ImGui.GetIO().Framerate, ImGui.GetIO().Framerate));
 
                 ImGui.InputText("Text input", _textBuffer, 100);
