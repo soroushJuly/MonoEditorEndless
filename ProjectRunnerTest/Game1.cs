@@ -36,6 +36,7 @@ namespace ProjectRunnerTest
         // Example Model
         private Actor actor;
         private Actor road;
+        private Actor collectable;
 
         private Vector3 translation = Vector3.Zero;
 
@@ -62,7 +63,8 @@ namespace ProjectRunnerTest
             actor.SetVelocity(2f);
             actor.SetForward(Vector3.UnitX);
             road = new Actor();
-
+            collectable = new Actor();
+            
             _camera = new Engine.Camera();
 
             _lastMouse = new Vector2(Mouse.GetState().X, Mouse.GetState().Y);
@@ -75,6 +77,8 @@ namespace ProjectRunnerTest
         {
             actor.LoadModel(Content.Load<Model>("Content/flag-wide"));
             road.LoadModel(Content.Load<Model>("Content/bridge-straight"));
+            collectable.LoadModel(Content.Load<Model>("Content/FBX/Coin"));
+            collectable.SetScale(.5f);
 
             //foreach (ModelBone bone in model.Bones)
             //{
@@ -107,6 +111,9 @@ namespace ProjectRunnerTest
             DrawModel(road, Matrix.CreateTranslation(new Vector3(2 * road.GetDimentions().Z, -road.GetDimentions().Y, 0)), _camera.GetView(), projection);
             DrawModel(road, Matrix.CreateTranslation(new Vector3(3 * road.GetDimentions().Z, -road.GetDimentions().Y, 0)), _camera.GetView(), projection);
             DrawModel(road, Matrix.CreateTranslation(new Vector3(4 * road.GetDimentions().Z, -road.GetDimentions().Y, 0)), _camera.GetView(), projection);
+            DrawModel(collectable, Matrix.CreateTranslation(new Vector3(4 * road.GetDimentions().Z, -road.GetDimentions().Y + 50 / collectable.GetScale(), 0)), _camera.GetView(), projection);
+            DrawModel(collectable, Matrix.CreateTranslation(new Vector3(4 * road.GetDimentions().Z + 50, -road.GetDimentions().Y + 50 / collectable.GetScale(), 0)), _camera.GetView(), projection);
+            DrawModel(collectable, Matrix.CreateTranslation(new Vector3(4 * road.GetDimentions().Z + 100, -road.GetDimentions().Y + 50 / collectable.GetScale(), 0)), _camera.GetView(), projection);
 
             // Call BeforeLayout first to set things up
             _imGuiRenderer.BeforeLayout(gameTime);
@@ -247,6 +254,7 @@ namespace ProjectRunnerTest
 
 
                 if (ImGui.Button("Test Window")) show_test_window = !show_test_window;
+                if (ImGui.Button("Switch Camera")) isFreeCamera = !isFreeCamera;
                 ImGui.Text(string.Format("Application average {0:F3} ms/frame ({1:F1} FPS)", 1000f / ImGui.GetIO().Framerate, ImGui.GetIO().Framerate));
 
                 ImGui.InputText("Text input", _textBuffer, 100);
@@ -424,7 +432,7 @@ namespace ProjectRunnerTest
 
             _lastMouse.X = Mouse.GetState().X;
             _lastMouse.Y = Mouse.GetState().Y;
-            //actor.Update(gameTime);
+            actor.Update(gameTime);
             world = Matrix.CreateTranslation(actor.GetPosition());
         }
     }
