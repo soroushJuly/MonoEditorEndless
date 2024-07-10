@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System.Reflection;
 
 
 namespace MonoEditorEndless.Engine
@@ -11,13 +12,16 @@ namespace MonoEditorEndless.Engine
         Vector3 _forwardVector;
         Model _model;
         Vector3 _dimentions;
-        Vector3 _Scale;
+        public float _scale;
+        Matrix _scaleMatrix;
 
         public Actor()
         {
             _forwardVector = -Vector3.UnitZ;
             _position = Vector3.Zero;
             _velocity = 0f;
+            _scale = 1f;
+            _scaleMatrix = Matrix.Identity;
         }
         public Actor(Vector3 position)
         {
@@ -27,10 +31,19 @@ namespace MonoEditorEndless.Engine
         public Vector3 GetPosition() { return _position; }
         public Vector3 GetForward() { return _forwardVector; }
         public Model GetModel() { return _model; }
+        public float GetScale() { return _scale; }
         public Vector3 GetDimentions() { return _dimentions; }
+        public Matrix GetScaleMatrix() { return _scaleMatrix; }
         // Setters
         public void SetVelocity(float velocity) { _velocity = velocity; }
         public void SetForward(Vector3 forwardVector) { _forwardVector = forwardVector; }
+        public void SetScale(float scale)
+        {
+            _scale = scale;
+            BoundingBox boundingBox = GetBoundingBox(_model);
+            _dimentions = boundingBox.Max - boundingBox.Min;
+            _scaleMatrix = Matrix.CreateScale(_scale);
+        }
 
         private BoundingBox GetBoundingBox(Model model)
         {

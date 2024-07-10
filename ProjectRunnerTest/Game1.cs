@@ -29,12 +29,12 @@ namespace ProjectRunnerTest
 
         private Vector2 _lastMouse;
 
+        private float _actorScale;
+
         private string _gameTitle = "Untitled";
 
         // Example Model
-        private Model model;
         private Actor actor;
-        private Model roadModel;
         private Actor road;
 
         private Vector3 translation = Vector3.Zero;
@@ -73,19 +73,14 @@ namespace ProjectRunnerTest
 
         protected override void LoadContent()
         {
-            // Texture loading example
-            model = Content.Load<Model>("Content/flag-wide");
-            //roadModel = Content.Load<Model>("Content/FBX/Ship");
-
-            actor.LoadModel(model);
+            actor.LoadModel(Content.Load<Model>("Content/flag-wide"));
             road.LoadModel(Content.Load<Model>("Content/bridge-straight"));
 
-            foreach (ModelBone bone in model.Bones)
-            {
-                Debug.WriteLine(bone.Name);
-                Debug.WriteLine(bone.ModelTransform);
-                Debug.WriteLine(bone.Transform);
-            }
+            //foreach (ModelBone bone in model.Bones)
+            //{
+            //    Debug.WriteLine(bone.ModelTransform);
+            //    Debug.WriteLine(bone.Transform);
+            //}
 
 
             // First, load the texture as a Texture2D (can also be done using the XNA/FNA content pipeline)
@@ -106,12 +101,12 @@ namespace ProjectRunnerTest
             GraphicsDevice.Clear(new Color(clear_color.X, clear_color.Y, clear_color.Z));
 
 
-            DrawModel(model, world, _camera.GetView(), projection);
-            DrawModel(road.GetModel(), Matrix.CreateTranslation(new Vector3(0, -road.GetDimentions().Y, 0)), _camera.GetView(), projection);
-            DrawModel(road.GetModel(), Matrix.CreateTranslation(new Vector3(road.GetDimentions().X, -road.GetDimentions().Y, 0)), _camera.GetView(), projection);
-            DrawModel(road.GetModel(), Matrix.CreateTranslation(new Vector3(2 * road.GetDimentions().Z, -road.GetDimentions().Y, 0)), _camera.GetView(), projection);
-            DrawModel(road.GetModel(), Matrix.CreateTranslation(new Vector3(3 * road.GetDimentions().Z, -road.GetDimentions().Y, 0)), _camera.GetView(), projection);
-            DrawModel(road.GetModel(), Matrix.CreateTranslation(new Vector3(4 * road.GetDimentions().Z, -road.GetDimentions().Y, 0)), _camera.GetView(), projection);
+            DrawModel(actor, world, _camera.GetView(), projection);
+            DrawModel(road, Matrix.CreateTranslation(new Vector3(0, -road.GetDimentions().Y, 0)), _camera.GetView(), projection);
+            DrawModel(road, Matrix.CreateTranslation(new Vector3(road.GetDimentions().X, -road.GetDimentions().Y, 0)), _camera.GetView(), projection);
+            DrawModel(road, Matrix.CreateTranslation(new Vector3(2 * road.GetDimentions().Z, -road.GetDimentions().Y, 0)), _camera.GetView(), projection);
+            DrawModel(road, Matrix.CreateTranslation(new Vector3(3 * road.GetDimentions().Z, -road.GetDimentions().Y, 0)), _camera.GetView(), projection);
+            DrawModel(road, Matrix.CreateTranslation(new Vector3(4 * road.GetDimentions().Z, -road.GetDimentions().Y, 0)), _camera.GetView(), projection);
 
             // Call BeforeLayout first to set things up
             _imGuiRenderer.BeforeLayout(gameTime);
@@ -125,8 +120,9 @@ namespace ProjectRunnerTest
             base.Draw(gameTime);
         }
 
-        private void DrawModel(Model model, Matrix world, Matrix view, Matrix projection)
+        private void DrawModel(Actor actor, Matrix world, Matrix view, Matrix projection)
         {
+            Model model = actor.GetModel();
             Matrix[] transforms = new Matrix[model.Bones.Count];
             model.CopyAbsoluteBoneTransformsTo(transforms);
 
@@ -136,7 +132,8 @@ namespace ProjectRunnerTest
                 {
                     //effect.World = world;
                     //effect.AmbientLightColor = new Vector3(1f, 0, 0);
-                    effect.World = transforms[mesh.ParentBone.Index] * world;
+                    // TODO: Add Rotation and Transformation here later
+                    effect.World = actor.GetScaleMatrix() * transforms[mesh.ParentBone.Index] * world;
 
                     // Use the matrices provided by the chase camera
                     effect.View = view;
@@ -241,6 +238,12 @@ namespace ProjectRunnerTest
 
                 ImGui.Text(Mouse.GetState().X.ToString());
                 ImGui.Text(Mouse.GetState().Y.ToString());
+                ImGui.Text(actor.GetDimentions().ToString());
+                ImGui.InputFloat("Scale:", ref _actorScale);
+                if (ImGui.Button("Set Scale"))
+                {
+                    actor.SetScale(_actorScale);
+                };
 
 
                 if (ImGui.Button("Test Window")) show_test_window = !show_test_window;
@@ -421,7 +424,7 @@ namespace ProjectRunnerTest
 
             _lastMouse.X = Mouse.GetState().X;
             _lastMouse.Y = Mouse.GetState().Y;
-            actor.Update(gameTime);
+            //actor.Update(gameTime);
             world = Matrix.CreateTranslation(actor.GetPosition());
         }
     }
