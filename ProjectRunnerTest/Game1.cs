@@ -1,7 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
-using System.IO;
+
+using Forms = System.Windows.Forms;
 using Num = System.Numerics;
 
 using ImGuiNET;
@@ -9,6 +10,11 @@ using Microsoft.Xna.Framework.Input;
 using System.Diagnostics;
 
 using MonoEditorEndless.Engine;
+using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Media;
+using System.Collections.Generic;
+using System.IO;
+using System.Threading;
 
 namespace ProjectRunnerTest
 {
@@ -32,6 +38,13 @@ namespace ProjectRunnerTest
         private float _actorScale;
 
         private string _gameTitle = "Untitled";
+
+        // Audio
+        SoundEffect _soundEffect;
+        Song _bgMusic;
+        private string _bgMusicName;
+        List<Song> _songList;
+
 
         // Example Model
         private Actor actor;
@@ -60,15 +73,16 @@ namespace ProjectRunnerTest
             _imGuiRenderer.RebuildFontAtlas();
 
             actor = new Actor();
-            actor.SetVelocity(2f);
+            actor.SetVelocity(4f);
             actor.SetForward(Vector3.UnitX);
             road = new Actor();
             collectable = new Actor();
-            
+
             _camera = new Engine.Camera();
 
             _lastMouse = new Vector2(Mouse.GetState().X, Mouse.GetState().Y);
 
+            _bgMusicName = "";
 
             base.Initialize();
         }
@@ -79,6 +93,8 @@ namespace ProjectRunnerTest
             road.LoadModel(Content.Load<Model>("Content/bridge-straight"));
             collectable.LoadModel(Content.Load<Model>("Content/FBX/Coin"));
             collectable.SetScale(.5f);
+
+            _bgMusic = Content.Load<Song>("Content/Audio/Titan");
 
             //foreach (ModelBone bone in model.Bones)
             //{
@@ -97,6 +113,7 @@ namespace ProjectRunnerTest
             // Then, bind it to an ImGui-friendly pointer, that we can use during regular ImGui.** calls (see below)
             _imGuiTexture = _imGuiRenderer.BindTexture(_xnaTexture);
 
+            MediaPlayer.Play(_bgMusic);
             base.LoadContent();
         }
 
@@ -223,6 +240,49 @@ namespace ProjectRunnerTest
                 }
                 if (ImGui.CollapsingHeader("Audio"))
                 {
+                    // Main Background music
+                    ImGui.Text("Load background music");
+                    if (ImGui.Button("Load from computer"))
+                    {
+                        Thread thread = new Thread(() =>
+                        {
+                            var fileContent = string.Empty;
+                            var filePath = string.Empty;
+
+                            using (Forms.OpenFileDialog openFileDialog = new Forms.OpenFileDialog())
+                            {
+                                openFileDialog.InitialDirectory = "c:\\";
+                                openFileDialog.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
+                                openFileDialog.FilterIndex = 2;
+                                openFileDialog.RestoreDirectory = true;
+
+                                if (openFileDialog.ShowDialog() == Forms.DialogResult.OK)
+                                {
+                                    //Get the path of specified file
+                                    filePath = openFileDialog.FileName;
+                                    _bgMusicName = filePath;
+
+                                    //Read the contents of the file into a stream
+                                    var fileStream = openFileDialog.OpenFile();
+
+                                    using (StreamReader reader = new StreamReader(fileStream))
+                                    {
+                                        fileContent = reader.ReadToEnd();
+                                    }
+                                }
+                            }
+                            
+                            //Forms.MessageBox.Show(fileContent, "File Content at path: " + filePath, Forms.MessageBoxButtons.OK);
+                        });
+                        thread.SetApartmentState(ApartmentState.STA); //Set the thread to STA
+                        thread.Start();
+                        thread.Join(); //Wait for the thread to end
+                    }
+                    ImGui.Text(_bgMusicName);
+                    // Menu Music
+
+                    // Ending Music
+
                     ImGui.SliderFloat("float", ref f, 0.0f, 1.0f, string.Empty);
                     ImGui.ColorEdit3("clear color", ref clear_color);
                     ImGui.Text("Hello from camera setting!");
@@ -382,7 +442,6 @@ namespace ProjectRunnerTest
 
             return texture;
         }
-
         protected override void Update(GameTime gameTime)
         {
             // ------------ Editor Controls ----------- //
