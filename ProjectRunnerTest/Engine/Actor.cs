@@ -2,6 +2,8 @@
 using Microsoft.Xna.Framework.Graphics;
 using System.Reflection;
 
+using MonoEditorEndless.Engine.Components;
+
 
 namespace MonoEditorEndless.Engine
 {
@@ -15,6 +17,11 @@ namespace MonoEditorEndless.Engine
         public float _scale;
         Matrix _scaleMatrix;
 
+
+        // Collision
+        private bool _bCollisionEnabled;
+        ICollision _collisionComponent;
+
         public Actor()
         {
             _forwardVector = -Vector3.UnitZ;
@@ -22,6 +29,8 @@ namespace MonoEditorEndless.Engine
             _velocity = 0f;
             _scale = 1f;
             _scaleMatrix = Matrix.Identity;
+
+            _bCollisionEnabled = false;
         }
         public Actor(Vector3 position)
         {
