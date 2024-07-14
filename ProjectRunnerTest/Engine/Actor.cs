@@ -2,8 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using System.Reflection;
 
-using MonoEditorEndless.Engine.Components;
-
+using MonoEditorEndless.Engine.Collision;
 
 namespace MonoEditorEndless.Engine
 {
@@ -20,7 +19,7 @@ namespace MonoEditorEndless.Engine
 
         // Collision
         private bool _bCollisionEnabled;
-        ICollision _collisionComponent;
+        Collidable _colliadable;
 
         public Actor()
         {
@@ -31,6 +30,7 @@ namespace MonoEditorEndless.Engine
             _scaleMatrix = Matrix.Identity;
 
             _bCollisionEnabled = false;
+            _colliadable = new Collidable();
         }
         public Actor(Vector3 position)
         {
@@ -43,6 +43,7 @@ namespace MonoEditorEndless.Engine
         public float GetScale() { return _scale; }
         public Vector3 GetDimentions() { return _dimentions; }
         public Matrix GetScaleMatrix() { return _scaleMatrix; }
+        public float GetColliadableZ() { return _colliadable.Xmax; }
         // Setters
         public void SetVelocity(float velocity) { _velocity = velocity; }
         public void SetForward(Vector3 forwardVector) { _forwardVector = forwardVector; }
@@ -53,6 +54,8 @@ namespace MonoEditorEndless.Engine
             _dimentions = boundingBox.Max - boundingBox.Min;
             _scaleMatrix = Matrix.CreateScale(_scale);
         }
+
+        public void EnableCollision() { _bCollisionEnabled = true; }
 
         private BoundingBox GetBoundingBox(Model model)
         {
@@ -92,10 +95,17 @@ namespace MonoEditorEndless.Engine
             _model = model;
             BoundingBox boundingBox = GetBoundingBox(model);
             _dimentions = boundingBox.Max - boundingBox.Min;
+            // TODO: All actors have colliadable but deactive by default - change this
+            // TODO: Colliadable initializes here - change this 
+            _colliadable.Initialize(_position, _dimentions);
         }
         public void Update(GameTime gameTime)
         {
             _position += _forwardVector * _velocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            if(_bCollisionEnabled)
+            {
+                _colliadable.Update(_position);
+            }
         }
     }
 }

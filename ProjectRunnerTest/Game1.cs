@@ -76,8 +76,10 @@ namespace ProjectRunnerTest
             actor = new Actor();
             actor.SetVelocity(4f);
             actor.SetForward(Vector3.UnitX);
+            actor.EnableCollision();
             road = new Actor();
             collectable = new Actor();
+            collectable.EnableCollision();
 
             _camera = new Engine.Camera();
 
@@ -304,9 +306,9 @@ namespace ProjectRunnerTest
                 }
                 ImGui.Text(actor.GetPosition().ToString());
 
-                ImGui.Text(Mouse.GetState().X.ToString());
-                ImGui.Text(Mouse.GetState().Y.ToString());
                 ImGui.Text(actor.GetDimentions().ToString());
+                ImGui.Text(actor.GetColliadableZ().ToString());
+
                 ImGui.InputFloat("Scale:", ref _actorScale);
                 if (ImGui.Button("Set Scale"))
                 {
