@@ -39,6 +39,18 @@ namespace MonoEditorEndless.Engine.Collision
         }
         public bool CollisionTest(Collidable collidable)
         {
+            // AABB collision testing
+            if (
+                collidable.Xmax > this.Xmin &&
+                collidable.Xmin < this.Xmax &&
+                collidable.Ymax > this.Ymin &&
+                collidable.Ymin < this.Ymax &&
+                collidable.Zmax > this.Zmin &&
+                collidable.Zmin < this.Zmax
+                )
+            {
+                return true;
+            }
             return false;
         }
     }

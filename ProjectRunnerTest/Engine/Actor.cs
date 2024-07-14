@@ -35,10 +35,18 @@ namespace MonoEditorEndless.Engine
         public Actor(Vector3 position)
         {
             _position = position;
+            _forwardVector = -Vector3.UnitZ;
+            _velocity = 0f;
+            _scale = 1f;
+            _scaleMatrix = Matrix.Identity;
+
+            _bCollisionEnabled = false;
+            _colliadable = new Collidable();
         }
         // Getters
         public Vector3 GetPosition() { return _position; }
         public Vector3 GetForward() { return _forwardVector; }
+        public Collidable GetCollidable() { return _colliadable; }
         public Model GetModel() { return _model; }
         public float GetScale() { return _scale; }
         public Vector3 GetDimentions() { return _dimentions; }
@@ -46,6 +54,7 @@ namespace MonoEditorEndless.Engine
         public float GetColliadableZ() { return _colliadable.Xmax; }
         // Setters
         public void SetVelocity(float velocity) { _velocity = velocity; }
+        public void SetPosition(Vector3 position) { _position = position; }
         public void SetForward(Vector3 forwardVector) { _forwardVector = forwardVector; }
         public void SetScale(float scale)
         {
@@ -56,6 +65,10 @@ namespace MonoEditorEndless.Engine
         }
 
         public void EnableCollision() { _bCollisionEnabled = true; }
+        public bool CollisionTest(Actor otherActor)
+        {
+            return _colliadable.CollisionTest(otherActor.GetCollidable());
+        }
 
         private BoundingBox GetBoundingBox(Model model)
         {

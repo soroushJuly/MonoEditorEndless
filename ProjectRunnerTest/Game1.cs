@@ -38,6 +38,8 @@ namespace ProjectRunnerTest
 
         private float _actorScale;
 
+        private World _world;
+
         private string _gameTitle = "Untitled";
 
         // Audio
@@ -73,8 +75,10 @@ namespace ProjectRunnerTest
             _imGuiRenderer = new ImGuiRenderer(this);
             _imGuiRenderer.RebuildFontAtlas();
 
+            _world = new World();
+
             actor = new Actor();
-            actor.SetVelocity(4f);
+            actor.SetVelocity(20f);
             actor.SetForward(Vector3.UnitX);
             actor.EnableCollision();
             road = new Actor();
@@ -82,6 +86,9 @@ namespace ProjectRunnerTest
             collectable.EnableCollision();
 
             _camera = new Engine.Camera();
+
+            _world.AddActor(actor, true);
+            _world.AddActor(collectable, true);
 
             _lastMouse = new Vector2(Mouse.GetState().X, Mouse.GetState().Y);
 
@@ -96,6 +103,7 @@ namespace ProjectRunnerTest
             road.LoadModel(Content.Load<Model>("Content/bridge-straight"));
             collectable.LoadModel(Content.Load<Model>("Content/FBX/Coin"));
             collectable.SetScale(.5f);
+            collectable.SetPosition(new Vector3(4 * road.GetDimentions().Z, -road.GetDimentions().Y + 50 / collectable.GetScale(), 0));
 
             _bgMusic = Content.Load<Song>("Content/Audio/Titan");
 
@@ -474,7 +482,8 @@ namespace ProjectRunnerTest
 
             _lastMouse.X = Mouse.GetState().X;
             _lastMouse.Y = Mouse.GetState().Y;
-            actor.Update(gameTime);
+            //actor.Update(gameTime);
+            _world.Update(gameTime);
             world = Matrix.CreateTranslation(actor.GetPosition());
         }
     }
