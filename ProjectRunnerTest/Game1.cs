@@ -107,7 +107,7 @@ namespace ProjectRunnerTest
 
 
             // First, load the texture as a Texture2D (can also be done using the XNA/FNA content pipeline)
-            _xnaTexture = CreateTexture(GraphicsDevice, 300, 150, pixel =>
+            _xnaTexture = ImGuiRenderer.CreateTexture(GraphicsDevice, 300, 150, pixel =>
             {
                 var red = (pixel % 300) / 2;
                 return new Color(red, 1, 1);
@@ -186,9 +186,7 @@ namespace ProjectRunnerTest
             var io = ImGui.GetIO();
             io.ConfigFlags = ImGuiConfigFlags.DockingEnable;
             //int windowFlags =| ImGuiWindowFlags.
-            //io.ConfigFlags
             // Left panel - Game Setting
-            // 1. Show a simple window
             // Tip: if we don't call ImGui.Begin()/ImGui.End() the widgets appears in a window automatically called "Debug"
             ImGui.SetNextWindowPos(new Num.Vector2(0f, ImGui.GetFrameHeight()));
             ImGui.SetNextWindowSize(new Num.Vector2(350f, _graphics.PreferredBackBufferHeight));
@@ -426,24 +424,6 @@ namespace ProjectRunnerTest
                 ImGui.EndMenu();
             }
 
-        }
-        public static Texture2D CreateTexture(GraphicsDevice device, int width, int height, Func<int, Color> paint)
-        {
-            //initialize a texture
-            var texture = new Texture2D(device, width, height);
-
-            //the array holds the color for each pixel in the texture
-            Color[] data = new Color[width * height];
-            for (var pixel = 0; pixel < data.Length; pixel++)
-            {
-                //the function applies the color according to the specified pixel
-                data[pixel] = paint(pixel);
-            }
-
-            //set the color
-            texture.SetData(data);
-
-            return texture;
         }
         protected override void Update(GameTime gameTime)
         {
