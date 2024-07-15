@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.Reflection;
 
 using MonoEditorEndless.Engine.Collision;
+using System;
 
 namespace MonoEditorEndless.Engine
 {
@@ -20,6 +20,7 @@ namespace MonoEditorEndless.Engine
         // Collision
         private bool _bCollisionEnabled;
         Collidable _colliadable;
+        public EventHandler CollisionHandler;
 
         public Actor()
         {
@@ -115,10 +116,14 @@ namespace MonoEditorEndless.Engine
         public void Update(GameTime gameTime)
         {
             _position += _forwardVector * _velocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            if(_bCollisionEnabled)
+            if (_bCollisionEnabled)
             {
                 _colliadable.Update(_position);
             }
+        }
+        public void OnCollision(Actor otherActor)
+        {
+            CollisionHandler(this, new CollisionEventArgs(otherActor));
         }
     }
 }

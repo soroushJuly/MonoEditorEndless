@@ -44,7 +44,7 @@ namespace MonoEditorEndless.Engine
                     if (collidable.Equals(otherCollidable)) { break; }
                     if (collidable.CollisionTest(otherCollidable))
                     {
-                        //_collisions.Add
+                        collidable.OnCollision(otherCollidable);
                     }
                 }
             }
