@@ -39,6 +39,7 @@ namespace ProjectRunnerTest
         private float _actorScale;
 
         private World _world;
+        private GameSession _gameSession;
 
         private string _gameTitle = "Untitled";
 
@@ -70,20 +71,28 @@ namespace ProjectRunnerTest
             IsMouseVisible = true;
         }
 
+        void CollisionHandler(object sender, EventArgs e)
+        {
+            _gameSession.AddPoint(10f);
+        }
+
         protected override void Initialize()
         {
             _imGuiRenderer = new ImGuiRenderer(this);
             _imGuiRenderer.RebuildFontAtlas();
 
             _world = new World();
+            _gameSession = new GameSession();
 
             actor = new Actor();
-            actor.SetVelocity(20f);
+            actor.SetVelocity(34f);
             actor.SetForward(Vector3.UnitX);
             actor.EnableCollision();
             road = new Actor();
             collectable = new Actor();
             collectable.EnableCollision();
+            actor.CollisionHandler += this.CollisionHandler;
+            collectable.CollisionHandler += this.CollisionHandler;
 
             _camera = new Engine.Camera();
 
@@ -99,11 +108,12 @@ namespace ProjectRunnerTest
 
         protected override void LoadContent()
         {
-            actor.LoadModel(Content.Load<Model>("Content/flag-wide"));
+            actor.LoadModel(Content.Load<Model>("Content/FBX/Ship"));
+            actor.SetScale(0.01f);
             road.LoadModel(Content.Load<Model>("Content/bridge-straight"));
             collectable.LoadModel(Content.Load<Model>("Content/FBX/Coin"));
-            collectable.SetScale(.5f);
-            collectable.SetPosition(new Vector3(4 * road.GetDimentions().Z, -road.GetDimentions().Y + 50 / collectable.GetScale(), 0));
+            collectable.SetScale(.4f);
+            collectable.SetPosition(new Vector3(4 * road.GetDimentions().Z, 0, 0));
 
             _bgMusic = Content.Load<Song>("Content/Audio/Titan");
 
@@ -139,9 +149,9 @@ namespace ProjectRunnerTest
             DrawModel(road, Matrix.CreateTranslation(new Vector3(2 * road.GetDimentions().Z, -road.GetDimentions().Y, 0)), _camera.GetView(), projection);
             DrawModel(road, Matrix.CreateTranslation(new Vector3(3 * road.GetDimentions().Z, -road.GetDimentions().Y, 0)), _camera.GetView(), projection);
             DrawModel(road, Matrix.CreateTranslation(new Vector3(4 * road.GetDimentions().Z, -road.GetDimentions().Y, 0)), _camera.GetView(), projection);
-            DrawModel(collectable, Matrix.CreateTranslation(new Vector3(4 * road.GetDimentions().Z, -road.GetDimentions().Y + 50 / collectable.GetScale(), 0)), _camera.GetView(), projection);
-            DrawModel(collectable, Matrix.CreateTranslation(new Vector3(4 * road.GetDimentions().Z + 50, -road.GetDimentions().Y + 50 / collectable.GetScale(), 0)), _camera.GetView(), projection);
-            DrawModel(collectable, Matrix.CreateTranslation(new Vector3(4 * road.GetDimentions().Z + 100, -road.GetDimentions().Y + 50 / collectable.GetScale(), 0)), _camera.GetView(), projection);
+            DrawModel(collectable, Matrix.CreateTranslation(new Vector3(collectable.GetPosition().X, collectable.GetPosition().Y, 0)), _camera.GetView(), projection);
+            DrawModel(collectable, Matrix.CreateTranslation(new Vector3(collectable.GetPosition().X + 50, collectable.GetPosition().Y, 0)), _camera.GetView(), projection);
+            DrawModel(collectable, Matrix.CreateTranslation(new Vector3(collectable.GetPosition().X + 100, collectable.GetPosition().Y, 0)), _camera.GetView(), projection);
 
             // Call BeforeLayout first to set things up
             _imGuiRenderer.BeforeLayout(gameTime);
@@ -280,7 +290,7 @@ namespace ProjectRunnerTest
                                     }
                                 }
                             }
-                            
+
                             //Forms.MessageBox.Show(fileContent, "File Content at path: " + filePath, Forms.MessageBoxButtons.OK);
                         });
                         thread.SetApartmentState(ApartmentState.STA); //Set the thread to STA
@@ -320,6 +330,10 @@ namespace ProjectRunnerTest
                 {
                     actor.SetScale(_actorScale);
                 };
+
+                ImGui.Text("POINTS");
+                ImGui.Text(_gameSession.GetPoints().ToString());
+
 
 
                 if (ImGui.Button("Test Window")) show_test_window = !show_test_window;

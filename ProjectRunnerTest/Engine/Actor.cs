@@ -20,7 +20,7 @@ namespace MonoEditorEndless.Engine
         // Collision
         private bool _bCollisionEnabled;
         Collidable _colliadable;
-        public EventHandler CollisionHandler;
+        public event EventHandler<CollisionEventArgs> CollisionHandler;
 
         public Actor()
         {
@@ -63,6 +63,8 @@ namespace MonoEditorEndless.Engine
             BoundingBox boundingBox = GetBoundingBox(_model);
             _dimentions = boundingBox.Max - boundingBox.Min;
             _scaleMatrix = Matrix.CreateScale(_scale);
+            // Update the collidable properties
+            _colliadable.Initialize(_position, _dimentions);
         }
 
         public void EnableCollision() { _bCollisionEnabled = true; }
@@ -95,8 +97,8 @@ namespace MonoEditorEndless.Engine
                         Vector3 transformedPosition = Vector3.Transform(vertex.Position, meshTransform);
 
                         // Update min and max points
-                        min = Vector3.Min(min, transformedPosition);
-                        max = Vector3.Max(max, transformedPosition);
+                        min = Vector3.Min(min, transformedPosition) * _scale;
+                        max = Vector3.Max(max, transformedPosition) * _scale;
                     }
                 }
             }
@@ -123,7 +125,8 @@ namespace MonoEditorEndless.Engine
         }
         public void OnCollision(Actor otherActor)
         {
-            CollisionHandler(this, new CollisionEventArgs(otherActor));
+            // If no subscriber this will return null
+            this.CollisionHandler(this, new CollisionEventArgs(otherActor));
         }
     }
 }
