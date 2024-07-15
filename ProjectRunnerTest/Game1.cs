@@ -43,6 +43,10 @@ namespace ProjectRunnerTest
 
         private string _gameTitle = "Untitled";
 
+        // Skybox
+        Skybox _skybox;
+        List<Texture2D> _skyboxTextureList;
+
         // Audio
         SoundEffect _soundEffect;
         Song _bgMusic;
@@ -117,6 +121,9 @@ namespace ProjectRunnerTest
 
             _bgMusic = Content.Load<Song>("Content/Audio/Titan");
 
+
+
+
             //foreach (ModelBone bone in model.Bones)
             //{
             //    Debug.WriteLine(bone.ModelTransform);
@@ -130,6 +137,15 @@ namespace ProjectRunnerTest
                 var red = (pixel % 300) / 2;
                 return new Color(red, 1, 1);
             });
+
+            _skyboxTextureList = new List<Texture2D>();
+            _skyboxTextureList.Add(Content.Load<Texture2D>("Content/Skybox/front"));
+            _skyboxTextureList.Add(Content.Load<Texture2D>("Content/Skybox/back"));
+            _skyboxTextureList.Add(Content.Load<Texture2D>("Content/Skybox/left"));
+            _skyboxTextureList.Add(Content.Load<Texture2D>("Content/Skybox/right"));
+            _skyboxTextureList.Add(Content.Load<Texture2D>("Content/Skybox/top"));
+            _skyboxTextureList.Add(Content.Load<Texture2D>("Content/Skybox/bottom"));
+            _skybox = new Skybox(GraphicsDevice, _skyboxTextureList);
 
             // Then, bind it to an ImGui-friendly pointer, that we can use during regular ImGui.** calls (see below)
             _imGuiTexture = _imGuiRenderer.BindTexture(_xnaTexture);
@@ -148,11 +164,13 @@ namespace ProjectRunnerTest
             DrawModel(road, Matrix.CreateTranslation(new Vector3(road.GetDimentions().X, -road.GetDimentions().Y, 0)), _camera.GetView(), projection);
             DrawModel(road, Matrix.CreateTranslation(new Vector3(2 * road.GetDimentions().Z, -road.GetDimentions().Y, 0)), _camera.GetView(), projection);
             DrawModel(road, Matrix.CreateTranslation(new Vector3(3 * road.GetDimentions().Z, -road.GetDimentions().Y, 0)), _camera.GetView(), projection);
-            DrawModel(road, Matrix.CreateTranslation(new Vector3(4 * road.GetDimentions().Z, -road.GetDimentions().Y, 0)), _camera.GetView(), projection);
+            //DrawModel(road, Matrix.CreateTranslation(new Vector3(4 * road.GetDimentions().Z, -road.GetDimentions().Y, 0)), _camera.GetView(), projection);
             DrawModel(collectable, Matrix.CreateTranslation(new Vector3(collectable.GetPosition().X, collectable.GetPosition().Y, 0)), _camera.GetView(), projection);
             DrawModel(collectable, Matrix.CreateTranslation(new Vector3(collectable.GetPosition().X + 50, collectable.GetPosition().Y, 0)), _camera.GetView(), projection);
             DrawModel(collectable, Matrix.CreateTranslation(new Vector3(collectable.GetPosition().X + 100, collectable.GetPosition().Y, 0)), _camera.GetView(), projection);
 
+            _skybox.Draw(GraphicsDevice, Matrix.CreateTranslation(_camera.GetPosition()), _camera.GetView(), projection);
+            //_skybox.Draw(GraphicsDevice, Matrix.CreateTranslation(Vector3.Zero), _camera.GetView(), projection);
             // Call BeforeLayout first to set things up
             _imGuiRenderer.BeforeLayout(gameTime);
 
@@ -491,7 +509,8 @@ namespace ProjectRunnerTest
             // Else third person camera
             else
             {
-                _camera.LookAtTarget(actor.GetPosition() + 50 * actor.GetForward(), actor.GetForward(), 200f, 150f);
+                _camera.SetPosition(actor.GetPosition() - 50 * actor.GetForward());
+                _camera.LookAtTarget(actor.GetPosition() + 100 * actor.GetForward(), actor.GetForward(), 300f, 100f);
             }
 
             _lastMouse.X = Mouse.GetState().X;
