@@ -19,6 +19,8 @@ namespace ProjectRunnerTest.Engine
 
         private Matrix _view;
         public Matrix GetView() { return _view; }
+        public Vector3 GetPosition() { return _cameraPosition; }
+        public void SetPosition(Vector3 position) { _cameraPosition = position; }
 
         public Camera()
         {
@@ -57,6 +59,7 @@ namespace ProjectRunnerTest.Engine
             double yawRadian = (Math.PI / 180) * _yaw;
             double pitchRadian = (Math.PI / 180) * _pitch;
 
+            // Calculate new vector with having changes in angles in Yaw and pitch
             frontVector.X = (float)Math.Cos(yawRadian) * (float)Math.Cos(pitchRadian);
             frontVector.Y = (float)Math.Sin(pitchRadian);
             frontVector.Z = (float)Math.Sin(yawRadian) * (float)Math.Cos(pitchRadian);
