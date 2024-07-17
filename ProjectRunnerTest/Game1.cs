@@ -1,20 +1,20 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
+using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Media;
 
+using System;
+using System.IO;
+using System.Threading;
+using System.Collections.Generic;
 using Forms = System.Windows.Forms;
 using Num = System.Numerics;
 
 using ImGuiNET;
-using Microsoft.Xna.Framework.Input;
-using System.Diagnostics;
 
 using MonoEditorEndless.Engine;
-using Microsoft.Xna.Framework.Audio;
-using Microsoft.Xna.Framework.Media;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading;
+using MonoEditorEndless.Engine.Path;
 using MonoEditorEndless.Editor;
 
 namespace ProjectRunnerTest
@@ -41,7 +41,10 @@ namespace ProjectRunnerTest
         private World _world;
         private GameSession _gameSession;
 
+        private PathManager _pathManager;
         private string _gameTitle = "Untitled";
+
+        KeyboardState _prevKeyState;
 
         // Skybox
         Skybox _skybox;
@@ -57,6 +60,9 @@ namespace ProjectRunnerTest
         // Example Model
         private Actor actor;
         private Actor road;
+        private Actor wall;
+        private Actor corner;
+        private Actor roadR;
         private Actor collectable;
 
         private Vector3 translation = Vector3.Zero;
@@ -87,12 +93,16 @@ namespace ProjectRunnerTest
 
             _world = new World();
             _gameSession = new GameSession();
+            _pathManager = new PathManager();
 
             actor = new Actor();
-            actor.SetVelocity(34f);
+            actor.SetVelocity(80f);
             actor.SetForward(Vector3.UnitX);
             actor.EnableCollision();
             road = new Actor();
+            wall = new Actor();
+            roadR = new Actor();
+            corner = new Actor();
             collectable = new Actor();
             collectable.EnableCollision();
             actor.CollisionHandler += this.CollisionHandler;
@@ -113,22 +123,27 @@ namespace ProjectRunnerTest
         protected override void LoadContent()
         {
             actor.LoadModel(Content.Load<Model>("Content/FBX/Ship"));
-            actor.SetScale(0.01f);
-            road.LoadModel(Content.Load<Model>("Content/bridge-straight"));
+            actor.SetScale(0.012f);
+            actor.RotateY((-90f / 180f) * (float)Math.PI);
+            road.LoadModel(Content.Load<Model>("Content/wall"));
+            road.RotateY((90f / 180f) * (float)Math.PI);
+            wall.LoadModel(Content.Load<Model>("Content/wall-half"));
+            roadR.LoadModel(Content.Load<Model>("Content/wall"));
+            wall.RotateY((180f / 180f) * (float)Math.PI);
             collectable.LoadModel(Content.Load<Model>("Content/FBX/Coin"));
             collectable.SetScale(.4f);
             collectable.SetPosition(new Vector3(4 * road.GetDimentions().Z, 0, 0));
 
+            corner.LoadModel(Content.Load<Model>("Content/wall-corner"));
+
+            _pathManager.AddRoadBlock(road);
+            _pathManager.AddWallBlock(wall);
+            _pathManager.AddTurnRight(corner);
+
             _bgMusic = Content.Load<Song>("Content/Audio/Titan");
 
 
-
-
-            //foreach (ModelBone bone in model.Bones)
-            //{
-            //    Debug.WriteLine(bone.ModelTransform);
-            //    Debug.WriteLine(bone.Transform);
-            //}
+            // Debug.WriteLine(bone.Transform);
 
 
             // First, load the texture as a Texture2D (can also be done using the XNA/FNA content pipeline)
@@ -150,7 +165,7 @@ namespace ProjectRunnerTest
             // Then, bind it to an ImGui-friendly pointer, that we can use during regular ImGui.** calls (see below)
             _imGuiTexture = _imGuiRenderer.BindTexture(_xnaTexture);
 
-            MediaPlayer.Play(_bgMusic);
+            //MediaPlayer.Play(_bgMusic);
             base.LoadContent();
         }
 
@@ -158,13 +173,19 @@ namespace ProjectRunnerTest
         {
             GraphicsDevice.Clear(new Color(clear_color.X, clear_color.Y, clear_color.Z));
 
+            actor.Draw(world, _camera.GetView(), projection);
+            _pathManager.Draw(world, _camera.GetView(), projection);
+            //DrawModel(actor, world, _camera.GetView(), projection);
+            //DrawModel(road, Matrix.CreateTranslation(new Vector3(0, -road.GetDimentions().Y, 0)), _camera.GetView(), projection);
+            //DrawModel(road, Matrix.CreateTranslation(new Vector3(road.GetDimentions().X, -road.GetDimentions().Y, 0)), _camera.GetView(), projection);
+            //DrawModel(road, Matrix.CreateTranslation(new Vector3(2 * road.GetDimentions().X, -road.GetDimentions().Y, 0)), _camera.GetView(), projection);
+            //DrawModel(road, Matrix.CreateTranslation(new Vector3(3 * road.GetDimentions().X, -road.GetDimentions().Y, 0)), _camera.GetView(), projection);
+            //DrawModel(wall, Matrix.CreateTranslation(
+            //    new Vector3(3 * road.GetDimentions().X + wall.GetDimentions().Z, -road.GetDimentions().Y, 0)), _camera.GetView(), projection);
+            //DrawModel(roadR, Matrix.CreateTranslation(
+            //    new Vector3(3 * road.GetDimentions().X + wall.GetDimentions().Z, -road.GetDimentions().Y, 0 + roadR.GetDimentions().Z)), _camera.GetView(), projection);
 
-            DrawModel(actor, world, _camera.GetView(), projection);
-            DrawModel(road, Matrix.CreateTranslation(new Vector3(0, -road.GetDimentions().Y, 0)), _camera.GetView(), projection);
-            DrawModel(road, Matrix.CreateTranslation(new Vector3(road.GetDimentions().X, -road.GetDimentions().Y, 0)), _camera.GetView(), projection);
-            DrawModel(road, Matrix.CreateTranslation(new Vector3(2 * road.GetDimentions().Z, -road.GetDimentions().Y, 0)), _camera.GetView(), projection);
-            DrawModel(road, Matrix.CreateTranslation(new Vector3(3 * road.GetDimentions().Z, -road.GetDimentions().Y, 0)), _camera.GetView(), projection);
-            //DrawModel(road, Matrix.CreateTranslation(new Vector3(4 * road.GetDimentions().Z, -road.GetDimentions().Y, 0)), _camera.GetView(), projection);
+
             DrawModel(collectable, Matrix.CreateTranslation(new Vector3(collectable.GetPosition().X, collectable.GetPosition().Y, 0)), _camera.GetView(), projection);
             DrawModel(collectable, Matrix.CreateTranslation(new Vector3(collectable.GetPosition().X + 50, collectable.GetPosition().Y, 0)), _camera.GetView(), projection);
             DrawModel(collectable, Matrix.CreateTranslation(new Vector3(collectable.GetPosition().X + 100, collectable.GetPosition().Y, 0)), _camera.GetView(), projection);
@@ -196,7 +217,7 @@ namespace ProjectRunnerTest
                     //effect.World = world;
                     //effect.AmbientLightColor = new Vector3(1f, 0, 0);
                     // TODO: Add Rotation and Transformation here later
-                    effect.World = actor.GetScaleMatrix() * transforms[mesh.ParentBone.Index] * world;
+                    effect.World = actor.GetScaleMatrix() * actor.GetRotationMatrix() * transforms[mesh.ParentBone.Index] * world;
 
                     // Use the matrices provided by the chase camera
                     effect.View = view;
@@ -341,7 +362,6 @@ namespace ProjectRunnerTest
                 ImGui.Text(actor.GetPosition().ToString());
 
                 ImGui.Text(actor.GetDimentions().ToString());
-                ImGui.Text(actor.GetColliadableZ().ToString());
 
                 ImGui.InputFloat("Scale:", ref _actorScale);
                 if (ImGui.Button("Set Scale"))
@@ -467,6 +487,7 @@ namespace ProjectRunnerTest
         }
         protected override void Update(GameTime gameTime)
         {
+
             // ------------ Editor Controls ----------- //
             // Free Camera Control
             if (isFreeCamera)
@@ -513,11 +534,20 @@ namespace ProjectRunnerTest
                 _camera.LookAtTarget(actor.GetPosition() + 100 * actor.GetForward(), actor.GetForward(), 300f, 100f);
             }
 
+            if (_prevKeyState.IsKeyDown(Keys.F) && Keyboard.GetState().IsKeyUp(Keys.F))
+            {
+                _pathManager.Generate();
+            }
+
             _lastMouse.X = Mouse.GetState().X;
             _lastMouse.Y = Mouse.GetState().Y;
+            actor.SetVelocity(actor.GetVelocity() * _gameSession.GetGameSpeed());
+            _pathManager.Update(gameTime, actor);
             //actor.Update(gameTime);
             _world.Update(gameTime);
             world = Matrix.CreateTranslation(actor.GetPosition());
+
+            _prevKeyState = Keyboard.GetState();
         }
     }
 }

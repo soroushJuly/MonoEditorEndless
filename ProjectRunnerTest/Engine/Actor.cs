@@ -15,6 +15,7 @@ namespace MonoEditorEndless.Engine
         Vector3 _dimentions;
         public float _scale;
         Matrix _scaleMatrix;
+        Matrix _rotationMatrix;
 
 
         // Collision
@@ -29,9 +30,23 @@ namespace MonoEditorEndless.Engine
             _velocity = 0f;
             _scale = 1f;
             _scaleMatrix = Matrix.Identity;
+            _rotationMatrix = Matrix.Identity;
 
             _bCollisionEnabled = false;
             _colliadable = new Collidable();
+        }
+        public Actor(Actor actor)
+        {
+            _forwardVector = actor._forwardVector;
+            _position = actor._position;
+            _velocity = actor._velocity;
+            _scale = actor._scale;
+            _scaleMatrix = actor._scaleMatrix;
+            _rotationMatrix = actor._rotationMatrix;
+            _dimentions = actor._dimentions;
+            _model = actor._model;
+            _bCollisionEnabled = actor._bCollisionEnabled;
+            _colliadable = actor._colliadable;
         }
         public Actor(Vector3 position)
         {
@@ -40,6 +55,7 @@ namespace MonoEditorEndless.Engine
             _velocity = 0f;
             _scale = 1f;
             _scaleMatrix = Matrix.Identity;
+            _rotationMatrix = Matrix.Identity;
 
             _bCollisionEnabled = false;
             _colliadable = new Collidable();
@@ -47,12 +63,13 @@ namespace MonoEditorEndless.Engine
         // Getters
         public Vector3 GetPosition() { return _position; }
         public Vector3 GetForward() { return _forwardVector; }
+        public float GetVelocity() { return _velocity; }
         public Collidable GetCollidable() { return _colliadable; }
         public Model GetModel() { return _model; }
         public float GetScale() { return _scale; }
         public Vector3 GetDimentions() { return _dimentions; }
         public Matrix GetScaleMatrix() { return _scaleMatrix; }
-        public float GetColliadableZ() { return _colliadable.Xmax; }
+        public Matrix GetRotationMatrix() { return _rotationMatrix; }
         // Setters
         public void SetVelocity(float velocity) { _velocity = velocity; }
         public void SetPosition(Vector3 position) { _position = position; }
@@ -67,6 +84,19 @@ namespace MonoEditorEndless.Engine
             _colliadable.Initialize(_position, _dimentions);
         }
 
+
+        public void RotateX(float amountRadian)
+        {
+            _rotationMatrix *= Matrix.CreateRotationX(amountRadian);
+        }
+        public void RotateY(float amountRadian)
+        {
+            _rotationMatrix *= Matrix.CreateRotationY(amountRadian);
+        }
+        public void RotateZ(float amountRadian)
+        {
+            _rotationMatrix *= Matrix.CreateRotationZ(amountRadian);
+        }
         public void EnableCollision() { _bCollisionEnabled = true; }
         public bool CollisionTest(Actor otherActor)
         {
@@ -127,6 +157,31 @@ namespace MonoEditorEndless.Engine
         {
             // If no subscriber this will return null
             this.CollisionHandler(this, new CollisionEventArgs(otherActor));
+        }
+        public void Draw(Matrix world, Matrix view, Matrix projection)
+        {
+            //Model model = actor.GetModel();
+            Matrix[] transforms = new Matrix[_model.Bones.Count];
+            _model.CopyAbsoluteBoneTransformsTo(transforms);
+
+            foreach (ModelMesh mesh in _model.Meshes)
+            {
+                foreach (BasicEffect effect in mesh.Effects)
+                {
+                    //effect.World = world;
+                    //effect.AmbientLightColor = new Vector3(1f, 0, 0);
+                    // TODO: Add Rotation and Transformation here later
+                    effect.World = GetScaleMatrix() * GetRotationMatrix() * transforms[mesh.ParentBone.Index] * world;
+
+                    // Use the matrices provided by the chase camera
+                    effect.View = view;
+                    effect.Projection = projection;
+
+                    effect.TextureEnabled = true;
+                    effect.EnableDefaultLighting();
+                }
+                mesh.Draw();
+            }
         }
     }
 }
