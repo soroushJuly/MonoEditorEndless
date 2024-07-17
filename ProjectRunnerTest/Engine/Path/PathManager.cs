@@ -67,10 +67,10 @@ namespace MonoEditorEndless.Engine.Path
                         rotatedActor.RotateY((float)Math.PI);
                         break;
                     case Directions.EAST:
-                        rotatedActor.RotateY((float)Math.PI/2);
+                        rotatedActor.RotateY((float)Math.PI / 2);
                         break;
                     case Directions.WEST:
-                        rotatedActor.RotateY(-(float)Math.PI/2);
+                        rotatedActor.RotateY(-(float)Math.PI / 2);
                         break;
                     default:
                         break;
@@ -150,11 +150,28 @@ namespace MonoEditorEndless.Engine.Path
         }
         public void RemoveBlock()
         {
-            Block removedBlock = _activeBlocks.Dequeue();
             // To compensate their position in the current position
             // TODO: this can be saved during draw and be used here
             // TODO: removed block direction should be considerate when removing
-            _startingPosition += new Vector3(removedBlock.GetActor().GetDimentions().Z, 0, 0);
+            Block removedBlock = _activeBlocks.Dequeue();
+            switch (removedBlock.GetDirection())
+            {
+                case Directions.NORTH:
+                    _startingPosition += new Vector3(removedBlock.GetActor().GetDimentions().Z, 0, 0);
+                    break;
+                case Directions.SOUTH:
+                    _startingPosition += new Vector3(-removedBlock.GetActor().GetDimentions().Z, 0, 0);
+                    break;
+                case Directions.EAST:
+                    _startingPosition += new Vector3(0, 0, removedBlock.GetActor().GetDimentions().X);
+                    break;
+                case Directions.WEST:
+                    _startingPosition += new Vector3(0, 0, -removedBlock.GetActor().GetDimentions().X);
+                    break;
+                default:
+                    break;
+            }
+            //_startingPosition += new Vector3(removedBlock.GetActor().GetDimentions().Z, 0, 0);
         }
         public void Draw(Matrix world, Matrix view, Matrix projection)
         {
@@ -162,11 +179,11 @@ namespace MonoEditorEndless.Engine.Path
             foreach (Block block in _activeBlocks)
             {
                 Actor actor = block.GetActor();
-                switch(block.GetDirection())
+                switch (block.GetDirection())
                 {
                     case Directions.NORTH:
                         nextPostion += new Vector3(actor.GetDimentions().Z, 0, 0);
-                        break; 
+                        break;
                     case Directions.SOUTH:
                         nextPostion += new Vector3(-actor.GetDimentions().Z, 0, 0);
                         break;
@@ -187,7 +204,7 @@ namespace MonoEditorEndless.Engine.Path
         {
             // TODO: maybe consider cutting the _activeBlocks to half instead
             // of this for better performance
-            if (_activeBlocks.Count > 100)
+            if (_activeBlocks.Count > 20)
             {
                 RemoveBlock();
             }
