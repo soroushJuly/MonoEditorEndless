@@ -204,7 +204,7 @@ namespace MonoEditorEndless.Engine.Path
         {
             // TODO: maybe consider cutting the _activeBlocks to half instead
             // of this for better performance
-            if (_activeBlocks.Count > 20)
+            if (_activeBlocks.Count > 100)
             {
                 RemoveBlock();
             }
