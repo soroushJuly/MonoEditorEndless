@@ -64,6 +64,7 @@ namespace ProjectRunnerTest
         private Actor corner;
         private Actor roadR;
         private Actor collectable;
+        private Actor obstacle;
 
         private Vector3 translation = Vector3.Zero;
 
@@ -83,7 +84,9 @@ namespace ProjectRunnerTest
 
         void CollisionHandler(object sender, EventArgs e)
         {
+            Actor collectableItem = sender as Actor;
             _gameSession.AddPoint(10f);
+            collectableItem.GetCollidable().SetRemoveFlag(true);
         }
 
         protected override void Initialize()
@@ -98,20 +101,20 @@ namespace ProjectRunnerTest
             actor = new Actor();
             actor.SetVelocity(80f);
             actor.SetForward(Vector3.UnitX);
-            actor.EnableCollision();
+
             road = new Actor();
             wall = new Actor();
             roadR = new Actor();
             corner = new Actor();
             collectable = new Actor();
-            collectable.EnableCollision();
-            actor.CollisionHandler += this.CollisionHandler;
+
+            obstacle = new Actor();
+
+            //actor.CollisionHandler += this.CollisionHandler;
             collectable.CollisionHandler += this.CollisionHandler;
 
             _camera = new Engine.Camera();
 
-            _world.AddActor(actor, true);
-            _world.AddActor(collectable, true);
 
             _lastMouse = new Vector2(Mouse.GetState().X, Mouse.GetState().Y);
 
@@ -133,6 +136,16 @@ namespace ProjectRunnerTest
             collectable.LoadModel(Content.Load<Model>("Content/FBX/Coin"));
             collectable.SetScale(.4f);
             collectable.SetPosition(new Vector3(4 * road.GetDimentions().Z, 0, 0));
+
+
+            _world.AddActor(actor, true);
+            _world.AddActor(collectable, true);
+
+            _world.AddActor(obstacle, false);
+
+
+            obstacle.LoadModel(Content.Load<Model>("Content/rocks-small"));
+            obstacle.SetScale(0.25f);
 
             corner.LoadModel(Content.Load<Model>("Content/wall-corner"));
 
@@ -173,22 +186,15 @@ namespace ProjectRunnerTest
         {
             GraphicsDevice.Clear(new Color(clear_color.X, clear_color.Y, clear_color.Z));
 
-            actor.Draw(world, _camera.GetView(), projection);
+            //actor.Draw(world, _camera.GetView(), projection);
             _pathManager.Draw(world, _camera.GetView(), projection);
-            //DrawModel(actor, world, _camera.GetView(), projection);
-            //DrawModel(road, Matrix.CreateTranslation(new Vector3(0, -road.GetDimentions().Y, 0)), _camera.GetView(), projection);
-            //DrawModel(road, Matrix.CreateTranslation(new Vector3(road.GetDimentions().X, -road.GetDimentions().Y, 0)), _camera.GetView(), projection);
-            //DrawModel(road, Matrix.CreateTranslation(new Vector3(2 * road.GetDimentions().X, -road.GetDimentions().Y, 0)), _camera.GetView(), projection);
-            //DrawModel(road, Matrix.CreateTranslation(new Vector3(3 * road.GetDimentions().X, -road.GetDimentions().Y, 0)), _camera.GetView(), projection);
-            //DrawModel(wall, Matrix.CreateTranslation(
-            //    new Vector3(3 * road.GetDimentions().X + wall.GetDimentions().Z, -road.GetDimentions().Y, 0)), _camera.GetView(), projection);
-            //DrawModel(roadR, Matrix.CreateTranslation(
-            //    new Vector3(3 * road.GetDimentions().X + wall.GetDimentions().Z, -road.GetDimentions().Y, 0 + roadR.GetDimentions().Z)), _camera.GetView(), projection);
+            obstacle.Draw(Matrix.CreateTranslation(Vector3.Zero), _camera.GetView(), projection);
+            _world.Draw(_camera.GetView(), projection);
 
 
-            DrawModel(collectable, Matrix.CreateTranslation(new Vector3(collectable.GetPosition().X, collectable.GetPosition().Y, 0)), _camera.GetView(), projection);
-            DrawModel(collectable, Matrix.CreateTranslation(new Vector3(collectable.GetPosition().X + 50, collectable.GetPosition().Y, 0)), _camera.GetView(), projection);
-            DrawModel(collectable, Matrix.CreateTranslation(new Vector3(collectable.GetPosition().X + 100, collectable.GetPosition().Y, 0)), _camera.GetView(), projection);
+            //DrawModel(collectable, Matrix.CreateTranslation(new Vector3(collectable.GetPosition().X, collectable.GetPosition().Y, 0)), _camera.GetView(), projection);
+            //DrawModel(collectable, Matrix.CreateTranslation(new Vector3(collectable.GetPosition().X + 50, collectable.GetPosition().Y, 0)), _camera.GetView(), projection);
+            //DrawModel(collectable, Matrix.CreateTranslation(new Vector3(collectable.GetPosition().X + 100, collectable.GetPosition().Y, 0)), _camera.GetView(), projection);
 
             _skybox.Draw(GraphicsDevice, Matrix.CreateTranslation(_camera.GetPosition()), _camera.GetView(), projection);
             //_skybox.Draw(GraphicsDevice, Matrix.CreateTranslation(Vector3.Zero), _camera.GetView(), projection);

@@ -19,7 +19,6 @@ namespace MonoEditorEndless.Engine
 
 
         // Collision
-        private bool _bCollisionEnabled;
         Collidable _colliadable;
         public event EventHandler<CollisionEventArgs> CollisionHandler;
 
@@ -32,7 +31,6 @@ namespace MonoEditorEndless.Engine
             _scaleMatrix = Matrix.Identity;
             _rotationMatrix = Matrix.Identity;
 
-            _bCollisionEnabled = false;
             _colliadable = new Collidable();
         }
         public Actor(Actor actor)
@@ -45,7 +43,6 @@ namespace MonoEditorEndless.Engine
             _rotationMatrix = actor._rotationMatrix;
             _dimentions = actor._dimentions;
             _model = actor._model;
-            _bCollisionEnabled = actor._bCollisionEnabled;
             _colliadable = actor._colliadable;
         }
         public Actor(Vector3 position)
@@ -57,7 +54,6 @@ namespace MonoEditorEndless.Engine
             _scaleMatrix = Matrix.Identity;
             _rotationMatrix = Matrix.Identity;
 
-            _bCollisionEnabled = false;
             _colliadable = new Collidable();
         }
         // Getters
@@ -97,7 +93,6 @@ namespace MonoEditorEndless.Engine
         {
             _rotationMatrix *= Matrix.CreateRotationZ(amountRadian);
         }
-        public void EnableCollision() { _bCollisionEnabled = true; }
         public bool CollisionTest(Actor otherActor)
         {
             return _colliadable.CollisionTest(otherActor.GetCollidable());
@@ -148,15 +143,16 @@ namespace MonoEditorEndless.Engine
         public void Update(GameTime gameTime)
         {
             _position += _forwardVector * _velocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            if (_bCollisionEnabled)
-            {
-                _colliadable.Update(_position);
-            }
+            // Update the collidable info if it was there
+            _colliadable?.Update(_position);
         }
         public void OnCollision(Actor otherActor)
         {
             // If no subscriber this will return null
-            this.CollisionHandler(this, new CollisionEventArgs(otherActor));
+            if (CollisionHandler != null)
+            {
+                this.CollisionHandler(this, new CollisionEventArgs(otherActor));
+            }
         }
         public void Draw(Matrix world, Matrix view, Matrix projection)
         {

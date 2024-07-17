@@ -16,6 +16,13 @@ namespace MonoEditorEndless.Engine.Collision
         public float Xmin;
         public float Ymin;
         public float Zmin;
+        // This flag indicates if this collidable should be removed or not
+        private bool _removalFlag;
+        public bool GetRemoveFlag() { return _removalFlag; }
+        public void SetRemoveFlag(bool value)
+        {
+            _removalFlag = value;
+        }
         public void Initialize(Vector3 BasePosition, Vector3 dimentions)
         {
             _halfX = dimentions.X / 2;
