@@ -52,6 +52,8 @@ namespace ProjectRunnerTest
 
         // Audio
         SoundEffect _soundEffect;
+        List<SoundEffect> _soundEffectList;
+        SoundEffectInstance _soundEffectInstance;
         Song _bgMusic;
         private string _bgMusicName;
         List<Song> _songList;
@@ -87,6 +89,7 @@ namespace ProjectRunnerTest
             Actor collectableItem = sender as Actor;
             _gameSession.AddPoint(10f);
             collectableItem.GetCollidable().SetRemoveFlag(true);
+            _soundEffectInstance.Play();
         }
 
         protected override void Initialize()
@@ -136,6 +139,11 @@ namespace ProjectRunnerTest
             collectable.LoadModel(Content.Load<Model>("Content/FBX/Coin"));
             collectable.SetScale(.4f);
             collectable.SetPosition(new Vector3(4 * road.GetDimentions().Z, 0, 0));
+
+            // Load the sound effect
+            //_soundEffect = new SoundEffect();
+            _soundEffect = Content.Load<SoundEffect>("Content/Audio/mario_coin_sound");
+            _soundEffectInstance = _soundEffect.CreateInstance();
 
 
             _world.AddActor(actor, true);

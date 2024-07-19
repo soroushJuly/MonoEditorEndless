@@ -14,6 +14,12 @@
 
 #---------------------------------- Content ---------------------------------#
 
+#begin Audio/mario_coin_sound.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/mario_coin_sound.mp3
+
 #begin Audio/Titan.mp3
 /importer:Mp3Importer
 /processor:SongProcessor
