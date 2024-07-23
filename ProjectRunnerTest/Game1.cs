@@ -91,6 +91,16 @@ namespace ProjectRunnerTest
             collectableItem.GetCollidable().SetRemoveFlag(true);
             _soundEffectInstance.Play();
         }
+        void CharacterCollisionHandler(object sender, EventArgs e)
+        {
+            Actor character = sender as Actor;
+            if (e.ToString() != "")
+            {
+
+                _gameSession.AddPoint(10f);
+                character.SetVelocity(0);
+            }
+        }
 
         protected override void Initialize()
         {
@@ -115,6 +125,7 @@ namespace ProjectRunnerTest
 
             //actor.CollisionHandler += this.CollisionHandler;
             collectable.CollisionHandler += this.CollisionHandler;
+            actor.CollisionHandler += this.CharacterCollisionHandler;
 
             _camera = new Engine.Camera();
 
@@ -144,16 +155,15 @@ namespace ProjectRunnerTest
             //_soundEffect = new SoundEffect();
             _soundEffect = Content.Load<SoundEffect>("Content/Audio/mario_coin_sound");
             _soundEffectInstance = _soundEffect.CreateInstance();
-
-
-            _world.AddActor(actor, true);
-            _world.AddActor(collectable, true);
-
-            _world.AddActor(obstacle, false);
-
+            _soundEffectInstance.Volume = .1f;
 
             obstacle.LoadModel(Content.Load<Model>("Content/rocks-small"));
             obstacle.SetScale(0.25f);
+            obstacle.SetPosition(new Vector3(3 * road.GetDimentions().Z, 0, 0));
+
+            _world.AddActor(actor, true);
+            _world.AddActor(collectable, true);
+            _world.AddActor(obstacle, true);
 
             corner.LoadModel(Content.Load<Model>("Content/wall-corner"));
 
@@ -200,10 +210,6 @@ namespace ProjectRunnerTest
             _world.Draw(_camera.GetView(), projection);
 
 
-            //DrawModel(collectable, Matrix.CreateTranslation(new Vector3(collectable.GetPosition().X, collectable.GetPosition().Y, 0)), _camera.GetView(), projection);
-            //DrawModel(collectable, Matrix.CreateTranslation(new Vector3(collectable.GetPosition().X + 50, collectable.GetPosition().Y, 0)), _camera.GetView(), projection);
-            //DrawModel(collectable, Matrix.CreateTranslation(new Vector3(collectable.GetPosition().X + 100, collectable.GetPosition().Y, 0)), _camera.GetView(), projection);
-
             _skybox.Draw(GraphicsDevice, Matrix.CreateTranslation(_camera.GetPosition()), _camera.GetView(), projection);
             //_skybox.Draw(GraphicsDevice, Matrix.CreateTranslation(Vector3.Zero), _camera.GetView(), projection);
             // Call BeforeLayout first to set things up
@@ -217,33 +223,6 @@ namespace ProjectRunnerTest
 
             base.Draw(gameTime);
         }
-
-        private void DrawModel(Actor actor, Matrix world, Matrix view, Matrix projection)
-        {
-            Model model = actor.GetModel();
-            Matrix[] transforms = new Matrix[model.Bones.Count];
-            model.CopyAbsoluteBoneTransformsTo(transforms);
-
-            foreach (ModelMesh mesh in model.Meshes)
-            {
-                foreach (BasicEffect effect in mesh.Effects)
-                {
-                    //effect.World = world;
-                    //effect.AmbientLightColor = new Vector3(1f, 0, 0);
-                    // TODO: Add Rotation and Transformation here later
-                    effect.World = actor.GetScaleMatrix() * actor.GetRotationMatrix() * transforms[mesh.ParentBone.Index] * world;
-
-                    // Use the matrices provided by the chase camera
-                    effect.View = view;
-                    effect.Projection = projection;
-
-                    effect.TextureEnabled = true;
-                    effect.EnableDefaultLighting();
-                }
-                mesh.Draw();
-            }
-        }
-
 
         // Direct port of the example at https://github.com/ocornut/imgui/blob/master/examples/sdl_opengl2_example/main.cpp
         private float f = 0.0f;
