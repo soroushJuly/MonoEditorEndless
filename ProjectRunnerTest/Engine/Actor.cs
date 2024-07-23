@@ -174,6 +174,11 @@ namespace MonoEditorEndless.Engine
                     effect.Projection = projection;
 
                     effect.TextureEnabled = true;
+                    effect.FogEnabled = true;
+                    effect.FogColor = Color.CornflowerBlue.ToVector3(); // For best results, make this color whatever your background is.
+                    effect.FogStart = 900.75f;
+                    effect.FogEnd = 1000.25f;
+
                     effect.EnableDefaultLighting();
                 }
                 mesh.Draw();
