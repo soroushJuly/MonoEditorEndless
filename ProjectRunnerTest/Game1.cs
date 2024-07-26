@@ -16,6 +16,7 @@ using ImGuiNET;
 using MonoEditorEndless.Engine;
 using MonoEditorEndless.Engine.Path;
 using MonoEditorEndless.Editor;
+using MonoEditorEndless.Engine.Input;
 
 namespace ProjectRunnerTest
 {
@@ -45,6 +46,8 @@ namespace ProjectRunnerTest
         private string _gameTitle = "Untitled";
 
         KeyboardState _prevKeyState;
+
+        private InputManager _inputManager;
 
         // Skybox
         Skybox _skybox;
@@ -96,9 +99,38 @@ namespace ProjectRunnerTest
             Actor character = sender as Actor;
             if (e.ToString() != "")
             {
-
                 _gameSession.AddPoint(10f);
                 character.SetVelocity(0);
+            }
+        }
+
+        //public void AGameAction(eButtonState buttonState, Vector2 amount)
+        //{
+        //    if (true)
+        //    {
+        //        actor.SetPosition(actor.GetPosition() + new Vector3(0, 0, amount.X));
+        //    }
+        //}
+        public void TurnRight(eButtonState buttonState, Vector2 amount)
+        {
+            if (buttonState == eButtonState.PRESSED)
+            {
+                Vector3 oldRightVec = actor.GetRight();
+                Vector3 oldForward = actor.GetForward();
+                //actor.SetForward(-oldRightVec);
+                //actor.SetRightVector(oldForward);
+                actor.SmoothRotateY(-(float)Math.PI / 2f, 0.04f);
+            }
+        }
+        public void TurnLeft(eButtonState buttonState, Vector2 amount)
+        {
+            if (buttonState == eButtonState.PRESSED)
+            {
+                Vector3 oldRightVec = actor.GetRight();
+                Vector3 oldForward = actor.GetForward();
+                //actor.SetForward(oldRightVec);
+                //actor.SetRightVector(-oldForward);
+                actor.SmoothRotateY((float)Math.PI / 2f, 0.04f);
             }
         }
 
@@ -110,10 +142,15 @@ namespace ProjectRunnerTest
             _world = new World();
             _gameSession = new GameSession();
             _pathManager = new PathManager();
+            _inputManager = new InputManager();
+            //_inputManager.AddMouseBinding(eMouseInputs.X_MOVE, AGameAction);
+            _inputManager.AddKeyboardBinding(Keys.D, TurnRight);
+            _inputManager.AddKeyboardBinding(Keys.A, TurnLeft);
 
             actor = new Actor();
             actor.SetVelocity(80f);
             actor.SetForward(Vector3.UnitX);
+            actor.SetRightVector(-Vector3.UnitZ);
 
             road = new Actor();
             wall = new Actor();
@@ -125,7 +162,7 @@ namespace ProjectRunnerTest
 
             //actor.CollisionHandler += this.CollisionHandler;
             collectable.CollisionHandler += this.CollisionHandler;
-            actor.CollisionHandler += this.CharacterCollisionHandler;
+            //actor.CollisionHandler += this.CharacterCollisionHandler;
 
             _camera = new Engine.Camera();
 
@@ -206,7 +243,7 @@ namespace ProjectRunnerTest
 
             //actor.Draw(world, _camera.GetView(), projection);
             _pathManager.Draw(world, _camera.GetView(), projection);
-            obstacle.Draw(Matrix.CreateTranslation(Vector3.Zero), _camera.GetView(), projection);
+            //obstacle.Draw(Matrix.CreateTranslation(Vector3.Zero), _camera.GetView(), projection);
             _world.Draw(_camera.GetView(), projection);
 
 
@@ -353,6 +390,8 @@ namespace ProjectRunnerTest
                     ImGui.Text("Hello from camera setting!");
                 }
                 ImGui.Text(actor.GetPosition().ToString());
+                ImGui.Text("Actors forward: ");
+                ImGui.Text(actor.GetForward().ToString());
 
                 ImGui.Text(actor.GetDimentions().ToString());
 
@@ -534,6 +573,7 @@ namespace ProjectRunnerTest
 
             _lastMouse.X = Mouse.GetState().X;
             _lastMouse.Y = Mouse.GetState().Y;
+            _inputManager.Update();
             actor.SetVelocity(actor.GetVelocity() * _gameSession.GetGameSpeed());
             _pathManager.Update(gameTime, actor);
             //actor.Update(gameTime);
