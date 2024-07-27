@@ -106,6 +106,9 @@ namespace ProjectRunnerTest
             _inputManager.AddKeyboardBinding(Keys.D, TurnRight);
             _inputManager.AddKeyboardBinding(Keys.A, TurnLeft);
 
+            _pathManager.BlockAdded += (object sender, BlockEventArgs e) => { _world.AddActor(e.GetBlock(), true); };
+            _pathManager.BlockRemoved += (object sender, BlockEventArgs e) => { _world.RemoveActor(e.GetBlock()); };
+
             actor = new Actor();
             actor.SetVelocity(80f);
             actor.SetForward(Vector3.UnitX);
@@ -211,7 +214,7 @@ namespace ProjectRunnerTest
 
 
             _skybox.Draw(GraphicsDevice, Matrix.CreateTranslation(_camera.GetPosition()), _camera.GetView(), projection);
-            _plane.Draw(GraphicsDevice, Matrix.CreateTranslation(-100*Vector3.UnitY), _camera.GetView(), projection);
+            _plane.Draw(GraphicsDevice, Matrix.CreateTranslation(-100 * Vector3.UnitY), _camera.GetView(), projection);
             //_skybox.Draw(GraphicsDevice, Matrix.CreateTranslation(Vector3.Zero), _camera.GetView(), projection);
             // Call BeforeLayout first to set things up
             _imGuiRenderer.BeforeLayout(gameTime);
