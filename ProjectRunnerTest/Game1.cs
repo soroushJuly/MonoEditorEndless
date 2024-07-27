@@ -61,6 +61,8 @@ namespace ProjectRunnerTest
         private string _bgMusicName;
         List<Song> _songList;
 
+        MouseState curMouse;
+        MouseState prevMouse;
 
         // Example Model
         private Actor actor;
@@ -104,21 +106,18 @@ namespace ProjectRunnerTest
             }
         }
 
-        //public void AGameAction(eButtonState buttonState, Vector2 amount)
-        //{
-        //    if (true)
-        //    {
-        //        actor.SetPosition(actor.GetPosition() + new Vector3(0, 0, amount.X));
-        //    }
-        //}
+        public void MoveX(eButtonState buttonState, Vector2 amount)
+        {
+            float x = amount.X / 20f;
+            if (true)
+            {
+                actor.SetPosition(actor.GetPosition() + -x * actor.GetRight());
+            }
+        }
         public void TurnRight(eButtonState buttonState, Vector2 amount)
         {
             if (buttonState == eButtonState.PRESSED)
             {
-                Vector3 oldRightVec = actor.GetRight();
-                Vector3 oldForward = actor.GetForward();
-                //actor.SetForward(-oldRightVec);
-                //actor.SetRightVector(oldForward);
                 actor.SmoothRotateY(-(float)Math.PI / 2f, 0.04f);
             }
         }
@@ -126,10 +125,6 @@ namespace ProjectRunnerTest
         {
             if (buttonState == eButtonState.PRESSED)
             {
-                Vector3 oldRightVec = actor.GetRight();
-                Vector3 oldForward = actor.GetForward();
-                //actor.SetForward(oldRightVec);
-                //actor.SetRightVector(-oldForward);
                 actor.SmoothRotateY((float)Math.PI / 2f, 0.04f);
             }
         }
@@ -143,7 +138,7 @@ namespace ProjectRunnerTest
             _gameSession = new GameSession();
             _pathManager = new PathManager();
             _inputManager = new InputManager();
-            //_inputManager.AddMouseBinding(eMouseInputs.X_MOVE, AGameAction);
+            //_inputManager.AddMouseBinding(eMouseInputs.X_MOVE, MoveX);
             _inputManager.AddKeyboardBinding(Keys.D, TurnRight);
             _inputManager.AddKeyboardBinding(Keys.A, TurnLeft);
 
@@ -575,6 +570,13 @@ namespace ProjectRunnerTest
             _lastMouse.Y = Mouse.GetState().Y;
             _inputManager.Update();
             actor.SetVelocity(actor.GetVelocity() * _gameSession.GetGameSpeed());
+            curMouse = Mouse.GetState();
+            float x = (curMouse.X - prevMouse.X) / 5f;
+            prevMouse = curMouse;
+            if (true)
+            {
+                actor.SetPosition(actor.GetPosition() + -x * actor.GetRight());
+            }
             _pathManager.Update(gameTime, actor);
             //actor.Update(gameTime);
             _world.Update(gameTime);
