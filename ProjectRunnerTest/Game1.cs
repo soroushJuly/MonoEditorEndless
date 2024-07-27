@@ -73,11 +73,13 @@ namespace ProjectRunnerTest
         private Actor collectable;
         private Actor obstacle;
 
+        private MonoEditorEndless.Engine.Plane _plane;
+
         private Vector3 translation = Vector3.Zero;
 
         // Transforming matrices
         private Matrix world = Matrix.CreateTranslation(new Vector3(0, 0, 0));
-        private Matrix projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45), 800f / 480f, 0.1f, 4000f);
+        private Matrix projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45), 800f / 480f, 0.1f, 5000f);
 
         public Game1()
         {
@@ -225,6 +227,9 @@ namespace ProjectRunnerTest
             _skyboxTextureList.Add(Content.Load<Texture2D>("Content/Skybox/bottom"));
             _skybox = new Skybox(GraphicsDevice, _skyboxTextureList);
 
+            Texture2D grass = Content.Load<Texture2D>("Content/grass");
+            _plane = new MonoEditorEndless.Engine.Plane(GraphicsDevice, grass, 3000, 10);
+
             // Then, bind it to an ImGui-friendly pointer, that we can use during regular ImGui.** calls (see below)
             _imGuiTexture = _imGuiRenderer.BindTexture(_xnaTexture);
 
@@ -243,6 +248,7 @@ namespace ProjectRunnerTest
 
 
             _skybox.Draw(GraphicsDevice, Matrix.CreateTranslation(_camera.GetPosition()), _camera.GetView(), projection);
+            _plane.Draw(GraphicsDevice, Matrix.CreateTranslation(-100*Vector3.UnitY), _camera.GetView(), projection);
             //_skybox.Draw(GraphicsDevice, Matrix.CreateTranslation(Vector3.Zero), _camera.GetView(), projection);
             // Call BeforeLayout first to set things up
             _imGuiRenderer.BeforeLayout(gameTime);
