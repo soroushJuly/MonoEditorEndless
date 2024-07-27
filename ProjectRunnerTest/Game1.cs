@@ -45,6 +45,8 @@ namespace ProjectRunnerTest
         private PathManager _pathManager;
         private string _gameTitle = "Untitled";
 
+        private float _mouseActiveTimer = 0f;
+
         KeyboardState _prevKeyState;
 
         private InputManager _inputManager;
@@ -89,46 +91,6 @@ namespace ProjectRunnerTest
             _graphics.PreferMultiSampling = true;
 
             IsMouseVisible = true;
-        }
-
-        void CollisionHandler(object sender, EventArgs e)
-        {
-            Actor collectableItem = sender as Actor;
-            _gameSession.AddPoint(10f);
-            collectableItem.GetCollidable().SetRemoveFlag(true);
-            _soundEffectInstance.Play();
-        }
-        void CharacterCollisionHandler(object sender, EventArgs e)
-        {
-            Actor character = sender as Actor;
-            if (e.ToString() != "")
-            {
-                _gameSession.AddPoint(10f);
-                character.SetVelocity(0);
-            }
-        }
-
-        public void MoveX(eButtonState buttonState, Vector2 amount)
-        {
-            float x = amount.X / 20f;
-            if (true)
-            {
-                actor.SetPosition(actor.GetPosition() + -x * actor.GetRight());
-            }
-        }
-        public void TurnRight(eButtonState buttonState, Vector2 amount)
-        {
-            if (buttonState == eButtonState.PRESSED)
-            {
-                actor.SmoothRotateY(-(float)Math.PI / 2f, 0.04f);
-            }
-        }
-        public void TurnLeft(eButtonState buttonState, Vector2 amount)
-        {
-            if (buttonState == eButtonState.PRESSED)
-            {
-                actor.SmoothRotateY((float)Math.PI / 2f, 0.04f);
-            }
         }
 
         protected override void Initialize()
@@ -204,6 +166,7 @@ namespace ProjectRunnerTest
             _pathManager.AddRoadBlock(road);
             _pathManager.AddWallBlock(wall);
             _pathManager.AddTurnRight(corner);
+            _pathManager.Initialize(10);
 
             _bgMusic = Content.Load<Song>("Content/Audio/Titan");
 
@@ -520,7 +483,7 @@ namespace ProjectRunnerTest
         }
         protected override void Update(GameTime gameTime)
         {
-
+            _mouseActiveTimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
             // ------------ Editor Controls ----------- //
             // Free Camera Control
             if (isFreeCamera)
@@ -579,7 +542,7 @@ namespace ProjectRunnerTest
             curMouse = Mouse.GetState();
             float x = (curMouse.X - prevMouse.X) / 5f;
             prevMouse = curMouse;
-            if (true)
+            if (_mouseActiveTimer > 2)
             {
                 actor.SetPosition(actor.GetPosition() + -x * actor.GetRight());
             }
@@ -589,6 +552,45 @@ namespace ProjectRunnerTest
             world = Matrix.CreateTranslation(actor.GetPosition());
 
             _prevKeyState = Keyboard.GetState();
+        }
+        void CollisionHandler(object sender, EventArgs e)
+        {
+            Actor collectableItem = sender as Actor;
+            _gameSession.AddPoint(10f);
+            collectableItem.GetCollidable().SetRemoveFlag(true);
+            _soundEffectInstance.Play();
+        }
+        void CharacterCollisionHandler(object sender, EventArgs e)
+        {
+            Actor character = sender as Actor;
+            if (e.ToString() != "")
+            {
+                _gameSession.AddPoint(10f);
+                character.SetVelocity(0);
+            }
+        }
+
+        public void MoveX(eButtonState buttonState, Vector2 amount)
+        {
+            float x = amount.X / 20f;
+            if (true)
+            {
+                actor.SetPosition(actor.GetPosition() + -x * actor.GetRight());
+            }
+        }
+        public void TurnRight(eButtonState buttonState, Vector2 amount)
+        {
+            if (buttonState == eButtonState.PRESSED)
+            {
+                actor.SmoothRotateY(-(float)Math.PI / 2f, 0.04f);
+            }
+        }
+        public void TurnLeft(eButtonState buttonState, Vector2 amount)
+        {
+            if (buttonState == eButtonState.PRESSED)
+            {
+                actor.SmoothRotateY((float)Math.PI / 2f, 0.04f);
+            }
         }
     }
 }

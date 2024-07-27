@@ -16,6 +16,7 @@ namespace MonoEditorEndless.Engine.Path
         // The chance that a wall appears. Between 0 to 100
         int _wallChance;
         // The chance that a turn appears. Between 0 to 100
+        const int TURN_CHANCE_MAX = 8;
         int _turnChance;
         // To generate random numbers
         Random _random;
@@ -31,7 +32,8 @@ namespace MonoEditorEndless.Engine.Path
             _wallBlocks = new List<Actor>();
             _turnRightBlocks = new List<Actor>();
             _startingPosition = Vector3.Zero;
-            _turnChance = 10;
+            // Turn chance starts with zero and get max in Initialize
+            _turnChance = 0;
             _wallChance = 0;
             // Initial path direction is North
             _pathDirection = Directions.NORTH;
@@ -50,6 +52,14 @@ namespace MonoEditorEndless.Engine.Path
         public void AddTurnRight(Actor actor)
         {
             _turnRightBlocks.Add(actor);
+        }
+        public void Initialize(int numberOfBlocks)
+        {
+            for (int i = 0; i < numberOfBlocks; i++)
+            {
+                Generate();
+            }
+            _turnChance = TURN_CHANCE_MAX;
         }
 
         public void Generate()
@@ -82,6 +92,10 @@ namespace MonoEditorEndless.Engine.Path
                 CreateWall();
             // One way turns
             else CreateTurn(randomNumber);
+            if (_turnChance < TURN_CHANCE_MAX && _turnChance != 0)
+            {
+                _turnChance++;
+            }
         }
         private void CreateWall()
         {
@@ -89,6 +103,7 @@ namespace MonoEditorEndless.Engine.Path
         }
         private void CreateTurn(int randomNumber)
         {
+            _turnChance = (int)Math.Floor((double)_turnChance / 2);
             // Turn Right
             if (randomNumber > _turnChance / 2)
             {
