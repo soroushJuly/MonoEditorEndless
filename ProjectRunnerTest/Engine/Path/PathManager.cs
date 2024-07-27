@@ -23,7 +23,12 @@ namespace MonoEditorEndless.Engine.Path
 
         private Directions _pathDirection;
 
+        private Vector3 _latestPosition = Vector3.Zero;
+
         const int CHANCE_RANGE = 100;
+
+        public event EventHandler<BlockEventArgs> BlockAdded;
+        public event EventHandler<BlockEventArgs> BlockRemoved;
 
         public PathManager()
         {
@@ -85,7 +90,10 @@ namespace MonoEditorEndless.Engine.Path
                     default:
                         break;
                 }
-                _activeBlocks.Enqueue(new Block(rotatedActor, _pathDirection));
+                Vector3 nextPosition = GenerateNextPosition(rotatedActor, _pathDirection);
+                _latestPosition += nextPosition;
+                rotatedActor.SetPosition(_latestPosition + -new Vector3(0, rotatedActor.GetDimentions().Y, 0));
+                AddNewActiveBlock(new Block(rotatedActor, _pathDirection));
             }
             // Two way block
             else if (_wallChance + _turnChance > randomNumber && randomNumber > _turnChance)
@@ -97,9 +105,37 @@ namespace MonoEditorEndless.Engine.Path
                 _turnChance++;
             }
         }
+        private Vector3 GenerateNextPosition(Actor actor, Directions direction)
+        {
+            Vector3 nextPostion = Vector3.Zero;
+            switch (_pathDirection)
+            {
+                case Directions.NORTH:
+                    nextPostion += new Vector3(actor.GetDimentions().Z, 0, 0);
+                    break;
+                case Directions.SOUTH:
+                    nextPostion += new Vector3(-actor.GetDimentions().Z, 0, 0);
+                    break;
+                case Directions.EAST:
+                    nextPostion += new Vector3(0, 0, actor.GetDimentions().X);
+                    break;
+                case Directions.WEST:
+                    nextPostion += new Vector3(0, 0, -actor.GetDimentions().X);
+                    break;
+                default:
+                    break;
+            }
+            return nextPostion;
+        }
         private void CreateWall()
         {
-            _activeBlocks.Enqueue(new Block(_wallBlocks[0], _pathDirection));
+            Block newBlock = new Block(_wallBlocks[0], _pathDirection);
+            AddNewActiveBlock(newBlock);
+        }
+        private void AddNewActiveBlock(Block newBlock)
+        {
+            _activeBlocks.Enqueue(newBlock);
+            BlockAdded(this, new BlockEventArgs(newBlock));
         }
         private void CreateTurn(int randomNumber)
         {
@@ -127,8 +163,11 @@ namespace MonoEditorEndless.Engine.Path
                     default:
                         break;
                 }
+                Vector3 nextPosition = GenerateNextPosition(rotatedActor, _pathDirection);
+                _latestPosition += nextPosition;
+                rotatedActor.SetPosition(_latestPosition + -new Vector3(0, rotatedActor.GetDimentions().Y, 0));
                 // Add the corner block
-                _activeBlocks.Enqueue(new Block(rotatedActor, _pathDirection));
+                AddNewActiveBlock(new Block(rotatedActor, _pathDirection));
                 // Then change path
                 _pathDirection++;
                 if (_pathDirection == Directions.LAST) { _pathDirection = Directions.FIRST + 1; }
@@ -157,7 +196,10 @@ namespace MonoEditorEndless.Engine.Path
                     default:
                         break;
                 }
-                _activeBlocks.Enqueue(new Block(rotatedActor, _pathDirection));
+                Vector3 nextPosition = GenerateNextPosition(rotatedActor, _pathDirection);
+                _latestPosition += nextPosition;
+                rotatedActor.SetPosition(_latestPosition + -new Vector3(0, rotatedActor.GetDimentions().Y, 0));
+                AddNewActiveBlock(new Block(rotatedActor, _pathDirection));
                 // Change path
                 _pathDirection--;
                 if (_pathDirection == Directions.FIRST) { _pathDirection = Directions.LAST - 1; }
@@ -169,57 +211,20 @@ namespace MonoEditorEndless.Engine.Path
             // TODO: this can be saved during draw and be used here
             // TODO: removed block direction should be considerate when removing
             Block removedBlock = _activeBlocks.Dequeue();
-            switch (removedBlock.GetDirection())
-            {
-                case Directions.NORTH:
-                    _startingPosition += new Vector3(removedBlock.GetActor().GetDimentions().Z, 0, 0);
-                    break;
-                case Directions.SOUTH:
-                    _startingPosition += new Vector3(-removedBlock.GetActor().GetDimentions().Z, 0, 0);
-                    break;
-                case Directions.EAST:
-                    _startingPosition += new Vector3(0, 0, removedBlock.GetActor().GetDimentions().X);
-                    break;
-                case Directions.WEST:
-                    _startingPosition += new Vector3(0, 0, -removedBlock.GetActor().GetDimentions().X);
-                    break;
-                default:
-                    break;
-            }
-            //_startingPosition += new Vector3(removedBlock.GetActor().GetDimentions().Z, 0, 0);
+            BlockRemoved(this, new BlockEventArgs(removedBlock));
         }
         public void Draw(Matrix world, Matrix view, Matrix projection)
         {
-            Vector3 nextPostion = Vector3.Zero;
-            foreach (Block block in _activeBlocks)
+            foreach(Block block in _activeBlocks)
             {
-                Actor actor = block.GetActor();
-                switch (block.GetDirection())
-                {
-                    case Directions.NORTH:
-                        nextPostion += new Vector3(actor.GetDimentions().Z, 0, 0);
-                        break;
-                    case Directions.SOUTH:
-                        nextPostion += new Vector3(-actor.GetDimentions().Z, 0, 0);
-                        break;
-                    case Directions.EAST:
-                        nextPostion += new Vector3(0, 0, actor.GetDimentions().X);
-                        break;
-                    case Directions.WEST:
-                        nextPostion += new Vector3(0, 0, -actor.GetDimentions().X);
-                        break;
-                    default:
-                        break;
-                }
-
-                actor.Draw(Matrix.CreateTranslation(_startingPosition + nextPostion - new Vector3(0, actor.GetDimentions().Y, 0)), view, projection);
+                block.Draw(Matrix.CreateTranslation(block.GetPosition()), view, projection);
             }
         }
         public void Update(GameTime gameTime, Actor character)
         {
             // TODO: maybe consider cutting the _activeBlocks to half instead
             // of this for better performance
-            if (_activeBlocks.Count > 100)
+            if (_activeBlocks.Count > 10)
             {
                 RemoveBlock();
             }
