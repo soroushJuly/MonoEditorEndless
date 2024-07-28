@@ -14,12 +14,15 @@ namespace MonoEditorEndless.Engine.Path
         public override void OnCollision(Actor otherActor)
         {
             // TODO: if the block is corner block there is a punishment
-            if (otherActor.GetName() == "character")
+            if (otherActor?.GetName() == "character" && this.GetName() != "corner")
             {
-                Debug.Print("collision with road");
+                otherActor._isTurnAllowed = false;
             }
-            //otherActor.SetVelocity()
-            //Debug.Print(otherActor.GetPosition().ToString());
+            if (otherActor?.GetName() == "character" && this.GetName() == "corner")
+            {
+                otherActor._isTurnAllowed = true;
+                otherActor._lastCollisionSeen = "corner";
+            }
         }
 
         public Directions GetDirection() { return _direction; }

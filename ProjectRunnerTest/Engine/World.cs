@@ -38,13 +38,19 @@ namespace MonoEditorEndless.Engine
             // This way we wont get the collection modified error
             foreach (Actor collidable in _collidableActors.ToList())
             {
+                bool hasCollision = false;
                 foreach (Actor otherCollidable in _collidableActors.ToList())
                 {
                     if (collidable.Equals(otherCollidable)) { continue; }
                     if (collidable.CollisionTest(otherCollidable))
                     {
+                        hasCollision = true;
                         collidable.OnCollision(otherCollidable);
                     }
+                }
+                if (!hasCollision)
+                {
+                    collidable.OnCollision(null);
                 }
             }
             RemoveFlaggedCollidables();

@@ -20,6 +20,9 @@ namespace MonoEditorEndless.Engine
         public Vector3 _boundingScale = new Vector3(1f);
         private Matrix _scaleMatrix;
         private Matrix _rotationMatrix;
+        // TODO: move this to another class
+        public bool _isTurnAllowed = false;
+        public string _lastCollisionSeen = String.Empty;
 
         float _rotationYAnimation = 0f;
         float _rotationYAnimationMax = 0f;
@@ -28,6 +31,7 @@ namespace MonoEditorEndless.Engine
         // Collision
         Collidable _colliadable;
         public event EventHandler<CollisionEventArgs> CollisionHandler;
+        public event EventHandler NoCollisionHandler;
 
         public Actor()
         {
@@ -188,6 +192,10 @@ namespace MonoEditorEndless.Engine
             if (CollisionHandler != null)
             {
                 this.CollisionHandler(this, new CollisionEventArgs(otherActor));
+            }
+            if (otherActor == null && NoCollisionHandler != null)
+            {
+                this.NoCollisionHandler(this, EventArgs.Empty);
             }
         }
         public void Draw(Matrix world, Matrix view, Matrix projection)

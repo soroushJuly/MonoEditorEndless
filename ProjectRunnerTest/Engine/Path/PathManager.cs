@@ -57,6 +57,7 @@ namespace MonoEditorEndless.Engine.Path
         }
         public void AddTurnRight(Actor actor)
         {
+            actor.SetColliadableY(1000f);
             _turnRightBlocks.Add(actor);
         }
         public void Initialize(int numberOfBlocks)
@@ -217,7 +218,7 @@ namespace MonoEditorEndless.Engine.Path
         }
         public void Draw(Matrix world, Matrix view, Matrix projection)
         {
-            foreach(Block block in _activeBlocks)
+            foreach (Block block in _activeBlocks)
             {
                 block.Draw(Matrix.CreateTranslation(block.GetPosition()), view, projection);
             }
@@ -235,6 +236,18 @@ namespace MonoEditorEndless.Engine.Path
             //    AddBlock(_roadBlocks[0]);
             //}
         }
-
+        public bool IsOnPath(Vector3 position)
+        {
+            bool isOnPath = false;
+            foreach (Block block in _activeBlocks)
+            {
+                Collision.Collidable collidable = block.GetCollidable();
+                if (position.X < collidable.Xmax && position.X > collidable.Xmin && position.Z > collidable.Zmin && position.Z < collidable.Zmax)
+                {
+                    isOnPath = true;
+                }
+            }
+            return isOnPath;
+        }
     }
 }

@@ -18,6 +18,7 @@ using MonoEditorEndless.Engine.Path;
 using MonoEditorEndless.Editor;
 using MonoEditorEndless.Engine.Input;
 using MonoEditorEndless.Engine.Collision;
+using System.Diagnostics;
 
 namespace ProjectRunnerTest
 {
@@ -111,7 +112,7 @@ namespace ProjectRunnerTest
             _pathManager.BlockRemoved += (object sender, BlockEventArgs e) => { _world.RemoveActor(e.GetBlock()); };
 
             actor = new Actor();
-            actor.SetVelocity(80f);
+            actor.SetVelocity(160f);
             actor.SetForward(Vector3.UnitX);
             actor.SetRightVector(-Vector3.UnitZ);
             actor.SetPosition(0 * Vector3.UnitY);
@@ -127,8 +128,8 @@ namespace ProjectRunnerTest
 
             //actor.CollisionHandler += this.CollisionHandler;
             collectable.CollisionHandler += this.CollisionHandler;
-            //actor.CollisionHandler += this.CharacterCollisionHandler;
-
+            actor.CollisionHandler += this.CharacterCollisionHandler;
+            actor.NoCollisionHandler += this.CharacterNoCollisionHandler;
             _camera = new Engine.Camera();
 
 
@@ -169,6 +170,7 @@ namespace ProjectRunnerTest
             _world.AddActor(obstacle, true);
 
             corner.LoadModel(Content.Load<Model>("Content/wall-corner"));
+            corner.SetName("corner");
 
             _pathManager.AddRoadBlock(road);
             _pathManager.AddWallBlock(wall);
@@ -198,7 +200,7 @@ namespace ProjectRunnerTest
             _skybox = new Skybox(GraphicsDevice, _skyboxTextureList);
 
             Texture2D grass = Content.Load<Texture2D>("Content/grass");
-            _plane = new MonoEditorEndless.Engine.Plane(GraphicsDevice, grass, 3000, 10);
+            _plane = new MonoEditorEndless.Engine.Plane(GraphicsDevice, grass, 3000, 20);
 
             // Then, bind it to an ImGui-friendly pointer, that we can use during regular ImGui.** calls (see below)
             _imGuiTexture = _imGuiRenderer.BindTexture(_xnaTexture);
@@ -549,9 +551,13 @@ namespace ProjectRunnerTest
             curMouse = Mouse.GetState();
             float x = (curMouse.X - prevMouse.X) / 5f;
             prevMouse = curMouse;
+            // slide right and left
             if (_mouseActiveTimer > 2)
             {
-                actor.SetPosition(actor.GetPosition() + -x * actor.GetRight());
+                Vector3 position = actor.GetPosition() + -x * actor.GetRight();
+                // Check if it is allowed to do the next move
+                if (_pathManager.IsOnPath(position))
+                    actor.SetPosition(position);
             }
             _pathManager.Update(gameTime, actor);
             //actor.Update(gameTime);
@@ -571,13 +577,24 @@ namespace ProjectRunnerTest
 
             }
         }
-        void CharacterCollisionHandler(object sender, EventArgs e)
+        void CharacterCollisionHandler(object sender, CollisionEventArgs e)
         {
             Actor character = sender as Actor;
-            if (e.ToString() != "")
+            if (e._actor?.GetName() == "collectable")
             {
                 _gameSession.AddPoint(10f);
-                character.SetVelocity(0);
+            }
+            if (e._actor?.GetName() == "corner")
+            {
+                character._lastCollisionSeen = "corner";
+            }
+        }
+        void CharacterNoCollisionHandler(object sender, EventArgs e)
+        {
+            Actor character = sender as Actor;
+            if (character._lastCollisionSeen == "corner")
+            {
+                Debug.WriteLine("You lost!!!");
             }
         }
         // TODO: These can go inside the pawn class
@@ -591,6 +608,10 @@ namespace ProjectRunnerTest
         }
         public void TurnRight(eButtonState buttonState, Vector2 amount)
         {
+            if (!actor._isTurnAllowed)
+            {
+                return;
+            }
             if (buttonState == eButtonState.PRESSED)
             {
                 actor.SmoothRotateY(-(float)Math.PI / 2f, 0.04f);
@@ -598,6 +619,10 @@ namespace ProjectRunnerTest
         }
         public void TurnLeft(eButtonState buttonState, Vector2 amount)
         {
+            if (!actor._isTurnAllowed)
+            {
+                return;
+            }
             if (buttonState == eButtonState.PRESSED)
             {
                 actor.SmoothRotateY((float)Math.PI / 2f, 0.04f);
