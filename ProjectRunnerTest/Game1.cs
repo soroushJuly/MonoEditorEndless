@@ -17,6 +17,7 @@ using MonoEditorEndless.Engine;
 using MonoEditorEndless.Engine.Path;
 using MonoEditorEndless.Editor;
 using MonoEditorEndless.Engine.Input;
+using MonoEditorEndless.Engine.Collision;
 
 namespace ProjectRunnerTest
 {
@@ -113,6 +114,8 @@ namespace ProjectRunnerTest
             actor.SetVelocity(80f);
             actor.SetForward(Vector3.UnitX);
             actor.SetRightVector(-Vector3.UnitZ);
+            actor.SetPosition(0 * Vector3.UnitY);
+            actor.SetName("character");
 
             road = new Actor();
             wall = new Actor();
@@ -143,12 +146,13 @@ namespace ProjectRunnerTest
             actor.RotateY((-90f / 180f) * (float)Math.PI);
             road.LoadModel(Content.Load<Model>("Content/wall"));
             road.RotateY((90f / 180f) * (float)Math.PI);
+            road.SetName("road straight");
             wall.LoadModel(Content.Load<Model>("Content/wall-half"));
             roadR.LoadModel(Content.Load<Model>("Content/wall"));
             wall.RotateY((180f / 180f) * (float)Math.PI);
             collectable.LoadModel(Content.Load<Model>("Content/FBX/Coin"));
             collectable.SetScale(.4f);
-            collectable.SetPosition(new Vector3(4 * road.GetDimentions().Z, 0, 0));
+            collectable.SetPosition(new Vector3(10 * road.GetDimentions().Z, 0, 0));
 
             // Load the sound effect
             //_soundEffect = new SoundEffect();
@@ -556,12 +560,16 @@ namespace ProjectRunnerTest
 
             _prevKeyState = Keyboard.GetState();
         }
-        void CollisionHandler(object sender, EventArgs e)
+        void CollisionHandler(object sender, CollisionEventArgs e)
         {
             Actor collectableItem = sender as Actor;
-            _gameSession.AddPoint(10f);
-            collectableItem.GetCollidable().SetRemoveFlag(true);
-            _soundEffectInstance.Play();
+            if (e._actor.GetName() == "character")
+            {
+                _gameSession.AddPoint(10f);
+                collectableItem.GetCollidable().SetRemoveFlag(true);
+                _soundEffectInstance.Play();
+
+            }
         }
         void CharacterCollisionHandler(object sender, EventArgs e)
         {
@@ -572,7 +580,7 @@ namespace ProjectRunnerTest
                 character.SetVelocity(0);
             }
         }
-
+        // TODO: These can go inside the pawn class
         public void MoveX(eButtonState buttonState, Vector2 amount)
         {
             float x = amount.X / 20f;

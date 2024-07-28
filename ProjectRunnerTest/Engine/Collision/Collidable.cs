@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using System.Reflection.Metadata.Ecma335;
 
 namespace MonoEditorEndless.Engine.Collision
 {
@@ -18,21 +17,23 @@ namespace MonoEditorEndless.Engine.Collision
         public float Zmin;
         // This flag indicates if this collidable should be removed or not
         private bool _removalFlag;
+        private Vector3 _boundingScale = new Vector3(1f);
         public bool GetRemoveFlag() { return _removalFlag; }
         public void SetRemoveFlag(bool value)
         {
             _removalFlag = value;
         }
-        public void Initialize(Vector3 BasePosition, Vector3 dimentions)
+        public void Initialize(Vector3 BasePosition, Vector3 dimentions, Vector3 boundingScale)
         {
-            _halfX = dimentions.X / 2;
-            _halfY = dimentions.Y / 2;
-            _halfZ = dimentions.Z / 2;
+            _boundingScale = boundingScale;
+            _halfX = dimentions.X / 2 * boundingScale.X;
+            _halfY = dimentions.Y / 2 * boundingScale.Y;
+            _halfZ = dimentions.Z / 2 * boundingScale.Z;
             Zmax = BasePosition.Z + _halfZ;
             Zmin = BasePosition.Z - _halfZ;
             Xmax = BasePosition.X + _halfX;
             Xmin = BasePosition.X - _halfX;
-            Ymax = BasePosition.Y + dimentions.Y;
+            Ymax = BasePosition.Y + 2 * _halfY;
             Ymin = BasePosition.Y;
         }
         public void Update(Vector3 BasePosition)
@@ -59,6 +60,10 @@ namespace MonoEditorEndless.Engine.Collision
                 return true;
             }
             return false;
+        }
+        public void SetY(float halfY)
+        {
+            _halfY = halfY;
         }
     }
 }

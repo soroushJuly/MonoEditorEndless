@@ -3,22 +3,23 @@ using Microsoft.Xna.Framework.Graphics;
 
 using MonoEditorEndless.Engine.Collision;
 using System;
-using System.Configuration;
-using System.Threading;
+using System.Diagnostics;
 
 namespace MonoEditorEndless.Engine
 {
     internal class Actor
     {
-        Vector3 _position;
-        float _velocity;
-        Vector3 _forwardVector;
-        Vector3 _rightVector;
-        Model _model;
-        Vector3 _dimentions;
+        private string _name;
+        private Vector3 _position;
+        private float _velocity;
+        private Vector3 _forwardVector;
+        private Vector3 _rightVector;
+        private Model _model;
+        private Vector3 _dimentions;
         public float _scale;
-        Matrix _scaleMatrix;
-        Matrix _rotationMatrix;
+        public Vector3 _boundingScale = new Vector3(1f);
+        private Matrix _scaleMatrix;
+        private Matrix _rotationMatrix;
 
         float _rotationYAnimation = 0f;
         float _rotationYAnimationMax = 0f;
@@ -42,6 +43,7 @@ namespace MonoEditorEndless.Engine
         }
         public Actor(Actor actor)
         {
+            _name = actor._name;
             _forwardVector = actor._forwardVector;
             _rightVector = actor._rightVector;
             _position = actor._position;
@@ -51,7 +53,9 @@ namespace MonoEditorEndless.Engine
             _rotationMatrix = actor._rotationMatrix;
             _dimentions = actor._dimentions;
             _model = actor._model;
-            _colliadable = actor._colliadable;
+            _boundingScale= actor._boundingScale;
+            _colliadable = new Collidable();
+            _colliadable.Initialize(_position, _dimentions, _boundingScale);
         }
         public Actor(Vector3 position)
         {
@@ -65,6 +69,7 @@ namespace MonoEditorEndless.Engine
             _colliadable = new Collidable();
         }
         // Getters
+        public string GetName() { return _name; }
         public Vector3 GetPosition() { return _position; }
         public Vector3 GetForward() { return _forwardVector; }
         public Vector3 GetRight() { return _rightVector; }
@@ -76,8 +81,21 @@ namespace MonoEditorEndless.Engine
         public Matrix GetScaleMatrix() { return _scaleMatrix; }
         public Matrix GetRotationMatrix() { return _rotationMatrix; }
         // Setters
+        public void SetName(string name) { _name = name; }
         public void SetVelocity(float velocity) { _velocity = velocity; }
-        public void SetPosition(Vector3 position) { _position = position; }
+        public void SetPosition(Vector3 position)
+        {
+            _position = position;
+            if (_model != null)
+            {
+                BoundingBox boundingBox = GetBoundingBox(_model);
+                _dimentions = boundingBox.Max - boundingBox.Min;
+                // TODO: All actors have colliadable but deactive by default - change this
+                // TODO: Colliadable initializes here - change this 
+                _colliadable.Initialize(_position, _dimentions, _boundingScale);
+            }
+        }
+        public void SetColliadableY(float halfY) { _boundingScale.Y = halfY; }
         public void SetForward(Vector3 forwardVector) { _forwardVector = forwardVector; }
         public void SetRightVector(Vector3 rightVector) { _rightVector = rightVector; }
         public void SetScale(float scale)
@@ -87,7 +105,7 @@ namespace MonoEditorEndless.Engine
             _dimentions = boundingBox.Max - boundingBox.Min;
             _scaleMatrix = Matrix.CreateScale(_scale);
             // Update the collidable properties
-            _colliadable.Initialize(_position, _dimentions);
+            _colliadable.Initialize(_position, _dimentions, _boundingScale);
         }
 
 
@@ -153,7 +171,7 @@ namespace MonoEditorEndless.Engine
             _dimentions = boundingBox.Max - boundingBox.Min;
             // TODO: All actors have colliadable but deactive by default - change this
             // TODO: Colliadable initializes here - change this 
-            _colliadable.Initialize(_position, _dimentions);
+            _colliadable.Initialize(_position, _dimentions, _boundingScale);
         }
         public void Update(GameTime gameTime)
         {
@@ -164,7 +182,7 @@ namespace MonoEditorEndless.Engine
             // Update the collidable info if it was there
             _colliadable?.Update(_position);
         }
-        public void OnCollision(Actor otherActor)
+        public virtual void OnCollision(Actor otherActor)
         {
             // If no subscriber this will return null
             if (CollisionHandler != null)

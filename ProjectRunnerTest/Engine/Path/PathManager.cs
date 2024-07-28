@@ -47,6 +47,7 @@ namespace MonoEditorEndless.Engine.Path
         // Add a sample road block to block list to generate path from them
         public void AddRoadBlock(Actor actor)
         {
+            actor.SetColliadableY(1000f);
             _roadBlocks.Add(actor);
         }
         // Add a wall block to generate walls with two direction to go
@@ -92,8 +93,9 @@ namespace MonoEditorEndless.Engine.Path
                 }
                 Vector3 nextPosition = GenerateNextPosition(rotatedActor, _pathDirection);
                 _latestPosition += nextPosition;
-                rotatedActor.SetPosition(_latestPosition + -new Vector3(0, rotatedActor.GetDimentions().Y, 0));
-                AddNewActiveBlock(new Block(rotatedActor, _pathDirection));
+                Actor actor2 = new Actor(rotatedActor);
+                actor2.SetPosition(_latestPosition + -new Vector3(0, rotatedActor.GetDimentions().Y, 0));
+                AddNewActiveBlock(new Block(actor2, _pathDirection));
             }
             // Two way block
             else if (_wallChance + _turnChance > randomNumber && randomNumber > _turnChance)
@@ -129,7 +131,7 @@ namespace MonoEditorEndless.Engine.Path
         }
         private void CreateWall()
         {
-            Block newBlock = new Block(_wallBlocks[0], _pathDirection);
+            Block newBlock = new Block(new Actor(_wallBlocks[0]), _pathDirection);
             AddNewActiveBlock(newBlock);
         }
         private void AddNewActiveBlock(Block newBlock)
@@ -224,7 +226,7 @@ namespace MonoEditorEndless.Engine.Path
         {
             // TODO: maybe consider cutting the _activeBlocks to half instead
             // of this for better performance
-            if (_activeBlocks.Count > 10)
+            if (_activeBlocks.Count > 100)
             {
                 RemoveBlock();
             }
