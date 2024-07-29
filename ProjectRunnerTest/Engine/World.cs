@@ -79,6 +79,5 @@ namespace MonoEditorEndless.Engine
                 actor.Draw(Matrix.CreateTranslation(actor.GetPosition()), view, projection);
             }
         }
-
     }
 }

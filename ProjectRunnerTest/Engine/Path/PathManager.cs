@@ -11,6 +11,10 @@ namespace MonoEditorEndless.Engine.Path
         List<Actor> _roadBlocks;
         List<Actor> _turnRightBlocks;
         List<Actor> _wallBlocks;
+        // Different collectable that might appear in the path
+        List<Actor> _collectableTypes;
+        // Different obstacles that might appear in the path
+        List<Actor> _obstacleTypes;
         // Starting position of drawing active blocks
         Vector3 _startingPosition;
         // The chance that a wall appears. Between 0 to 100
@@ -36,6 +40,8 @@ namespace MonoEditorEndless.Engine.Path
             _roadBlocks = new List<Actor>();
             _wallBlocks = new List<Actor>();
             _turnRightBlocks = new List<Actor>();
+            _collectableTypes = new List<Actor>();
+            _obstacleTypes = new List<Actor>();
             _startingPosition = Vector3.Zero;
             // Turn chance starts with zero and get max in Initialize
             _turnChance = 0;
@@ -59,6 +65,14 @@ namespace MonoEditorEndless.Engine.Path
         {
             actor.SetColliadableY(1000f);
             _turnRightBlocks.Add(actor);
+        }
+        public void AddCollectable(Actor actor)
+        {
+            _collectableTypes.Add(actor);
+        }
+        public void AddObstacle(Actor actor)
+        {
+            _obstacleTypes.Add(actor);
         }
         public void Initialize(int numberOfBlocks)
         {
@@ -137,6 +151,21 @@ namespace MonoEditorEndless.Engine.Path
         }
         private void AddNewActiveBlock(Block newBlock)
         {
+            int randomNumber = _random.Next(100);
+            int randomNumber3 = _random.Next(100);
+            int randomNumber4 = _random.Next(100);
+            int randomNumber5 = _random.Next(100);
+            int obstacleChance = 10;
+            int collectableChance = 20;
+            if (randomNumber3 < obstacleChance)
+            {
+                newBlock.InitializeObstacles(randomNumber5 / 100f, randomNumber4 / 100f, _obstacleTypes);
+            }
+            if (randomNumber < collectableChance && newBlock.GetName() == "road-straight")
+            {
+                int randomNumber2 = _random.Next(100);
+                newBlock.InitializeCollectables(5, randomNumber2 / 100f, _collectableTypes);
+            }
             _activeBlocks.Enqueue(newBlock);
             BlockAdded(this, new BlockEventArgs(newBlock));
         }

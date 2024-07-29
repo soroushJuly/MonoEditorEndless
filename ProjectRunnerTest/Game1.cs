@@ -108,8 +108,31 @@ namespace ProjectRunnerTest
             _inputManager.AddKeyboardBinding(Keys.D, TurnRight);
             _inputManager.AddKeyboardBinding(Keys.A, TurnLeft);
 
-            _pathManager.BlockAdded += (object sender, BlockEventArgs e) => { _world.AddActor(e.GetBlock(), true); };
-            _pathManager.BlockRemoved += (object sender, BlockEventArgs e) => { _world.RemoveActor(e.GetBlock()); };
+            _pathManager.BlockAdded += (object sender, BlockEventArgs e) =>
+            {
+                _world.AddActor(e.GetBlock(), true);
+                foreach (Actor collectable in e.GetBlock()._collectables)
+                {
+                    _world.AddActor(collectable, true);
+                }
+                foreach (Actor obstacle in e.GetBlock()._obstacles)
+                {
+                    _world.AddActor(obstacle, true);
+                }
+
+            };
+            _pathManager.BlockRemoved += (object sender, BlockEventArgs e) =>
+            {
+                _world.RemoveActor(e.GetBlock());
+                foreach (Actor collectable in e.GetBlock()._collectables)
+                {
+                    _world.RemoveActor(collectable);
+                }
+                foreach (Actor obstacle in e.GetBlock()._obstacles)
+                {
+                    _world.RemoveActor(obstacle);
+                }
+            };
 
             actor = new Actor();
             actor.SetVelocity(160f);
@@ -147,13 +170,13 @@ namespace ProjectRunnerTest
             actor.RotateY((-90f / 180f) * (float)Math.PI);
             road.LoadModel(Content.Load<Model>("Content/wall"));
             road.RotateY((90f / 180f) * (float)Math.PI);
-            road.SetName("road straight");
+            road.SetName("road-straight");
             wall.LoadModel(Content.Load<Model>("Content/wall-half"));
             roadR.LoadModel(Content.Load<Model>("Content/wall"));
             wall.RotateY((180f / 180f) * (float)Math.PI);
             collectable.LoadModel(Content.Load<Model>("Content/FBX/Coin"));
-            collectable.SetScale(.4f);
-            collectable.SetPosition(new Vector3(10 * road.GetDimentions().Z, 0, 0));
+            collectable.SetScale(.1f);
+            collectable.SetName("collectable");
 
             // Load the sound effect
             //_soundEffect = new SoundEffect();
@@ -162,26 +185,22 @@ namespace ProjectRunnerTest
             _soundEffectInstance.Volume = .1f;
 
             obstacle.LoadModel(Content.Load<Model>("Content/rocks-small"));
-            obstacle.SetScale(0.25f);
-            obstacle.SetPosition(new Vector3(3 * road.GetDimentions().Z, 0, 0));
+            obstacle.SetScale(0.15f);
+            obstacle.SetName("obstacle");
 
             _world.AddActor(actor, true);
-            _world.AddActor(collectable, true);
-            _world.AddActor(obstacle, true);
 
             corner.LoadModel(Content.Load<Model>("Content/wall-corner"));
-            corner.SetName("corner");
+            corner.SetName("road-corner");
 
+            _pathManager.AddObstacle(obstacle);
+            _pathManager.AddCollectable(collectable);
             _pathManager.AddRoadBlock(road);
             _pathManager.AddWallBlock(wall);
             _pathManager.AddTurnRight(corner);
-            _pathManager.Initialize(10);
+            _pathManager.Initialize(20);
 
             _bgMusic = Content.Load<Song>("Content/Audio/Titan");
-
-
-            // Debug.WriteLine(bone.Transform);
-
 
             // First, load the texture as a Texture2D (can also be done using the XNA/FNA content pipeline)
             _xnaTexture = ImGuiRenderer.CreateTexture(GraphicsDevice, 300, 150, pixel =>
@@ -583,6 +602,11 @@ namespace ProjectRunnerTest
             if (e._actor?.GetName() == "collectable")
             {
                 _gameSession.AddPoint(10f);
+                _world.RemoveActor(e._actor);
+            }
+            if (e._actor?.GetName() == "obstacle")
+            {
+                // Do the dying thing
             }
             if (e._actor?.GetName() == "corner")
             {
