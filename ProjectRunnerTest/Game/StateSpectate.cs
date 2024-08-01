@@ -18,7 +18,7 @@ using Microsoft.Xna.Framework.Content;
 
 namespace MonoEditorEndless.Game
 {
-    internal class StatePlay : State
+    internal class StateSpectate : State
     {
         ContentManager Content;
         GraphicsDevice _graphicsDevice;
@@ -70,8 +70,9 @@ namespace MonoEditorEndless.Game
         // Transforming matrices
         private Matrix world = Matrix.CreateTranslation(new Vector3(0, 0, 0));
         private Matrix projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45), 800f / 480f, 0.1f, 5000f);
-        public StatePlay(ContentManager content, GraphicsDevice graphicsDevice)
+        public StateSpectate(ContentManager content, GraphicsDevice graphicsDevice)
         {
+            Name = "spectate";
             Content = content;
             _graphicsDevice = graphicsDevice;
         }
@@ -83,13 +84,6 @@ namespace MonoEditorEndless.Game
             _pathManager = new PathManager();
             _inputManager = new InputManager();
             //_inputManager.AddMouseBinding(eMouseInputs.X_MOVE, MoveX);
-            _inputManager.AddKeyboardBinding(Keys.D, TurnRight);
-            _inputManager.AddKeyboardBinding(Keys.A, TurnLeft);
-            _inputManager.AddKeyboardBinding(Keys.Space, (eButtonState buttonState, Vector2 amount) =>
-            {
-                if (buttonState == eButtonState.PRESSED)
-                    _gameSession.StartSession();
-            });
 
             _pathManager.BlockAdded += (object sender, BlockEventArgs e) =>
             {
@@ -132,11 +126,7 @@ namespace MonoEditorEndless.Game
 
             obstacle = new Actor();
 
-            //actor.CollisionHandler += this.CollisionHandler;
-            collectable.CollisionHandler += this.CollisionHandler;
-            actor.CollisionHandler += this.CharacterCollisionHandler;
-            actor.NoCollisionHandler += this.CharacterNoCollisionHandler;
-            _camera = new MonoEditorEndless.Engine.Camera();
+            _camera = new Camera();
 
 
             _lastMouse = new Vector2(Mouse.GetState().X, Mouse.GetState().Y);
@@ -197,10 +187,44 @@ namespace MonoEditorEndless.Game
         public override void Execute(object owner, GameTime gameTime)
         {
             _mouseActiveTimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+            // ------------ Editor Controls ----------- //
+            // Free Camera Control
 
-            // third person camera
-            _camera.SetPosition(actor.GetPosition() - 50 * actor.GetForward());
-            _camera.LookAtTarget(actor.GetPosition() + 100 * actor.GetForward(), actor.GetForward(), 300f, 100f);
+            if (Keyboard.GetState().IsKeyDown(Keys.D))
+            {
+                _camera.MoveLeft(.1f * (float)gameTime.ElapsedGameTime.Milliseconds);
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.A))
+            {
+                _camera.MoveLeft(-.1f * (float)gameTime.ElapsedGameTime.Milliseconds);
+            }
+            if (Mouse.GetState().RightButton == ButtonState.Pressed)
+            {
+                _camera.Rotate(Mouse.GetState().X - _lastMouse.X, Mouse.GetState().Y - _lastMouse.Y);
+            }
+            if (Mouse.GetState().LeftButton == ButtonState.Pressed)
+            {
+                if (Keyboard.GetState().IsKeyDown(Keys.W))
+                {
+                    _camera.MoveUp(.1f * (float)gameTime.ElapsedGameTime.Milliseconds);
+                }
+                if (Keyboard.GetState().IsKeyDown(Keys.S))
+                {
+                    _camera.MoveUp(-.1f * (float)gameTime.ElapsedGameTime.Milliseconds);
+                }
+            }
+            else
+            {
+                if (Keyboard.GetState().IsKeyDown(Keys.W))
+                {
+                    _camera.MoveForward(.1f * (float)gameTime.ElapsedGameTime.Milliseconds);
+                }
+                if (Keyboard.GetState().IsKeyDown(Keys.S))
+                {
+                    _camera.MoveForward(-.1f * (float)gameTime.ElapsedGameTime.Milliseconds);
+                }
+            }
+
 
             if (_prevKeyState.IsKeyDown(Keys.F) && Keyboard.GetState().IsKeyUp(Keys.F))
             {
@@ -210,23 +234,10 @@ namespace MonoEditorEndless.Game
 
             _lastMouse.X = Mouse.GetState().X;
             _lastMouse.Y = Mouse.GetState().Y;
-            _inputManager.Update();
-            if (_gameSession.GetState() == GameSession.State.START)
-                actor.SetVelocity(actor.GetVelocity() + 0.0002f * _gameSession.GetGameSpeed());
+
             curMouse = Mouse.GetState();
-            float x = (curMouse.X - prevMouse.X) / 5f;
             prevMouse = curMouse;
-            // slide right and left
-            if (_mouseActiveTimer > 2)
-            {
-                Vector3 position = actor.GetPosition() + -x * actor.GetRight();
-                // Check if it is allowed to do the next move
-                if (_pathManager.IsOnPath(position))
-                    actor.SetPosition(position);
-            }
-            _pathManager.Update(gameTime, actor);
-            //actor.Update(gameTime);
-            _world.Update(gameTime);
+
             world = Matrix.CreateTranslation(actor.GetPosition());
 
             _prevKeyState = Keyboard.GetState();
@@ -242,73 +253,6 @@ namespace MonoEditorEndless.Game
 
             _skybox.Draw(_graphicsDevice, Matrix.CreateTranslation(_camera.GetPosition()), _camera.GetView(), projection);
             _plane.Draw(_graphicsDevice, Matrix.CreateTranslation(-100 * Vector3.UnitY), _camera.GetView(), projection);
-        }
-        // TODO: These can go inside the pawn class
-        public void MoveX(eButtonState buttonState, Vector2 amount)
-        {
-            float x = amount.X / 20f;
-            if (true)
-            {
-                actor.SetPosition(actor.GetPosition() + -x * actor.GetRight());
-            }
-        }
-        public void TurnRight(eButtonState buttonState, Vector2 amount)
-        {
-            if (!actor._isTurnAllowed)
-            {
-                return;
-            }
-            if (buttonState == eButtonState.PRESSED)
-            {
-                actor.SmoothRotateY(-(float)Math.PI / 2f, 0.04f);
-            }
-        }
-        public void TurnLeft(eButtonState buttonState, Vector2 amount)
-        {
-            if (!actor._isTurnAllowed)
-            {
-                return;
-            }
-            if (buttonState == eButtonState.PRESSED)
-            {
-                actor.SmoothRotateY((float)Math.PI / 2f, 0.04f);
-            }
-        }
-        void CharacterCollisionHandler(object sender, CollisionEventArgs e)
-        {
-            Actor character = sender as Actor;
-            if (e._actor?.GetName() == "collectable")
-            {
-                _gameSession.AddPoint(10f);
-                _world.RemoveActor(e._actor);
-            }
-            if (e._actor?.GetName() == "obstacle")
-            {
-                // Do the dying thing
-            }
-            if (e._actor?.GetName() == "corner")
-            {
-                character._lastCollisionSeen = "corner";
-            }
-        }
-        void CharacterNoCollisionHandler(object sender, EventArgs e)
-        {
-            Actor character = sender as Actor;
-            if (character._lastCollisionSeen == "corner")
-            {
-                Debug.WriteLine("You lost!!!");
-            }
-        }
-        void CollisionHandler(object sender, CollisionEventArgs e)
-        {
-            Actor collectableItem = sender as Actor;
-            if (e._actor.GetName() == "character")
-            {
-                _gameSession.AddPoint(10f);
-                collectableItem.GetCollidable().SetRemoveFlag(true);
-                _soundEffectInstance.Play();
-
-            }
         }
     }
 }

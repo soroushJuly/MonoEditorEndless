@@ -1,6 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using MonoEndlesssRunner.Engine.StateManager;
 using System.Collections.Generic;
 
 namespace MonoEditorEndless.Engine.StateManager

@@ -2,7 +2,7 @@
 using MonoEditorEndless.Engine.StateManager;
 using Microsoft.Xna.Framework;
 
-namespace MonoEndlesssRunner.Engine.StateManager
+namespace MonoEditorEndless.Engine.StateManager
 {
     public class Transition
     {

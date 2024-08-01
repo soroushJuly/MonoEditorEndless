@@ -22,16 +22,20 @@ namespace MonoEditorEndless.Game
             State play = new StatePlay(_contentManger, _graphicsDevice);
             play.Name = "play";
 
+            State spectate = new StateSpectate(_contentManger, _graphicsDevice);
 
+            spectate.AddTransition(new Transition(play, () => { return _isPlaying; }));
 
             _fsm.AddState(play);
+            _fsm.AddState(spectate);
 
-            _fsm.Initialise("play");
+            _fsm.Initialise("spectate");
 
         }
         public void Start()
         {
             _isPlaying = true;
+
 
         }
         public void Stop()
@@ -40,10 +44,9 @@ namespace MonoEditorEndless.Game
         }
         public void Update(GameTime gameTime)
         {
-            if (_isPlaying)
-            {
-                _fsm.Update(gameTime);
-            }
+
+            _fsm.Update(gameTime);
+
         }
         public void Draw(GraphicsDevice graphicsDevice)
         {
