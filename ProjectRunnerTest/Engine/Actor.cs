@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework.Graphics;
 
 using MonoEditorEndless.Engine.Collision;
 using System;
-using System.Diagnostics;
 
 namespace MonoEditorEndless.Engine
 {

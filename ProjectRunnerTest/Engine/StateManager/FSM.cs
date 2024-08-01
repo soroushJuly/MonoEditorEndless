@@ -11,8 +11,9 @@ namespace MonoEditorEndless.Engine.StateManager
         private object m_owner;
         // states of the owner object
         private List<State> m_states;
-
+        // Current State of the state machine
         private State currentState;
+        public State GetCurrentState() { return currentState; }
 
         public FSM(object owner)
         {
@@ -49,13 +50,6 @@ namespace MonoEditorEndless.Engine.StateManager
 
             // Execute the current state 
             currentState.Execute(m_owner, gameTime);
-        }
-        // For the states with draw
-        public void Draw(GameTime gameTime, SpriteBatch spriteBatch = null)
-        {
-            if (currentState == null) return;
-
-            currentState.Draw(m_owner, gameTime, spriteBatch);
         }
     }
 }

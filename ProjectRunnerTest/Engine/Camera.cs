@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 
-namespace ProjectRunnerTest.Engine
+namespace MonoEditorEndless.Engine
 {
     internal class Camera
     {

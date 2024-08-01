@@ -1,3 +1,3 @@
 ﻿
-using var game = new ProjectRunnerTest.Game1();
+using var game = new ProjectRunnerTest.Application();
 game.Run();

@@ -14,7 +14,7 @@ namespace MonoEditorEndless.Editor
     /// </summary>
     public class ImGuiRenderer
     {
-        private Game _game;
+        private Microsoft.Xna.Framework.Game _game;
 
         // Graphics
         private GraphicsDevice _graphicsDevice;
@@ -42,7 +42,7 @@ namespace MonoEditorEndless.Editor
         private readonly float WHEEL_DELTA = 120;
         private Keys[] _allKeys = Enum.GetValues<Keys>();
 
-        public ImGuiRenderer(Game game)
+        public ImGuiRenderer(Microsoft.Xna.Framework.Game game)
         {
             var context = ImGui.CreateContext();
             ImGui.SetCurrentContext(context);
