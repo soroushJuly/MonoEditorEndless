@@ -237,7 +237,7 @@ namespace MonoEditorEndless.Engine.Path
                 if (_pathDirection == Directions.FIRST) { _pathDirection = Directions.LAST - 1; }
             }
         }
-        public void RemoveBlock()
+        public void RemoveLastBlock()
         {
             // To compensate their position in the current position
             // TODO: this can be saved during draw and be used here
@@ -254,16 +254,29 @@ namespace MonoEditorEndless.Engine.Path
         }
         public void Update(GameTime gameTime, Actor character)
         {
+            int seenBlocks = 0;
+            foreach (Block block in _activeBlocks)
+            {
+                if (!block._isSeenByCharacter)
+                {
+                    break;
+                }
+                if (block._isSeenByCharacter)
+                {
+                    seenBlocks++;
+                }
+
+            }
+            if (_activeBlocks.Count - seenBlocks < 30)
+            {
+                Generate();
+            }
             // TODO: maybe consider cutting the _activeBlocks to half instead
             // of this for better performance
-            if (_activeBlocks.Count > 100)
+            if (seenBlocks > 10)
             {
-                RemoveBlock();
+                RemoveLastBlock();
             }
-            //if (gameTime.ElapsedGameTime.TotalSeconds % 1000 == 0)
-            //{
-            //    AddBlock(_roadBlocks[0]);
-            //}
         }
         public bool IsOnPath(Vector3 position)
         {

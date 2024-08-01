@@ -10,6 +10,7 @@ namespace MonoEditorEndless.Engine.Path
         private Directions _direction;
         public List<Actor> _collectables;
         public List<Actor> _obstacles;
+        public bool _isSeenByCharacter;
         public Block(Actor actor, Directions direction) : base(actor)
         {
             _collectables = new List<Actor>();
@@ -21,10 +22,12 @@ namespace MonoEditorEndless.Engine.Path
             // TODO: if the block is corner block there is a punishment
             if (otherActor?.GetName() == "character" && this.GetName() != "road-corner")
             {
+                this._isSeenByCharacter = true;
                 otherActor._isTurnAllowed = false;
             }
             if (otherActor?.GetName() == "character" && this.GetName() == "road-corner")
             {
+                this._isSeenByCharacter = true;
                 otherActor._isTurnAllowed = true;
                 otherActor._lastCollisionSeen = "road-corner";
             }

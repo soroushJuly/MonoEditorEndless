@@ -107,6 +107,11 @@ namespace ProjectRunnerTest
             //_inputManager.AddMouseBinding(eMouseInputs.X_MOVE, MoveX);
             _inputManager.AddKeyboardBinding(Keys.D, TurnRight);
             _inputManager.AddKeyboardBinding(Keys.A, TurnLeft);
+            _inputManager.AddKeyboardBinding(Keys.Space, (eButtonState buttonState, Vector2 amount) =>
+            {
+                if (buttonState == eButtonState.PRESSED)
+                    _gameSession.StartSession();
+            });
 
             _pathManager.BlockAdded += (object sender, BlockEventArgs e) =>
             {
@@ -384,6 +389,8 @@ namespace ProjectRunnerTest
                 ImGui.Text(actor.GetPosition().ToString());
                 ImGui.Text("Actors forward: ");
                 ImGui.Text(actor.GetForward().ToString());
+                ImGui.Text("Actors Speed: ");
+                ImGui.Text(actor.GetVelocity().ToString());
 
                 ImGui.Text(actor.GetDimentions().ToString());
 
@@ -563,10 +570,13 @@ namespace ProjectRunnerTest
                 _pathManager.Generate();
             }
 
+            _gameSession.Update(gameTime);
+
             _lastMouse.X = Mouse.GetState().X;
             _lastMouse.Y = Mouse.GetState().Y;
             _inputManager.Update();
-            actor.SetVelocity(actor.GetVelocity() * _gameSession.GetGameSpeed());
+            if (_gameSession.GetState() == GameSession.State.START)
+                actor.SetVelocity(actor.GetVelocity() + 0.0002f * _gameSession.GetGameSpeed());
             curMouse = Mouse.GetState();
             float x = (curMouse.X - prevMouse.X) / 5f;
             prevMouse = curMouse;

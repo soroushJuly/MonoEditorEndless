@@ -9,7 +9,7 @@ namespace MonoEditorEndless.Engine
         private State _sessionState;
         private float _gameSpeed;
         private float _gameAccelerationRate;
-        private enum State
+        public enum State
         {
             IDLE,
             STOP,
@@ -23,12 +23,13 @@ namespace MonoEditorEndless.Engine
 
         public float GetPoints() { return _points; }
         public float GetGameSpeed() { return _gameSpeed; }
+        public State GetState() { return _sessionState; }
 
         public void StartSession()
         {
             _sessionState = State.START;
         }
-        public void OnUpdate(GameTime gameTime)
+        public void Update(GameTime gameTime)
         {
             if (_sessionState == State.STOP)
             {
@@ -43,7 +44,7 @@ namespace MonoEditorEndless.Engine
         }
         private void ResetSession()
         {
-            _gameAccelerationRate = 0.001f;
+            _gameAccelerationRate = 0.0001f;
             _sessionTimePassed = 0f;
             _gameSpeed = 1f;
             _points = 0f;
