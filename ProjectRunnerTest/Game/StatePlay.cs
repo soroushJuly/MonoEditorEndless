@@ -22,6 +22,9 @@ namespace MonoEditorEndless.Game
     {
         ContentManager Content;
         GraphicsDevice _graphicsDevice;
+        SpriteBatch _spriteBatch;
+
+        private Texture2D _whiteTexture;
 
         private Vector2 _lastMouse;
 
@@ -29,6 +32,8 @@ namespace MonoEditorEndless.Game
 
         private Camera _camera;
 
+
+        private Matrix _view;
 
         private World _world;
         private GameSession _gameSession;
@@ -82,6 +87,9 @@ namespace MonoEditorEndless.Game
             _gameSession = new GameSession();
             _pathManager = new PathManager();
             _inputManager = new InputManager();
+
+            _spriteBatch = new SpriteBatch(_graphicsDevice);
+
             //_inputManager.AddMouseBinding(eMouseInputs.X_MOVE, MoveX);
             _inputManager.AddKeyboardBinding(Keys.D, TurnRight);
             _inputManager.AddKeyboardBinding(Keys.A, TurnLeft);
@@ -138,6 +146,8 @@ namespace MonoEditorEndless.Game
             actor.NoCollisionHandler += this.CharacterNoCollisionHandler;
             _camera = new MonoEditorEndless.Engine.Camera();
 
+            _view = Matrix.CreateLookAt(_camera.GetPosition(), Vector3.Zero, Vector3.Up);
+
 
             _lastMouse = new Vector2(Mouse.GetState().X, Mouse.GetState().Y);
 
@@ -193,6 +203,10 @@ namespace MonoEditorEndless.Game
 
             Texture2D grass = Content.Load<Texture2D>("Content/grass");
             _plane = new MonoEditorEndless.Engine.Plane(_graphicsDevice, grass, 3000, 20);
+
+            // Create a 1x1 white texture
+            _whiteTexture = new Texture2D(_graphicsDevice, 1, 1);
+            _whiteTexture.SetData(new[] { Color.White });
         }
         public override void Execute(object owner, GameTime gameTime)
         {
@@ -234,6 +248,14 @@ namespace MonoEditorEndless.Game
         public override void Exit(object owner) { }
         public override void Draw(object owner, GraphicsDevice GraphicsDevice = null, SpriteBatch spriteBatch = null)
         {
+            var lastViewport = _graphicsDevice.Viewport;
+            var lastScissorBox = _graphicsDevice.ScissorRectangle;
+            var lastRasterizer = _graphicsDevice.RasterizerState;
+            var lastDepthStencil = _graphicsDevice.DepthStencilState;
+            var lastBlendFactor = _graphicsDevice.BlendFactor;
+            var lastBlendState = _graphicsDevice.BlendState;
+            var lastSamplerStates = _graphicsDevice.SamplerStates;
+
             //actor.Draw(world, _camera.GetView(), projection);
             _pathManager.Draw(world, _camera.GetView(), projection);
             //obstacle.Draw(Matrix.CreateTranslation(Vector3.Zero), _camera.GetView(), projection);
@@ -242,6 +264,34 @@ namespace MonoEditorEndless.Game
 
             _skybox.Draw(_graphicsDevice, Matrix.CreateTranslation(_camera.GetPosition()), _camera.GetView(), projection);
             _plane.Draw(_graphicsDevice, Matrix.CreateTranslation(-100 * Vector3.UnitY), _camera.GetView(), projection);
+
+
+            DrawHealthBar(new Vector2(400, 100), 0.75f, 1.0f);
+
+            _graphicsDevice.Viewport = lastViewport;
+            _graphicsDevice.ScissorRectangle = lastScissorBox;
+            _graphicsDevice.RasterizerState = lastRasterizer;
+            _graphicsDevice.DepthStencilState = lastDepthStencil;
+            _graphicsDevice.BlendState = lastBlendState;
+            _graphicsDevice.BlendFactor = lastBlendFactor;
+            _graphicsDevice.SamplerStates[0] = SamplerState.LinearWrap;
+        }
+        private void DrawHealthBar(Vector2 barPosition, float healthPercent, float maxHealth)
+        {
+            // Set the size and position of the health bar
+            int barWidth = 100;
+            int barHeight = 20;
+
+            // Calculate the width of the health portion
+            int healthWidth = (int)(barWidth * healthPercent);
+
+            // Draw the health bar
+            _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, DepthStencilState.DepthRead);
+            //_spriteBatch.Begin();
+            _spriteBatch.Draw(_whiteTexture, new Rectangle((int)barPosition.X, (int)barPosition.Y, barWidth, barHeight), Color.Gray); // Background
+            _spriteBatch.Draw(_whiteTexture, new Rectangle((int)barPosition.X, (int)barPosition.Y, healthWidth, barHeight), Color.Red); // Health
+            _spriteBatch.End();
+            // Implementation of health bar drawing will be done here
         }
         // TODO: These can go inside the pawn class
         public void MoveX(eButtonState buttonState, Vector2 amount)

@@ -225,13 +225,6 @@ namespace MonoEditorEndless.Game
                 }
             }
 
-
-            if (_prevKeyState.IsKeyDown(Keys.F) && Keyboard.GetState().IsKeyUp(Keys.F))
-            {
-                _pathManager.Generate();
-            }
-            _gameSession.Update(gameTime);
-
             _lastMouse.X = Mouse.GetState().X;
             _lastMouse.Y = Mouse.GetState().Y;
 
@@ -254,5 +247,12 @@ namespace MonoEditorEndless.Game
             _skybox.Draw(_graphicsDevice, Matrix.CreateTranslation(_camera.GetPosition()), _camera.GetView(), projection);
             _plane.Draw(_graphicsDevice, Matrix.CreateTranslation(-100 * Vector3.UnitY), _camera.GetView(), projection);
         }
+        
+        //private Vector2 ProjectToScreen(Vector3 worldPosition)
+        //{
+        //    Viewport viewport = _graphicsDevice.Viewport;
+        //    Vector3 projectedPosition = viewport.Project(worldPosition, projection, _view, Matrix.Identity);
+        //    return new Vector2(projectedPosition.X, projectedPosition.Y);
+        //}
     }
 }
