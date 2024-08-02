@@ -21,6 +21,9 @@ namespace MonoEditorEndless.Engine
         private Matrix _rotationMatrix;
         // TODO: move this to another class
         public bool _isTurnAllowed = false;
+        // TODO: move this to another class
+        public int _health = 3;
+        public bool _isActive = true;
         public string _lastCollisionSeen = String.Empty;
 
         float _rotationYAnimation = 0f;

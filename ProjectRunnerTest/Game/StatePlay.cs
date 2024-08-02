@@ -24,7 +24,8 @@ namespace MonoEditorEndless.Game
         GraphicsDevice _graphicsDevice;
         SpriteBatch _spriteBatch;
 
-        private Texture2D _whiteTexture;
+        private Texture2D _heartTexture;
+        private SpriteFont _font;
 
         private Vector2 _lastMouse;
 
@@ -89,6 +90,8 @@ namespace MonoEditorEndless.Game
             _inputManager = new InputManager();
 
             _spriteBatch = new SpriteBatch(_graphicsDevice);
+
+
 
             //_inputManager.AddMouseBinding(eMouseInputs.X_MOVE, MoveX);
             _inputManager.AddKeyboardBinding(Keys.D, TurnRight);
@@ -204,9 +207,13 @@ namespace MonoEditorEndless.Game
             Texture2D grass = Content.Load<Texture2D>("Content/grass");
             _plane = new MonoEditorEndless.Engine.Plane(_graphicsDevice, grass, 3000, 20);
 
+            Texture2D font = Content.Load<Texture2D>("Content/Fonts/WhitePeaberry");
+            _font = Content.Load<SpriteFont>("Content/Fonts/File");
+
             // Create a 1x1 white texture
-            _whiteTexture = new Texture2D(_graphicsDevice, 1, 1);
-            _whiteTexture.SetData(new[] { Color.White });
+            _heartTexture = Content.Load<Texture2D>("Content/heart");
+            //_whiteTexture = new Texture2D(_graphicsDevice, 1, 1);
+            //_whiteTexture.SetData(new[] { Color.White });
         }
         public override void Execute(object owner, GameTime gameTime)
         {
@@ -278,18 +285,16 @@ namespace MonoEditorEndless.Game
         }
         private void DrawHealthBar(Vector2 barPosition, float healthPercent, float maxHealth)
         {
-            // Set the size and position of the health bar
-            int barWidth = 100;
-            int barHeight = 20;
-
-            // Calculate the width of the health portion
-            int healthWidth = (int)(barWidth * healthPercent);
 
             // Draw the health bar
             _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, DepthStencilState.DepthRead);
             //_spriteBatch.Begin();
-            _spriteBatch.Draw(_whiteTexture, new Rectangle((int)barPosition.X, (int)barPosition.Y, barWidth, barHeight), Color.Gray); // Background
-            _spriteBatch.Draw(_whiteTexture, new Rectangle((int)barPosition.X, (int)barPosition.Y, healthWidth, barHeight), Color.Red); // Health
+            for (int i = 0; i < actor._health; i++)
+            {
+                _spriteBatch.Draw(_heartTexture, new Rectangle((int)barPosition.X + i * _heartTexture.Width, (int)barPosition.Y, _heartTexture.Width, _heartTexture.Height), Color.Gray); // Background
+            }
+            _spriteBatch.DrawString(_font, "Score:" + _gameSession.GetPoints(), new Vector2(400, 50), Color.Black);
+            //_spriteBatch.Draw(_heartTexture, new Rectangle((int)barPosition.X, (int)barPosition.Y, healthWidth, barHeight), Color.Red); // Health
             _spriteBatch.End();
             // Implementation of health bar drawing will be done here
         }
@@ -332,8 +337,10 @@ namespace MonoEditorEndless.Game
                 _gameSession.AddPoint(10f);
                 _world.RemoveActor(e._actor);
             }
-            if (e._actor?.GetName() == "obstacle")
+            if (e._actor?.GetName() == "obstacle" && e._actor._isActive == true)
             {
+                actor._health--;
+                e._actor._isActive = false;
                 // Do the dying thing
             }
             if (e._actor?.GetName() == "corner")
