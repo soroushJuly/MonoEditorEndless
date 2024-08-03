@@ -78,6 +78,7 @@ namespace MonoEditorEndless.Game
         private Matrix projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45), 800f / 480f, 0.1f, 5000f);
         public StatePlay(ContentManager content, GraphicsDevice graphicsDevice)
         {
+            Name = "play";
             Content = content;
             _graphicsDevice = graphicsDevice;
         }
@@ -253,7 +254,7 @@ namespace MonoEditorEndless.Game
             _prevKeyState = Keyboard.GetState();
         }
         public override void Exit(object owner) { }
-        public override void Draw(object owner, GraphicsDevice GraphicsDevice = null, SpriteBatch spriteBatch = null)
+        public override void Draw(GraphicsDevice GraphicsDevice = null, SpriteBatch spriteBatch = null)
         {
             var lastViewport = _graphicsDevice.Viewport;
             var lastScissorBox = _graphicsDevice.ScissorRectangle;

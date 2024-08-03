@@ -236,7 +236,7 @@ namespace MonoEditorEndless.Game
             _prevKeyState = Keyboard.GetState();
         }
         public override void Exit(object owner) { }
-        public override void Draw(object owner, GraphicsDevice GraphicsDevice = null, SpriteBatch spriteBatch = null)
+        public override void Draw(GraphicsDevice GraphicsDevice = null, SpriteBatch spriteBatch = null)
         {
             //actor.Draw(world, _camera.GetView(), projection);
             _pathManager.Draw(world, _camera.GetView(), projection);

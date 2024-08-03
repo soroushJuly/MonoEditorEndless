@@ -1,20 +1,23 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using MonoEditorEndless.Engine.StateManager;
 using MonoEditorEndless.Engine.UI;
 using System;
+using System.Diagnostics;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrayNotify;
 
 namespace MonoEditorEndless.Game
 {
-    internal class StateMenu : State
+    internal class StateMenuMaker : State
     {
         private Texture2D _background;
         private Texture2D _panel;
         private string _title;
         private ButtonList _buttonList;
         private SpriteFont _font;
+        float scale = 1f;
 
         ContentManager Content;
 
@@ -25,9 +28,9 @@ namespace MonoEditorEndless.Game
         public event EventHandler HighScores;
         public event EventHandler Controls;
         public event EventHandler ExitGame;
-        public StateMenu(ContentManager content, GraphicsDevice graphicsDevice)
+        public StateMenuMaker(ContentManager content, GraphicsDevice graphicsDevice)
         {
-            Name = "menu";
+            Name = "menu-maker";
             Content = content;
         }
         public override void Enter(object owner)
@@ -40,12 +43,24 @@ namespace MonoEditorEndless.Game
         }
         public override void Execute(object owner, GameTime gameTime)
         {
+            Debug.WriteLine(Mouse.GetState().ScrollWheelValue);
+            float step = 0.002f;
+            float minScroll = 1 / (4 * step);
+            int mouseWheelValue = Mouse.GetState().ScrollWheelValue;
+            if (mouseWheelValue >= minScroll)
+            {
+                scale = (float)Mouse.GetState().ScrollWheelValue * step;
+            }
+            else
+            {
+                scale = minScroll * step;
+            }
             _buttonList.Update();
         }
         public override void Exit(object owner) { _buttonList.Clear(); }
         public override void Draw(GraphicsDevice graphicsDevice = null, SpriteBatch spriteBatch = null)
         {
-            float scale = 0.2f;
+
             Matrix transform = Matrix.CreateScale(scale);
             transform *= Matrix.CreateTranslation(
                 graphicsDevice.Viewport.Width / 2 - graphicsDevice.Viewport.Width * scale / 2,
