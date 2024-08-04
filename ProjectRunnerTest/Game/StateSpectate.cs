@@ -4,11 +4,9 @@ using Microsoft.Xna.Framework.Audio;
 using MonoEditorEndless.Engine;
 using MonoEditorEndless.Engine.Path;
 using MonoEditorEndless.Engine.Input;
-using MonoEditorEndless.Engine.Collision;
 using MonoEditorEndless.Engine.StateManager;
 
 using System;
-using System.Diagnostics;
 using System.Collections.Generic;
 
 using Microsoft.Xna.Framework.Graphics;
