@@ -13,8 +13,9 @@ namespace MonoEditorEndless.Game
     internal class StateMenuMaker : State
     {
         private Texture2D _background;
+        // TODO: no panel for now
         private Texture2D _panel;
-        private string _title;
+        private Text _title;
         private ButtonList _buttonList;
         private SpriteFont _font;
         float scale = 1f;
@@ -41,7 +42,8 @@ namespace MonoEditorEndless.Game
             _font = Content.Load<SpriteFont>("Content/Fonts/File");
             _background = Content.Load<Texture2D>("Content/Textures/bg");
             // Initialize the button list with button indicator and padding between buttons
-            _buttonList = new ButtonList(null, 10, 10, _font, 50);
+            _buttonList = new ButtonList(null, 10, 50, _font, 50);
+            _title = new Text("Game Title", new Vector2(10, 10), _font, Color.Gainsboro);
             LoadMainButtons();
         }
         public override void Execute(object owner, GameTime gameTime)
@@ -74,6 +76,7 @@ namespace MonoEditorEndless.Game
             spriteBatch.Draw(_background,
                 new Rectangle(0, 0, graphicsDevice.Viewport.Width, graphicsDevice.Viewport.Height),
                 Color.White);
+            _title.Draw(spriteBatch);
             _buttonList.Draw(spriteBatch);
             spriteBatch.End();
             //base.Draw(owner, GraphicsDevice, spriteBatch);
