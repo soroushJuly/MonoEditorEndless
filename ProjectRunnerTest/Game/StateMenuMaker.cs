@@ -20,6 +20,7 @@ namespace MonoEditorEndless.Game
         float scale = 1f;
 
         ContentManager Content;
+        GraphicsDevice _graphicDevice;
 
 
 
@@ -32,6 +33,8 @@ namespace MonoEditorEndless.Game
         {
             Name = "menu-maker";
             Content = content;
+            _graphicDevice = graphicsDevice;
+
         }
         public override void Enter(object owner)
         {
@@ -43,8 +46,8 @@ namespace MonoEditorEndless.Game
         }
         public override void Execute(object owner, GameTime gameTime)
         {
-            Debug.WriteLine(Mouse.GetState().ScrollWheelValue);
-            float step = 0.002f;
+            // Zoom In/Out
+            float step = 0.0005f;
             float minScroll = 1 / (4 * step);
             int mouseWheelValue = Mouse.GetState().ScrollWheelValue;
             if (mouseWheelValue >= minScroll)
@@ -55,6 +58,7 @@ namespace MonoEditorEndless.Game
             {
                 scale = minScroll * step;
             }
+            // Get Keys for buttons
             _buttonList.Update();
         }
         public override void Exit(object owner) { _buttonList.Clear(); }
@@ -76,10 +80,13 @@ namespace MonoEditorEndless.Game
         }
         private void LoadMainButtons()
         {
-            _buttonList.AddButton("Start");
-            _buttonList.AddButton("High Scores");
-            _buttonList.AddButton("Controls");
-            _buttonList.AddButton("Exit");
+            Texture2D btnTexture = new Texture2D(_graphicDevice, 1, 1);
+            btnTexture.SetData(new[] { Color.White });
+
+            _buttonList.AddButton("Start", btnTexture, new Vector2(100, 20));
+            _buttonList.AddButton("High Scores", btnTexture, new Vector2(100, 20));
+            _buttonList.AddButton("Controls", btnTexture, new Vector2(100, 20));
+            _buttonList.AddButton("Exit", btnTexture, new Vector2(100, 20));
             // Handle button selection
             _buttonList.ButtonClicked += this.HandleButtonSelection;
             // Play sound on button switch
@@ -91,16 +98,20 @@ namespace MonoEditorEndless.Game
             switch (button.GetText())
             {
                 case "Start":
-                    GameStart(this, EventArgs.Empty);
+                    if (GameStart != null)
+                        GameStart(this, EventArgs.Empty);
                     break;
                 case "High Scores":
-                    HighScores(this, EventArgs.Empty);
+                    if (HighScores != null)
+                        HighScores(this, EventArgs.Empty);
                     break;
                 case "Controls":
-                    Controls(this, EventArgs.Empty);
+                    if (Controls != null)
+                        Controls(this, EventArgs.Empty);
                     break;
                 case "Exit":
-                    ExitGame(this, EventArgs.Empty);
+                    if (ExitGame != null)
+                        ExitGame(this, EventArgs.Empty);
                     break;
                 default:
                     break;

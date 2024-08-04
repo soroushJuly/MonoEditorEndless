@@ -1,6 +1,4 @@
-﻿using System;
-
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace MonoEditorEndless.Engine.UI
@@ -20,16 +18,19 @@ namespace MonoEditorEndless.Engine.UI
         // Little indicator on the left side of button
         Texture2D indicatorTexture;
         // TODO: use these variables later to have fixed size buttons
-        int width;
-        int height;
+        float width;
+        float height;
 
         public string GetText() { return text; }
-        public Button(string text, Texture2D indicatorTexture, Vector2 position, SpriteFont font)
+        public Button(string text, Texture2D indicatorTexture, Texture2D buttonTexture, Vector2 position, SpriteFont font, Vector2 dimensions)
         {
             this.indicatorTexture = indicatorTexture;
+            this.buttonTexture = buttonTexture;
             this.position = position;
             this.text = text;
             this.font = font;
+            this.width = dimensions.X;
+            this.height = dimensions.Y;
 
             isHovered = false;
         }
@@ -40,20 +41,31 @@ namespace MonoEditorEndless.Engine.UI
         public bool GetIsHovered() { return isHovered; }
         public void Draw(SpriteBatch spriteBatch)
         {
+            // Draw the background
+            Color bgColor = Color.Red;
+            spriteBatch.Draw(buttonTexture, new Rectangle((int)position.X, (int)position.Y,
+                    (int)width, (int)height), bgColor);
+
+            // Draw the text
+            Color color = Color.White;
+            if (isHovered)
+            {
+                color = Color.Blue;
+            }
             if (isHovered && indicatorTexture != null)
             {
                 spriteBatch.Draw(indicatorTexture, new Rectangle((int)position.X, (int)position.Y,
-                    indicatorTexture.Width, indicatorTexture.Height), Color.White);
+                    indicatorTexture.Width, indicatorTexture.Height), color);
             }
             if (indicatorTexture != null)
             {
 
-                spriteBatch.DrawString(font, text, new Vector2(position.X + indicatorTexture.Width + 20, position.Y), Color.White,
+                spriteBatch.DrawString(font, text, new Vector2(position.X + indicatorTexture.Width + 20, position.Y), color,
                     0.0f, Vector2.Zero, 0.7f, SpriteEffects.None, 1.0f);
             }
             else
             {
-                spriteBatch.DrawString(font, text, new Vector2(position.X + 20, position.Y), Color.White,
+                spriteBatch.DrawString(font, text, new Vector2(position.X + 20, position.Y), color,
                     0.0f, Vector2.Zero, 0.7f, SpriteEffects.None, 1.0f);
             }
         }

@@ -41,9 +41,9 @@ namespace MonoEditorEndless.Engine.UI
             inputCommandManager.AddKeyboardBinding(Keys.Enter, OnSelect);
         }
 
-        public void AddButton(string text)
+        public void AddButton(string text, Texture2D btnTexture, Vector2 dimensions)
         {
-            buttonList.Add(new Button(text, buttonIndicator, new Vector2(offsetX, offsetY + buttonList.Count * paddings), font));
+            buttonList.Add(new Button(text, buttonIndicator, btnTexture, new Vector2(offsetX, offsetY + buttonList.Count * paddings), font, dimensions));
         }
         public void Update()
         {
