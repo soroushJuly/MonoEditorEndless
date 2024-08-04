@@ -1,7 +1,19 @@
 ﻿using Microsoft.Xna.Framework;
+using System;
 
 namespace MonoEditorEndless.Engine
 {
+    // Args sent related to a game session
+    internal class SessionArgs : EventArgs
+    {
+        public float _points;
+        public float _time;
+        public SessionArgs(float points, float time)
+        {
+            _points = points;
+            _time = time;
+        }
+    }
     internal class GameSession
     {
         private float _sessionTimePassed;
@@ -22,6 +34,7 @@ namespace MonoEditorEndless.Engine
         }
 
         public float GetPoints() { return _points; }
+        public float GetTime() { return _sessionTimePassed; }
         public float GetGameSpeed() { return _gameSpeed; }
         public State GetState() { return _sessionState; }
 
