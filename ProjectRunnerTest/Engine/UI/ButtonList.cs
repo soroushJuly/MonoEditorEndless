@@ -1,9 +1,9 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework;
+using MonoEditorEndless.Engine.Input;
 using System;
 using System.Collections.Generic;
-using MonoEditorEndless.Engine.Input;
 
 namespace MonoEditorEndless.Engine.UI
 {
@@ -43,10 +43,17 @@ namespace MonoEditorEndless.Engine.UI
 
         public void AddButton(string text, Texture2D btnTexture, Vector2 dimensions)
         {
-            buttonList.Add(new Button(text, buttonIndicator, btnTexture, new Vector2(offsetX, offsetY + buttonList.Count * paddings), font, dimensions));
+            Button button = new Button(text, buttonIndicator, btnTexture, new Vector2(offsetX, offsetY + buttonList.Count * paddings), font, dimensions);
+            button.MouseHover += OnMouseHover;
+            buttonList.Add(button);
+
         }
         public void Update()
         {
+            MouseState mouse = Mouse.GetState();
+            Rectangle mouseBox = new Rectangle(mouse.X, mouse.Y, 10, 10);
+            foreach (Button btn in buttonList)
+                btn.Update(mouseBox);
             inputCommandManager?.Update();
         }
         public void Clear()
@@ -67,6 +74,19 @@ namespace MonoEditorEndless.Engine.UI
             foreach (var button in buttonList)
             {
                 button.Draw(_spriteBatch);
+            }
+        }
+        private void OnMouseHover(object sender, EventArgs e)
+        {
+            for (int i = 0; i < buttonList.Count; i++)
+            {
+                if (sender == buttonList[i])
+                {
+                    currentButtonIndex = i;
+                    buttonList[i].updateHovered(true);
+                }
+                else
+                    buttonList[i].updateHovered(false);
             }
         }
         private void UpdateCurrentButton(int index)

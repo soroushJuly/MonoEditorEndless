@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 
 namespace MonoEditorEndless.Engine.UI
 {
@@ -18,8 +19,10 @@ namespace MonoEditorEndless.Engine.UI
         // Little indicator on the left side of button
         Texture2D indicatorTexture;
         // TODO: use these variables later to have fixed size buttons
-        float width;
-        float height;
+        int width;
+        int height;
+
+        public event EventHandler MouseHover;
 
         public string GetText() { return text; }
         public Button(string text, Texture2D indicatorTexture, Texture2D buttonTexture, Vector2 position, SpriteFont font, Vector2 dimensions)
@@ -29,8 +32,9 @@ namespace MonoEditorEndless.Engine.UI
             this.position = position;
             this.text = text;
             this.font = font;
-            this.width = dimensions.X;
-            this.height = dimensions.Y;
+            this.width = (int)dimensions.X;
+            this.height = (int)dimensions.Y;
+            buttonBox = new Rectangle((int)position.X, (int)position.Y, width, height);
 
             isHovered = false;
         }
@@ -38,13 +42,21 @@ namespace MonoEditorEndless.Engine.UI
         {
             isHovered = status;
         }
+        public void Update(Rectangle mouseBox)
+        {
+            
+            if (buttonBox.Intersects(mouseBox))
+            {
+                MouseHover(this, EventArgs.Empty);
+            }
+        }
         public bool GetIsHovered() { return isHovered; }
         public void Draw(SpriteBatch spriteBatch)
         {
             // Draw the background
             Color bgColor = Color.Red;
             spriteBatch.Draw(buttonTexture, new Rectangle((int)position.X, (int)position.Y,
-                    (int)width, (int)height), bgColor);
+                    width, height), bgColor);
 
             // Draw the text
             Color color = Color.White;
