@@ -12,7 +12,7 @@ namespace MonoEditorEndless.Game
     {
         private Texture2D _background;
         private Texture2D _panel;
-        private string _title;
+        private Text _title;
         private ButtonList _buttonList;
         private SpriteFont _font;
 
@@ -43,9 +43,21 @@ namespace MonoEditorEndless.Game
         {
             _buttonList.Update();
         }
-        public override void Exit(object owner) { _buttonList.Clear(); }
+        public override void Exit(object owner)
+        {
+            _buttonList.Clear();
+            Content.Unload();
+        }
         public override void Draw(GraphicsDevice graphicsDevice = null, SpriteBatch spriteBatch = null)
         {
+            var lastViewport = _graphicsDevice.Viewport;
+            var lastScissorBox = _graphicsDevice.ScissorRectangle;
+            var lastRasterizer = _graphicsDevice.RasterizerState;
+            var lastDepthStencil = _graphicsDevice.DepthStencilState;
+            var lastBlendFactor = _graphicsDevice.BlendFactor;
+            var lastBlendState = _graphicsDevice.BlendState;
+            var lastSamplerStates = _graphicsDevice.SamplerStates;
+
             float scale = 0.2f;
             Matrix transform = Matrix.CreateScale(scale);
             transform *= Matrix.CreateTranslation(
@@ -58,17 +70,26 @@ namespace MonoEditorEndless.Game
                 Color.White);
             _buttonList.Draw(spriteBatch);
             spriteBatch.End();
+
+            _graphicsDevice.Viewport = lastViewport;
+            _graphicsDevice.ScissorRectangle = lastScissorBox;
+            _graphicsDevice.RasterizerState = lastRasterizer;
+            _graphicsDevice.DepthStencilState = lastDepthStencil;
+            _graphicsDevice.BlendState = lastBlendState;
+            _graphicsDevice.BlendFactor = lastBlendFactor;
+            _graphicsDevice.SamplerStates[0] = SamplerState.LinearWrap;
             //base.Draw(owner, GraphicsDevice, spriteBatch);
         }
         private void LoadMainButtons()
         {
-            Texture2D btnTexture = new Texture2D(_graphicsDevice, 100, 10);
+            Texture2D btnTexture = new Texture2D(_graphicsDevice, 1, 1);
             btnTexture.SetData(new[] { Color.White });
 
-            _buttonList.AddButton("Start", btnTexture,new Vector2(100, 10));
-            _buttonList.AddButton("High Scores", btnTexture, new Vector2(100, 10));
+            _buttonList.AddButton("Start", btnTexture, new Vector2(100, 10));
+            // Todo: add highscore later if there was time
+            //_buttonList.AddButton("High Scores", btnTexture, new Vector2(100, 10));
             _buttonList.AddButton("Controls", btnTexture, new Vector2(100, 10));
-            _buttonList.AddButton("Exit", btnTexture,new Vector2(100, 10));
+            _buttonList.AddButton("Exit", btnTexture, new Vector2(100, 10));
             // Handle button selection
             _buttonList.ButtonClicked += this.HandleButtonSelection;
             // Play sound on button switch
@@ -82,9 +103,9 @@ namespace MonoEditorEndless.Game
                 case "Start":
                     GameStart(this, EventArgs.Empty);
                     break;
-                case "High Scores":
-                    HighScores(this, EventArgs.Empty);
-                    break;
+                //case "High Scores":
+                //    HighScores(this, EventArgs.Empty);
+                //    break;
                 case "Controls":
                     Controls(this, EventArgs.Empty);
                     break;

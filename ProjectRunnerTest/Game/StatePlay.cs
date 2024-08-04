@@ -76,6 +76,8 @@ namespace MonoEditorEndless.Game
         // Transforming matrices
         private Matrix world = Matrix.CreateTranslation(new Vector3(0, 0, 0));
         private Matrix projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45), 800f / 480f, 0.1f, 5000f);
+
+        public event EventHandler<SessionArgs> SessionFinished;
         public StatePlay(ContentManager content, GraphicsDevice graphicsDevice)
         {
             Name = "play";
@@ -174,9 +176,9 @@ namespace MonoEditorEndless.Game
 
             // Load the sound effect
             //_soundEffect = new SoundEffect();
-            _soundEffect = Content.Load<SoundEffect>("Content/Audio/mario_coin_sound");
-            _soundEffectInstance = _soundEffect.CreateInstance();
-            _soundEffectInstance.Volume = .1f;
+            //_soundEffect = Content.Load<SoundEffect>("Content/Audio/mario_coin_sound");
+            //_soundEffectInstance = _soundEffect.CreateInstance();
+            //_soundEffectInstance.Volume = .1f;
 
             obstacle.LoadModel(Content.Load<Model>("Content/rocks-small"));
             obstacle.SetScale(0.15f);
@@ -194,7 +196,15 @@ namespace MonoEditorEndless.Game
             _pathManager.AddTurnRight(corner);
             _pathManager.Initialize(20);
 
-            _bgMusic = Content.Load<Song>("Content/Audio/Titan");
+            //try
+            //{
+
+            //    _bgMusic = Content.Load<Song>("Content/Audio/Titan");
+            //}
+            //catch
+            //{
+
+            //}
 
             _skyboxTextureList = new List<Texture2D>();
             _skyboxTextureList.Add(Content.Load<Texture2D>("Content/Skybox/front"));
@@ -208,7 +218,6 @@ namespace MonoEditorEndless.Game
             Texture2D grass = Content.Load<Texture2D>("Content/grass");
             _plane = new MonoEditorEndless.Engine.Plane(_graphicsDevice, grass, 3000, 20);
 
-            Texture2D font = Content.Load<Texture2D>("Content/Fonts/WhitePeaberry");
             _font = Content.Load<SpriteFont>("Content/Fonts/File");
 
             // Create a 1x1 white texture
@@ -253,7 +262,7 @@ namespace MonoEditorEndless.Game
 
             _prevKeyState = Keyboard.GetState();
         }
-        public override void Exit(object owner) { }
+        public override void Exit(object owner) { Content.Unload(); }
         public override void Draw(GraphicsDevice GraphicsDevice = null, SpriteBatch spriteBatch = null)
         {
             var lastViewport = _graphicsDevice.Viewport;
@@ -344,17 +353,17 @@ namespace MonoEditorEndless.Game
                 e._actor._isActive = false;
                 // Do the dying thing
             }
-            if (e._actor?.GetName() == "corner")
+            if (e._actor?.GetName() == "road-corner")
             {
-                character._lastCollisionSeen = "corner";
+                character._lastCollisionSeen = "road-corner";
             }
         }
         void CharacterNoCollisionHandler(object sender, EventArgs e)
         {
             Actor character = sender as Actor;
-            if (character._lastCollisionSeen == "corner")
+            if (character._lastCollisionSeen == "road-corner")
             {
-                Debug.WriteLine("You lost!!!");
+                SessionFinished(this, new SessionArgs(_gameSession.GetPoints(), _gameSession.GetTime()));
             }
         }
         void CollisionHandler(object sender, CollisionEventArgs e)
@@ -364,7 +373,7 @@ namespace MonoEditorEndless.Game
             {
                 _gameSession.AddPoint(10f);
                 collectableItem.GetCollidable().SetRemoveFlag(true);
-                _soundEffectInstance.Play();
+                //_soundEffectInstance.Play();
 
             }
         }

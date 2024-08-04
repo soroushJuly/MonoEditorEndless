@@ -78,7 +78,6 @@ namespace MonoEditorEndless.Game
         }
         public override void Enter(object owner)
         {
-
             _world = new World();
             _gameSession = new GameSession();
             _pathManager = new PathManager();
@@ -148,12 +147,6 @@ namespace MonoEditorEndless.Game
             collectable.SetScale(.1f);
             collectable.SetName("collectable");
 
-            // Load the sound effect
-            //_soundEffect = new SoundEffect();
-            _soundEffect = Content.Load<SoundEffect>("Content/Audio/mario_coin_sound");
-            _soundEffectInstance = _soundEffect.CreateInstance();
-            _soundEffectInstance.Volume = .1f;
-
             obstacle.LoadModel(Content.Load<Model>("Content/rocks-small"));
             obstacle.SetScale(0.15f);
             obstacle.SetName("obstacle");
@@ -170,7 +163,7 @@ namespace MonoEditorEndless.Game
             _pathManager.AddTurnRight(corner);
             _pathManager.Initialize(20);
 
-            _bgMusic = Content.Load<Song>("Content/Audio/Titan");
+            //_bgMusic = Content.Load<Song>("Content/Audio/Titan");
 
             _skyboxTextureList = new List<Texture2D>();
             _skyboxTextureList.Add(Content.Load<Texture2D>("Content/Skybox/front"));
@@ -238,6 +231,14 @@ namespace MonoEditorEndless.Game
         public override void Exit(object owner) { }
         public override void Draw(GraphicsDevice GraphicsDevice = null, SpriteBatch spriteBatch = null)
         {
+            var lastViewport = _graphicsDevice.Viewport;
+            var lastScissorBox = _graphicsDevice.ScissorRectangle;
+            var lastRasterizer = _graphicsDevice.RasterizerState;
+            var lastDepthStencil = _graphicsDevice.DepthStencilState;
+            var lastBlendFactor = _graphicsDevice.BlendFactor;
+            var lastBlendState = _graphicsDevice.BlendState;
+            var lastSamplerStates = _graphicsDevice.SamplerStates;
+
             //actor.Draw(world, _camera.GetView(), projection);
             _pathManager.Draw(world, _camera.GetView(), projection);
             //obstacle.Draw(Matrix.CreateTranslation(Vector3.Zero), _camera.GetView(), projection);
@@ -246,13 +247,14 @@ namespace MonoEditorEndless.Game
 
             _skybox.Draw(_graphicsDevice, Matrix.CreateTranslation(_camera.GetPosition()), _camera.GetView(), projection);
             _plane.Draw(_graphicsDevice, Matrix.CreateTranslation(-100 * Vector3.UnitY), _camera.GetView(), projection);
+
+            _graphicsDevice.Viewport = lastViewport;
+            _graphicsDevice.ScissorRectangle = lastScissorBox;
+            _graphicsDevice.RasterizerState = lastRasterizer;
+            _graphicsDevice.DepthStencilState = lastDepthStencil;
+            _graphicsDevice.BlendState = lastBlendState;
+            _graphicsDevice.BlendFactor = lastBlendFactor;
+            _graphicsDevice.SamplerStates[0] = SamplerState.LinearWrap;
         }
-        
-        //private Vector2 ProjectToScreen(Vector3 worldPosition)
-        //{
-        //    Viewport viewport = _graphicsDevice.Viewport;
-        //    Vector3 projectedPosition = viewport.Project(worldPosition, projection, _view, Matrix.Identity);
-        //    return new Vector2(projectedPosition.X, projectedPosition.Y);
-        //}
     }
 }
