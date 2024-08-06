@@ -58,7 +58,7 @@ namespace MonoEditorEndless.Game
             var lastBlendState = _graphicsDevice.BlendState;
             var lastSamplerStates = _graphicsDevice.SamplerStates;
 
-            float scale = 0.2f;
+            float scale = .5f;
             Matrix transform = Matrix.CreateScale(scale);
             transform *= Matrix.CreateTranslation(
                 graphicsDevice.Viewport.Width / 2 - graphicsDevice.Viewport.Width * scale / 2,

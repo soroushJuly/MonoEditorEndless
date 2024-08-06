@@ -21,6 +21,11 @@ namespace MonoEditorEndless.Engine.UI
             this.color = color;
         }
 
+        public void SetText(string text)
+        {
+            this.text = text;
+        }
+
         public void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.DrawString(font, text, new Vector2(position.X, position.Y), color,

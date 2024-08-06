@@ -16,6 +16,8 @@ namespace MonoEditorEndless.Game
         private GraphicsDevice _graphicsDevice;
         private SpriteBatch _spriteBatch;
 
+        public SessionArgs _sessionArgs;
+
         public event EventHandler ExitGame;
         public GameHandle(ContentManager content, GraphicsDevice graphicsDevice)
         {
@@ -30,13 +32,14 @@ namespace MonoEditorEndless.Game
             _fsm = new FSM(this);
 
             StatePlay play = new StatePlay(_contentManger, _graphicsDevice);
-            play.SessionFinished += (object sender, SessionArgs e) => { _isFinish = true; };
+            play.SessionFinished += (object sender, SessionArgs e) => { _isFinish = true; _sessionArgs = e; };
             StateMenu menu = new StateMenu(_contentManger, _graphicsDevice);
             menu.GameStart += (object sender, EventArgs e) => { _isPlaying = true; };
             StateMenuMaker menuMaker = new StateMenuMaker(_contentManger, _graphicsDevice);
-            StateFinish finish = new StateFinish(_contentManger, _graphicsDevice);
+            StateFinish finish = new StateFinish(_contentManger, _graphicsDevice, _sessionArgs);
             // In the editor is should go to spectate mode in the actual game it should call game exit
-            finish.ExitGame += (object sender, EventArgs e) => {
+            finish.ExitGame += (object sender, EventArgs e) =>
+            {
                 _isPlaying = false;
             };
 
@@ -63,6 +66,7 @@ namespace MonoEditorEndless.Game
         public void Stop()
         {
             _isPlaying = false;
+            _fsm.Initialise("menu");
         }
         public void Update(GameTime gameTime)
         {
