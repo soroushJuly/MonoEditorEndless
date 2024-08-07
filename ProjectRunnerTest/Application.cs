@@ -1,12 +1,14 @@
 ﻿using ImGuiNET;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
-
+using Microsoft.Xna.Framework.Media;
 using MonoEditorEndless.Editor;
-using MonoEditorEndless.Engine;
 using MonoEditorEndless.Game;
 
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using Forms = System.Windows.Forms;
@@ -32,6 +34,8 @@ namespace ProjectRunnerTest
 
         private string _bgMusicName;
 
+        private List<Song> _songList;
+        private List<SoundEffect> _soundList;
 
         public Application()
         {
@@ -49,6 +53,9 @@ namespace ProjectRunnerTest
             _imGuiRenderer.RebuildFontAtlas();
 
             _gameHandle = new GameHandle(Content, GraphicsDevice);
+
+            _songList = new List<Song>();
+            _soundList = new List<SoundEffect>();
 
             _bgMusicName = "";
 
@@ -115,6 +122,36 @@ namespace ProjectRunnerTest
                 ImGui.GetFont().Scale = old;
                 ImGui.PopFont();
                 ImGui.Separator();
+                // Build the Release version from the Debug mode
+                if (ImGui.Button("Build"))
+                {
+                    Thread thread = new Thread(() =>
+                    {
+                        string CurrentDirectory = Environment.CurrentDirectory;
+                        CurrentDirectory = Path.Combine(CurrentDirectory, "..", "..", "..");
+                        var processInfo = new ProcessStartInfo("dotnet")
+                        {
+                            Arguments = "publish -c Release -r win-x64 /p:PublishReadyToRun=false /p:TieredCompilation=false --self-contained",
+                            WorkingDirectory = CurrentDirectory,
+                            RedirectStandardOutput = true,
+                            UseShellExecute = false,
+                            CreateNoWindow = true
+                        };
+                        using (var process = Process.Start(processInfo))
+                        {
+                            using (var reader = process.StandardOutput)
+                            {
+                                string result = reader.ReadToEnd();
+                                Console.WriteLine(result);
+                            }
+                        }
+                    });
+                    thread.SetApartmentState(ApartmentState.STA); //Set the thread to STA
+                    thread.Start();
+                    thread.Join(); //Wait for the thread to end
+                }
+
+
                 if (ImGui.CollapsingHeader("Game Details"))
                 {
                     ImGui.Text("Hello from game setting!");
@@ -161,39 +198,15 @@ namespace ProjectRunnerTest
                     ImGui.Text("Load background music");
                     if (ImGui.Button("Load from computer"))
                     {
-                        Thread thread = new Thread(() =>
-                        {
-                            var fileContent = string.Empty;
-                            var filePath = string.Empty;
+                        _bgMusicName = string.Empty;
+                        _bgMusicName = LoadFile();
 
-                            using (Forms.OpenFileDialog openFileDialog = new Forms.OpenFileDialog())
-                            {
-                                openFileDialog.InitialDirectory = "c:\\";
-                                openFileDialog.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
-                                openFileDialog.FilterIndex = 2;
-                                openFileDialog.RestoreDirectory = true;
+                    }
+                    if (ImGui.Button("play it!!"))
+                    {
+                        SoundEffectInstance si =_soundList[0].CreateInstance();
+                        si.Play();
 
-                                if (openFileDialog.ShowDialog() == Forms.DialogResult.OK)
-                                {
-                                    //Get the path of specified file
-                                    filePath = openFileDialog.FileName;
-                                    _bgMusicName = filePath;
-
-                                    //Read the contents of the file into a stream
-                                    var fileStream = openFileDialog.OpenFile();
-
-                                    using (StreamReader reader = new StreamReader(fileStream))
-                                    {
-                                        fileContent = reader.ReadToEnd();
-                                    }
-                                }
-                            }
-
-                            //Forms.MessageBox.Show(fileContent, "File Content at path: " + filePath, Forms.MessageBoxButtons.OK);
-                        });
-                        thread.SetApartmentState(ApartmentState.STA); //Set the thread to STA
-                        thread.Start();
-                        thread.Join(); //Wait for the thread to end
                     }
                     //ImGui.Text(_bgMusicName);
                     // Menu Music
@@ -354,6 +367,82 @@ namespace ProjectRunnerTest
         protected override void Update(GameTime gameTime)
         {
             _gameHandle.Update(gameTime);
+        }
+        private string LoadFile()
+        {
+            var fileContent = string.Empty;
+            var filePath = string.Empty;
+            var newPath = string.Empty;
+            SoundEffect soundEffect = null;
+            Thread thread = new Thread(() =>
+            {
+
+                using (Forms.OpenFileDialog openFileDialog = new Forms.OpenFileDialog())
+                {
+                    openFileDialog.InitialDirectory = "c:\\";
+                    openFileDialog.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
+                    openFileDialog.FilterIndex = 2;
+                    openFileDialog.RestoreDirectory = true;
+                    // Opens the Dialog 
+                    if (openFileDialog.ShowDialog() == Forms.DialogResult.OK)
+                    {
+                        //Get the path of specified file
+                        filePath = openFileDialog.FileName;
+                        _bgMusicName = filePath;
+
+                        // Copying logic
+                        //string programDataDir =
+                        //Environment.GetFolderPath(Environment.CurrentDirectory);\
+
+                        string[] paths = { Environment.CurrentDirectory, "Content", "Audio", Path.GetFileName(filePath) };
+
+                        newPath = Path.Combine(paths);
+
+
+                        //string newPath = @"C:\Users\";
+                        //File.SetAttributes(newPath, FileAttributes.Normal);
+                        try
+                        {
+                            // Check if the source file exists
+                            if (File.Exists(filePath))
+                            {
+                                // Copy the source file to the destination file
+                                File.Copy(filePath, newPath, true);
+                                
+                                Console.WriteLine("File copied successfully.");
+                            }
+                            else
+                            {
+                                Console.WriteLine("Source file does not exist.");
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            // Handle any exceptions that may occur
+                            Console.WriteLine("An error occurred: " + ex.Message);
+                        }
+
+                        //Read the contents of the file into a stream
+                        var fileStream = openFileDialog.OpenFile();
+
+                        using (StreamReader reader = new StreamReader(fileStream))
+                        {
+                            fileContent = reader.ReadToEnd();
+                        }
+                    }
+
+                }
+
+
+                //Forms.MessageBox.Show(fileContent, "File Content at path: " + filePath, Forms.MessageBoxButtons.OK);
+            });
+            thread.SetApartmentState(ApartmentState.STA); //Set the thread to STA
+            thread.Start();
+            thread.Join(); //Wait for the thread to end
+            soundEffect = SoundEffect.FromFile(newPath);
+            
+            _soundList.Add(soundEffect);
+            return filePath;
         }
     }
 }
