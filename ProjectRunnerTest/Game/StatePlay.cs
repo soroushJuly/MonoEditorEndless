@@ -69,7 +69,7 @@ namespace MonoEditorEndless.Game
         Song _bgMusic;
         List<Song> _songList;
 
-        private MonoEditorEndless.Engine.Plane _plane;
+        private Engine.Plane _plane;
 
         private Vector3 translation = Vector3.Zero;
 
@@ -150,7 +150,7 @@ namespace MonoEditorEndless.Game
             collectable.CollisionHandler += this.CollisionHandler;
             actor.CollisionHandler += this.CharacterCollisionHandler;
             actor.NoCollisionHandler += this.CharacterNoCollisionHandler;
-            _camera = new MonoEditorEndless.Engine.Camera();
+            _camera = new Camera();
 
             _view = Matrix.CreateLookAt(_camera.GetPosition(), Vector3.Zero, Vector3.Up);
 
@@ -196,15 +196,15 @@ namespace MonoEditorEndless.Game
             _pathManager.AddTurnRight(corner);
             _pathManager.Initialize(20);
 
-            //try
-            //{
-
-            //    _bgMusic = Content.Load<Song>("Content/Audio/Titan");
-            //}
-            //catch
-            //{
-
-            //}
+            try
+            {
+                _bgMusic = Content.Load<Song>("Content/Audio/Titan");
+                MediaPlayer.Play(_bgMusic);
+               
+            }
+            catch
+            {
+            }
 
             _skyboxTextureList = new List<Texture2D>();
             _skyboxTextureList.Add(Content.Load<Texture2D>("Content/Skybox/front"));
