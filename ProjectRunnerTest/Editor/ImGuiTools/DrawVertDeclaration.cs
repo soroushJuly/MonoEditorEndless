@@ -1,7 +1,7 @@
 ﻿using ImGuiNET;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace MonoEditorEndless.Editor
+namespace MonoEditorEndless.Editor.ImGuiTools
 {
     public static class DrawVertDeclaration
     {

@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 
 using ImGuiNET;
 
-namespace MonoEditorEndless.Editor
+namespace MonoEditorEndless.Editor.ImGuiTools
 {
     /// <summary>
     /// ImGui renderer for use with XNA-likes (FNA & MonoGame)
