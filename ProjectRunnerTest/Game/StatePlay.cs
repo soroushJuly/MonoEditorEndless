@@ -218,7 +218,7 @@ namespace MonoEditorEndless.Game
             Texture2D grass = Content.Load<Texture2D>("Content/Texture/grass");
             _plane = new MonoEditorEndless.Engine.Plane(_graphicsDevice, grass, 3000, 20);
 
-            _font = Content.Load<SpriteFont>("Content/Fonts/File");
+            _font = Content.Load<SpriteFont>("Content/Font/File");
 
             // Create a 1x1 white texture
             _heartTexture = Content.Load<Texture2D>("Content/Texture/heart");
