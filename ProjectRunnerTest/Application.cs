@@ -87,18 +87,18 @@ namespace ProjectRunnerTest
 
 
             // Get the TargetFramework attribute
-            var targetFramework = Assembly.GetExecutingAssembly()
-                .GetCustomAttributes(typeof(TargetFrameworkAttribute), false)
-                .FirstOrDefault() as TargetFrameworkAttribute;
+            //var targetFramework = Assembly.GetExecutingAssembly()
+            //    .GetCustomAttributes(typeof(TargetFrameworkAttribute), false)
+            //    .FirstOrDefault() as TargetFrameworkAttribute;
 
-            if (targetFramework != null)
-            {
-                Debug.WriteLine($"Running on Target Framework: {targetFramework.FrameworkName}");
-            }
-            else
-            {
-                Debug.WriteLine("Target Framework attribute not found.");
-            }
+            //if (targetFramework != null)
+            //{
+            //    Debug.WriteLine($"Running on Target Framework: {targetFramework.FrameworkName}");
+            //}
+            //else
+            //{
+            //    Debug.WriteLine("Target Framework attribute not found.");
+            //}
             _imGuiRenderer = new ImGuiRenderer(this);
             _imGuiRenderer.RebuildFontAtlas();
 
@@ -106,11 +106,8 @@ namespace ProjectRunnerTest
             _songList = new List<Song>();
             _soundList = new List<SoundEffect>();
 
-            // Create the content file
-            foreach (Asset asset in project.GetAllAsset())
-            {
-                File.AppendAllText(Routes.CONTENT_DIRECTORY, asset.GetContentText());
-            }
+            // Update the content file
+            UpdateContent(project.GetAllAsset());
 
             _bgMusicName = "";
 
@@ -541,6 +538,16 @@ namespace ProjectRunnerTest
             thread.SetApartmentState(ApartmentState.STA); //Set the thread to STA
             thread.Start();
             thread.Join(); //Wait for the thread to end
+        }
+        private void UpdateContent(List<Asset> assetList)
+        {
+            string contentFileText = File.ReadAllText(Routes.CONTENT_DIRECTORY);
+            foreach (Asset asset in assetList)
+            {
+                // If asset is already in file don't add it again
+                if (!contentFileText.Contains(asset.GetContentText()))
+                    File.AppendAllText(Routes.CONTENT_DIRECTORY, asset.GetContentText());
+            }
         }
     }
 }

@@ -363,4 +363,4 @@ MigrationBackup/
 FodyWeavers.xsd
 
 # Content file will be populated automatically runtime
-ProjectRunnerTest/Content/Content.mgcb
+#ProjectRunnerTest/Content/Content.mgcb

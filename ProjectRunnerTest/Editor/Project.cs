@@ -53,7 +53,7 @@ namespace MonoEditorEndless.Editor
             _textureList.Add(new AssetTexture("ShipDiffuse_0.tga"));
             _textureList.Add(new AssetTexture("heart.png"));
             _textureList.Add(new AssetTexture("grass.jpg"));
-            _fontList.Add(new AssetFont("PeaberryBase.woff"));
+            _fontList.Add(new AssetFont("File.spritefont"));
         }
         public List<Asset> GetAllAsset()
         {
