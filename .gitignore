@@ -361,3 +361,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Content file will be populated automatically runtime
+ProjectRunnerTest/Content/Content.mgcb
