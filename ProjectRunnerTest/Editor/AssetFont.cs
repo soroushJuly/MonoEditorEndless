@@ -2,12 +2,14 @@
 using System;
 using System.Diagnostics;
 
-using Microsoft.Xna.Framework;
-
 namespace MonoEditorEndless.Editor
 {
-    internal class AssetFont : Asset
+    public class AssetFont : Asset
     {
+        // Argument-less constructor to make the serialization possible
+        public AssetFont() : base()
+        {
+        }
         public AssetFont(string fontName, bool isUsedInGame = false) : base(fontName, "Font", isUsedInGame)
         {
             _importerDetails = "/importer:FontDescriptionImporter\r\n/processor:FontDescriptionProcessor\r\n/processorParam:PremultiplyAlpha=True\r\n/processorParam:TextureFormat=Compressed\r\n";
@@ -51,7 +53,7 @@ namespace MonoEditorEndless.Editor
             );
             int dotIndex = _name.IndexOf(".");
             // Save the document to a file
-            Debug.WriteLine(_name.Substring( dotIndex + 1 ));
+            Debug.WriteLine(_name.Substring(dotIndex + 1));
             doc.Save("fontDescription.xml");
 
             Console.WriteLine("XML file created successfully.");

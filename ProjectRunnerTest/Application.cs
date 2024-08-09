@@ -63,6 +63,28 @@ namespace ProjectRunnerTest
 #if DEBUG
             _isDebug = true;
 #endif
+            // Initialize file handler
+            FileHandler fileHandler = new FileHandler();
+            // Project to be loaded
+            Project project = new Project();
+            string recentProjectName = null;
+            // Find and load the most recent Project
+            recentProjectName = fileHandler.LoadClassXml(recentProjectName, Path.Combine(Routes.SAVED_PROJECTS, "recent_project"));
+            if (recentProjectName != null)
+            {
+                // Load the most recent project
+                project = fileHandler.LoadClassXml(project, Path.Combine(Routes.SAVED_PROJECTS, recentProjectName));
+            }
+            else
+            {
+                // If no recent project Create the default project
+                project.CreateDefault();
+                // Then save the new project
+                if (fileHandler.SaveXml(project, "default_project", Routes.SAVED_PROJECTS))
+                    // Update recent project
+                    fileHandler.SaveXml(new string("default_project"), "recent_project", Routes.SAVED_PROJECTS);
+            }
+
 
             // Get the TargetFramework attribute
             var targetFramework = Assembly.GetExecutingAssembly()
@@ -83,35 +105,9 @@ namespace ProjectRunnerTest
 
             _songList = new List<Song>();
             _soundList = new List<SoundEffect>();
-            // List of assets uploaded and used in the game
-            _assetList = new List<Asset>();
-            // Preoccupy the asset list with the current assets
-            _assetList.Add(new AssetAudio("mario_coin_sound.mp3"));
-            _assetList.Add(new AssetAudio("Titan.mp3"));
-            _assetList.Add(new AssetModel("bridge-straight.fbx"));
-            _assetList.Add(new AssetModel("Coin.fbx"));
-            _assetList.Add(new AssetModel("Ship.fbx"));
-            _assetList.Add(new AssetModel("rocks-small.fbx"));
-            _assetList.Add(new AssetModel("wall-corner.fbx"));
-            _assetList.Add(new AssetModel("wall-half.fbx"));
-            _assetList.Add(new AssetModel("wall.fbx"));
-            _assetList.Add(new AssetTexture("bg.jpg"));
-            _assetList.Add(new AssetTexture("top.bmp"));
-            _assetList.Add(new AssetTexture("right.bmp"));
-            _assetList.Add(new AssetTexture("left.bmp"));
-            _assetList.Add(new AssetTexture("front.bmp"));
-            _assetList.Add(new AssetTexture("bottom.bmp"));
-            _assetList.Add(new AssetTexture("back.bmp"));
-            _assetList.Add(new AssetTexture("colormap.png"));
-            _assetList.Add(new AssetTexture("Coin2_BaseColor.jpg"));
-            _assetList.Add(new AssetTexture("ShipDiffuse.tga"));
-            _assetList.Add(new AssetTexture("ShipDiffuse_0.tga"));
-            _assetList.Add(new AssetTexture("heart.png"));
-            _assetList.Add(new AssetTexture("grass.jpg"));
-            _assetList.Add(new AssetFont("PeaberryBase.woff"));
 
-            // Create
-            foreach (Asset asset in _assetList)
+            // Create the content file
+            foreach (Asset asset in project.GetAllAsset())
             {
                 File.AppendAllText(Routes.CONTENT_DIRECTORY, asset.GetContentText());
             }
@@ -134,7 +130,7 @@ namespace ProjectRunnerTest
             // Then, bind it to an ImGui-friendly pointer, that we can use during regular ImGui.** calls (see below)
             _imGuiTexture = _imGuiRenderer.BindTexture(_xnaTexture);
 
-           
+
 
             _gameHandle = new GameHandle(Content, GraphicsDevice);
 

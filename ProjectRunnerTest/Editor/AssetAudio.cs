@@ -1,7 +1,14 @@
-﻿namespace MonoEditorEndless.Editor
+﻿using System;
+
+namespace MonoEditorEndless.Editor
 {
-    internal class AssetAudio : Asset
+    [Serializable]
+    public class AssetAudio : Asset
     {
+        // Argument-less constructor to make the serialization possible
+        public AssetAudio() : base()
+        {
+        }
         public AssetAudio(string name, bool isUsedInGame = false) : base(name, "Audio", isUsedInGame)
         {
             _importerDetails = "/importer:Mp3Importer\r\n/processor:SoundEffectProcessor\r\n/processorParam:Quality=Best\r\n";
