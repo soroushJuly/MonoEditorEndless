@@ -3,13 +3,17 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Media;
+using MonoEditorEndless;
 using MonoEditorEndless.Editor;
+using MonoEditorEndless.Editor.ImGuiTools;
 using MonoEditorEndless.Game;
-
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.Versioning;
 using System.Threading;
 using Forms = System.Windows.Forms;
 using Num = System.Numerics;
@@ -33,6 +37,11 @@ namespace ProjectRunnerTest
         private string _gameTitle = "Untitled";
 
         private string _bgMusicName;
+        private string _platform = "win-x64";
+
+        private List<Asset> _assetList;
+
+        private bool _isDebug = false;
 
         private List<Song> _songList;
         private List<SoundEffect> _soundList;
@@ -49,17 +58,67 @@ namespace ProjectRunnerTest
 
         protected override void Initialize()
         {
+            // If in debug Mode Change the flag
+            // Debug mode is editor mode
+#if DEBUG
+            _isDebug = true;
+#endif
+
+            // Get the TargetFramework attribute
+            var targetFramework = Assembly.GetExecutingAssembly()
+                .GetCustomAttributes(typeof(TargetFrameworkAttribute), false)
+                .FirstOrDefault() as TargetFrameworkAttribute;
+
+            if (targetFramework != null)
+            {
+                Debug.WriteLine($"Running on Target Framework: {targetFramework.FrameworkName}");
+            }
+            else
+            {
+                Debug.WriteLine("Target Framework attribute not found.");
+            }
             _imGuiRenderer = new ImGuiRenderer(this);
             _imGuiRenderer.RebuildFontAtlas();
 
-            _gameHandle = new GameHandle(Content, GraphicsDevice);
 
             _songList = new List<Song>();
             _soundList = new List<SoundEffect>();
+            // List of assets uploaded and used in the game
+            _assetList = new List<Asset>();
+            // Preoccupy the asset list with the current assets
+            _assetList.Add(new AssetAudio("mario_coin_sound.mp3"));
+            _assetList.Add(new AssetAudio("Titan.mp3"));
+            _assetList.Add(new AssetModel("bridge-straight.fbx"));
+            _assetList.Add(new AssetModel("Coin.fbx"));
+            _assetList.Add(new AssetModel("Ship.fbx"));
+            _assetList.Add(new AssetModel("rocks-small.fbx"));
+            _assetList.Add(new AssetModel("wall-corner.fbx"));
+            _assetList.Add(new AssetModel("wall-half.fbx"));
+            _assetList.Add(new AssetModel("wall.fbx"));
+            _assetList.Add(new AssetTexture("bg.jpg"));
+            _assetList.Add(new AssetTexture("top.bmp"));
+            _assetList.Add(new AssetTexture("right.bmp"));
+            _assetList.Add(new AssetTexture("left.bmp"));
+            _assetList.Add(new AssetTexture("front.bmp"));
+            _assetList.Add(new AssetTexture("bottom.bmp"));
+            _assetList.Add(new AssetTexture("back.bmp"));
+            _assetList.Add(new AssetTexture("colormap.png"));
+            _assetList.Add(new AssetTexture("Coin2_BaseColor.jpg"));
+            _assetList.Add(new AssetTexture("ShipDiffuse.tga"));
+            _assetList.Add(new AssetTexture("ShipDiffuse_0.tga"));
+            _assetList.Add(new AssetTexture("heart.png"));
+            _assetList.Add(new AssetTexture("grass.jpg"));
+            _assetList.Add(new AssetFont("PeaberryBase.woff"));
+
+            // Create
+            foreach (Asset asset in _assetList)
+            {
+                File.AppendAllText(Routes.CONTENT_DIRECTORY, asset.GetContentText());
+            }
 
             _bgMusicName = "";
 
-
+            BuildContent();
             base.Initialize();
         }
 
@@ -74,6 +133,11 @@ namespace ProjectRunnerTest
 
             // Then, bind it to an ImGui-friendly pointer, that we can use during regular ImGui.** calls (see below)
             _imGuiTexture = _imGuiRenderer.BindTexture(_xnaTexture);
+
+           
+
+            _gameHandle = new GameHandle(Content, GraphicsDevice);
+
 
             //MediaPlayer.Play(_bgMusic);
             base.LoadContent();
@@ -150,8 +214,12 @@ namespace ProjectRunnerTest
                     thread.Start();
                     thread.Join(); //Wait for the thread to end
                 }
+                // Building the Content while app is open
+                if (ImGui.Button("Rebuild Content!!!"))
+                {
+                    BuildContent();
 
-
+                }
                 if (ImGui.CollapsingHeader("Game Details"))
                 {
                     ImGui.Text("Hello from game setting!");
@@ -204,7 +272,7 @@ namespace ProjectRunnerTest
                     }
                     if (ImGui.Button("play it!!"))
                     {
-                        SoundEffectInstance si =_soundList[0].CreateInstance();
+                        SoundEffectInstance si = _soundList[0].CreateInstance();
                         si.Play();
 
                     }
@@ -408,7 +476,7 @@ namespace ProjectRunnerTest
                             {
                                 // Copy the source file to the destination file
                                 File.Copy(filePath, newPath, true);
-                                
+
                                 Console.WriteLine("File copied successfully.");
                             }
                             else
@@ -440,9 +508,43 @@ namespace ProjectRunnerTest
             thread.Start();
             thread.Join(); //Wait for the thread to end
             soundEffect = SoundEffect.FromFile(newPath);
-            
+
             _soundList.Add(soundEffect);
             return filePath;
+        }
+        private void BuildContent()
+        {
+            string contentProjectPath = Routes.CONTENT_DIRECTORY; // Path to content project
+            Thread thread = new Thread(() =>
+            {
+                string CurrentDirectory = Environment.CurrentDirectory;
+                string buildMode = _isDebug ? "Debug" : "Release";
+                string platform = _isDebug ? "" : "/win-x64";
+                //System.Runtime.
+                CurrentDirectory = Path.Combine(CurrentDirectory, "..", "..", "..");
+                var processInfo = new ProcessStartInfo("dotnet")
+                {
+                    //Arguments = "",
+                    Arguments = $"mgcb /build /@:{contentProjectPath} /platform:DesktopGL /outputDir:bin/{buildMode}/{Routes.FRAMEWORK_TARGET} /intermediateDir:obj /quiet",
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false,
+                    //CreateNoWindow = true
+                    //WorkingDirectory = CurrentDirectory,
+                    //CreateNoWindow = true
+                };
+                using (var process = Process.Start(processInfo))
+                {
+                    using (var reader = process.StandardOutput)
+                    {
+                        string result = reader.ReadToEnd();
+                        Console.WriteLine(result);
+                    }
+                }
+            });
+            thread.SetApartmentState(ApartmentState.STA); //Set the thread to STA
+            thread.Start();
+            thread.Join(); //Wait for the thread to end
         }
     }
 }

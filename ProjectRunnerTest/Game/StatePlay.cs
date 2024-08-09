@@ -161,16 +161,16 @@ namespace MonoEditorEndless.Game
         }
         private void LoadContent()
         {
-            actor.LoadModel(Content.Load<Model>("Content/FBX/Ship"));
+            actor.LoadModel(Content.Load<Model>("Content/Model/Ship"));
             actor.SetScale(0.012f);
             actor.RotateY((-90f / 180f) * (float)Math.PI);
-            road.LoadModel(Content.Load<Model>("Content/wall"));
+            road.LoadModel(Content.Load<Model>("Content/Model/wall"));
             road.RotateY((90f / 180f) * (float)Math.PI);
             road.SetName("road-straight");
-            wall.LoadModel(Content.Load<Model>("Content/wall-half"));
-            roadR.LoadModel(Content.Load<Model>("Content/wall"));
+            wall.LoadModel(Content.Load<Model>("Content/Model/wall-half"));
+            roadR.LoadModel(Content.Load<Model>("Content/Model/wall"));
             wall.RotateY((180f / 180f) * (float)Math.PI);
-            collectable.LoadModel(Content.Load<Model>("Content/FBX/Coin"));
+            collectable.LoadModel(Content.Load<Model>("Content/Model/Coin"));
             collectable.SetScale(.1f);
             collectable.SetName("collectable");
 
@@ -180,13 +180,13 @@ namespace MonoEditorEndless.Game
             //_soundEffectInstance = _soundEffect.CreateInstance();
             //_soundEffectInstance.Volume = .1f;
 
-            obstacle.LoadModel(Content.Load<Model>("Content/rocks-small"));
+            obstacle.LoadModel(Content.Load<Model>("Content/Model/rocks-small"));
             obstacle.SetScale(0.15f);
             obstacle.SetName("obstacle");
 
             _world.AddActor(actor, true);
 
-            corner.LoadModel(Content.Load<Model>("Content/wall-corner"));
+            corner.LoadModel(Content.Load<Model>("Content/Model/wall-corner"));
             corner.SetName("road-corner");
 
             _pathManager.AddObstacle(obstacle);
@@ -207,21 +207,21 @@ namespace MonoEditorEndless.Game
             }
 
             _skyboxTextureList = new List<Texture2D>();
-            _skyboxTextureList.Add(Content.Load<Texture2D>("Content/Skybox/front"));
-            _skyboxTextureList.Add(Content.Load<Texture2D>("Content/Skybox/back"));
-            _skyboxTextureList.Add(Content.Load<Texture2D>("Content/Skybox/left"));
-            _skyboxTextureList.Add(Content.Load<Texture2D>("Content/Skybox/right"));
-            _skyboxTextureList.Add(Content.Load<Texture2D>("Content/Skybox/top"));
-            _skyboxTextureList.Add(Content.Load<Texture2D>("Content/Skybox/bottom"));
+            _skyboxTextureList.Add(Content.Load<Texture2D>("Content/Texture/front"));
+            _skyboxTextureList.Add(Content.Load<Texture2D>("Content/Texture/back"));
+            _skyboxTextureList.Add(Content.Load<Texture2D>("Content/Texture/left"));
+            _skyboxTextureList.Add(Content.Load<Texture2D>("Content/Texture/right"));
+            _skyboxTextureList.Add(Content.Load<Texture2D>("Content/Texture/top"));
+            _skyboxTextureList.Add(Content.Load<Texture2D>("Content/Texture/bottom"));
             _skybox = new Skybox(_graphicsDevice, _skyboxTextureList);
 
-            Texture2D grass = Content.Load<Texture2D>("Content/grass");
+            Texture2D grass = Content.Load<Texture2D>("Content/Texture/grass");
             _plane = new MonoEditorEndless.Engine.Plane(_graphicsDevice, grass, 3000, 20);
 
             _font = Content.Load<SpriteFont>("Content/Fonts/File");
 
             // Create a 1x1 white texture
-            _heartTexture = Content.Load<Texture2D>("Content/heart");
+            _heartTexture = Content.Load<Texture2D>("Content/Texture/heart");
             //_whiteTexture = new Texture2D(_graphicsDevice, 1, 1);
             //_whiteTexture.SetData(new[] { Color.White });
         }
