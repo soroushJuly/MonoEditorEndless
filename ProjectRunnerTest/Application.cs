@@ -34,6 +34,9 @@ namespace ProjectRunnerTest
 
         private bool isFreeCamera = false;
 
+        // Current project class being used
+        private Project _project;
+
         private string _gameTitle = "Untitled";
 
         private string _bgMusicName;
@@ -65,22 +68,23 @@ namespace ProjectRunnerTest
 #endif
             // Initialize file handler
             FileHandler fileHandler = new FileHandler();
-            // Project to be loaded
-            Project project = new Project();
+
+            // Load the project on initialize
+            _project = new Project();
             string recentProjectName = null;
             // Find and load the most recent Project
             recentProjectName = fileHandler.LoadClassXml(recentProjectName, Path.Combine(Routes.SAVED_PROJECTS, "recent_project"));
             if (recentProjectName != null)
             {
                 // Load the most recent project
-                project = fileHandler.LoadClassXml(project, Path.Combine(Routes.SAVED_PROJECTS, recentProjectName));
+                _project = fileHandler.LoadClassXml(_project, Path.Combine(Routes.SAVED_PROJECTS, recentProjectName));
             }
             else
             {
                 // If no recent project Create the default project
-                project.CreateDefault();
+                _project.CreateDefault();
                 // Then save the new project
-                if (fileHandler.SaveXml(project, "default_project", Routes.SAVED_PROJECTS))
+                if (fileHandler.SaveXml(_project, "default_project", Routes.SAVED_PROJECTS))
                     // Update recent project
                     fileHandler.SaveXml(new string("default_project"), "recent_project", Routes.SAVED_PROJECTS);
             }
@@ -107,7 +111,7 @@ namespace ProjectRunnerTest
             _soundList = new List<SoundEffect>();
 
             // Update the content file
-            UpdateContent(project.GetAllAsset());
+            UpdateContent(_project.GetAllAsset());
 
             _bgMusicName = "";
 
@@ -545,7 +549,7 @@ namespace ProjectRunnerTest
             foreach (Asset asset in assetList)
             {
                 // If asset is already in file don't add it again
-                if (!contentFileText.Contains(asset.GetContentText()))
+                if (!contentFileText.Contains(asset.GetPathString()))
                     File.AppendAllText(Routes.CONTENT_DIRECTORY, asset.GetContentText());
             }
         }
