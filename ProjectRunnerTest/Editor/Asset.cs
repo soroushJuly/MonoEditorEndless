@@ -17,8 +17,10 @@ namespace MonoEditorEndless.Editor
         public bool _isUsedInGame;
         public string _importerDetails;
         public string _mgcbText;
+        public string _pathString;
 
         public string GetContentText() { return _mgcbText; }
+        public string GetPathString() { return _pathString; }
         public Asset()
         {
             _name = "";
@@ -33,8 +35,9 @@ namespace MonoEditorEndless.Editor
         }
         protected void GenerateContentText()
         {
-            _mgcbText = "#begin " + _type + "/" + _name + "\r\n" + _importerDetails +
-                "/build:" + _type + "/" + _name + "\r\n\r\n";
+            _pathString = _type + "/" + _name;
+            _mgcbText = "#begin " + _pathString  + "\r\n" + _importerDetails +
+                "/build:" + _type + "/" + _name + "\r\n";
         }
 
         // TODO: If we want the members to be private

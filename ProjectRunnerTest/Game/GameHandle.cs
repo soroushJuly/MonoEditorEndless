@@ -56,7 +56,7 @@ namespace MonoEditorEndless.Game
             _fsm.AddState(menuMaker);
             _fsm.AddState(finish);
 
-            _fsm.Initialise("menu");
+            _fsm.Initialise("spectate");
 
         }
         public void Start()
