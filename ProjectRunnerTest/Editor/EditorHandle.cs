@@ -3,14 +3,11 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using MonoEditorEndless.Editor.ImGuiTools;
-using MonoEditorEndless.Game;
-using System;
-using System.Drawing;
-using System.Threading;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Threading;
 using Num = System.Numerics;
 
 
@@ -21,7 +18,11 @@ namespace MonoEditorEndless.Editor
         private GraphicsDeviceManager _graphics;
         private ImGuiRenderer _imGuiRenderer;
         private Texture2D _xnaTexture;
-        private IntPtr _imGuiTexture;
+        private IntPtr _playTexture;
+        private IntPtr _pauseTexture;
+
+        private List<Asset> _assets;
+        public List<Asset> GetAssets() { return _assets; }
 
         // Direct port of the example at https://github.com/ocornut/imgui/blob/master/examples/sdl_opengl2_example/main.cpp
         private float f = 0.0f;
@@ -34,11 +35,16 @@ namespace MonoEditorEndless.Editor
             _imGuiRenderer = new ImGuiRenderer(game);
             _imGuiRenderer.RebuildFontAtlas();
             _graphics = graphics;
+
+            _assets = new List<Asset>();
+            _assets.Add(new AssetTexture("play.png", false, true));
+            _assets.Add(new AssetTexture("pause.png", false, true));
         }
 
         public void LoadContent(ContentManager content)
         {
-            _xnaTexture = content.Load<Texture2D>("Content/Texture/grass");
+            //_playTexture = ;
+            //_pauseTexture = ;
             // First, load the texture as a Texture2D (can also be done using the XNA/FNA content pipeline)
             //_xnaTexture = ImGuiRenderer.CreateTexture(GraphicsDevice, 300, 150, pixel =>
             //{
@@ -47,7 +53,8 @@ namespace MonoEditorEndless.Editor
             //});
 
             // Then, bind it to an ImGui-friendly pointer, that we can use during regular ImGui.** calls (see below)
-            _imGuiTexture = _imGuiRenderer.BindTexture(_xnaTexture);
+            _playTexture = _imGuiRenderer.BindTexture(content.Load<Texture2D>("Content/Editor/Texture/play"));
+            _pauseTexture = _imGuiRenderer.BindTexture(content.Load<Texture2D>("Content/Editor/Texture/pause"));
         }
 
         public void Draw(GameTime gameTime)
@@ -233,7 +240,12 @@ namespace MonoEditorEndless.Editor
                 ImGui.Text("Editor");
                 ImGui.GetFont().Scale = old;
                 ImGui.PopFont();
-                if (ImGui.ImageButton("Play", _imGuiTexture, new Num.Vector2(30, 10)))
+                if (ImGui.ImageButton("Play", _playTexture, new Num.Vector2(30, 30)))
+                {
+                    //_gameHandle.Start();
+                }
+                ImGui.SameLine();
+                if (ImGui.ImageButton("Play", _pauseTexture, new Num.Vector2(30, 30)))
                 {
                     //_gameHandle.Start();
                 }

@@ -252,6 +252,12 @@ namespace ProjectRunnerTest
                 if (!contentFileText.Contains(asset.GetPathString()))
                     File.AppendAllText(Routes.CONTENT_DIRECTORY, asset.GetContentText());
             }
+            foreach (Asset asset in _editorHandle.GetAssets())
+            {
+                // If asset is already in file don't add it again
+                if (!contentFileText.Contains(asset.GetPathString()))
+                    File.AppendAllText(Routes.CONTENT_DIRECTORY, asset.GetContentText());
+            }
         }
     }
 }
