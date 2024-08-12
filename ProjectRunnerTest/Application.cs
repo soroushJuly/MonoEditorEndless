@@ -31,9 +31,6 @@ namespace ProjectRunnerTest
         // Current project class being used
         public static Project _project;
 
-        private string _gameTitle = "Untitled";
-
-        private string _bgMusicName;
         private string _platform = "win-x64";
 
         // Current build mode
@@ -41,8 +38,6 @@ namespace ProjectRunnerTest
 
         // encapsulate event Controls for the application
         ControlsAggregator aggregator = new ControlsAggregator();
-
-        private List<SoundEffect> _soundList;
 
         public Application()
         {
@@ -93,8 +88,6 @@ namespace ProjectRunnerTest
 
             // Update the content file
             UpdateContent(_project.GetAllAsset());
-
-            _bgMusicName = "";
 
             BuildContent();
             base.Initialize();
