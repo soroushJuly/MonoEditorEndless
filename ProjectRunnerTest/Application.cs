@@ -39,6 +39,9 @@ namespace ProjectRunnerTest
         // Current build mode
         private bool _isDebug = false;
 
+        // encapsulate event Controls for the application
+        ControlsAggregator aggregator = new ControlsAggregator();
+
         private List<SoundEffect> _soundList;
 
         public Application()
@@ -81,21 +84,11 @@ namespace ProjectRunnerTest
                     fileHandler.SaveXml(new string("default_project"), "recent_project", Routes.SAVED_PROJECTS);
             }
 
+            
+            _editorHandle = new EditorHandle(this, _graphics, aggregator);
 
-            // Get the TargetFramework attribute
-            //var targetFramework = Assembly.GetExecutingAssembly()
-            //    .GetCustomAttributes(typeof(TargetFrameworkAttribute), false)
-            //    .FirstOrDefault() as TargetFrameworkAttribute;
 
-            //if (targetFramework != null)
-            //{
-            //    Debug.WriteLine($"Running on Target Framework: {targetFramework.FrameworkName}");
-            //}
-            //else
-            //{
-            //    Debug.WriteLine("Target Framework attribute not found.");
-            //}
-            _editorHandle = new EditorHandle(this, _graphics);
+
 
             // Update the content file
             UpdateContent(_project.GetAllAsset());
@@ -112,6 +105,8 @@ namespace ProjectRunnerTest
             _editorHandle.LoadContent(Content);
             // Initialize the game handle
             _gameHandle = new GameHandle(Content, GraphicsDevice);
+            aggregator.PlayPressed += (object sender, EventArgs e) => { _gameHandle.Start(); };
+            aggregator.PausePressed += (object sender, EventArgs e) => { _gameHandle.Stop(); };
 
 
             base.LoadContent();

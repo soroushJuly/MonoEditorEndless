@@ -11,6 +11,7 @@ namespace MonoEditorEndless.Game
     {
         private FSM _fsm;
         private bool _isPlaying;
+        private bool _isFromStartPlaying;
         private bool _isFinish;
         private ContentManager _contentManger;
         private GraphicsDevice _graphicsDevice;
@@ -22,6 +23,7 @@ namespace MonoEditorEndless.Game
         public GameHandle(ContentManager content, GraphicsDevice graphicsDevice)
         {
             _isPlaying = false;
+            _isFromStartPlaying = false;
             _isFinish = false;
             _contentManger = content;
             _graphicsDevice = graphicsDevice;
@@ -47,8 +49,10 @@ namespace MonoEditorEndless.Game
 
             spectate.AddTransition(new Transition(play, () => { return _isPlaying; }));
             play.AddTransition(new Transition(finish, () => { return _isFinish; }));
+            play.AddTransition(new Transition(spectate, () => { return !_isPlaying; }));
             finish.AddTransition(new Transition(spectate, () => { return !_isPlaying; }));
-            menu.AddTransition(new Transition(play, () => { return _isPlaying; }));
+            menu.AddTransition(new Transition(play, () => { return _isFromStartPlaying; }));
+            menu.AddTransition(new Transition(spectate, () => { return !_isFromStartPlaying; }));
 
             _fsm.AddState(play);
             _fsm.AddState(spectate);
@@ -59,14 +63,19 @@ namespace MonoEditorEndless.Game
             _fsm.Initialise("spectate");
 
         }
-        public void Start()
+        public void Start(bool isFromStart = false)
         {
-            _isPlaying = true;
+            if (isFromStart)
+                _isFromStartPlaying = true;
+            else
+                _isPlaying = true;
+
         }
         public void Stop()
         {
             _isPlaying = false;
-            _fsm.Initialise("menu");
+            _isFromStartPlaying = false;
+            //_fsm.Initialise("spectate");
         }
         public void Update(GameTime gameTime)
         {
