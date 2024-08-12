@@ -257,7 +257,7 @@ namespace MonoEditorEndless.Editor.Layouts
             ImGui.Separator();
             //IMGUI_DEMO_MARKER("Examples/Menu/Options");
 
-            ImGui.Combo("Combo", ref n, "Yes\0No\0Maybe\0\0");
+            //ImGui.Combo("Combo", ref n, "Yes\0No\0Maybe\0\0");
         }
         static void ShowMenuEdit()
         {

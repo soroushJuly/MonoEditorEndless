@@ -23,6 +23,7 @@ namespace MonoEditorEndless.Editor
     public class Asset
     {
         public readonly string _name;
+        public readonly string _nameWithoutExtenstion;
         public string _type;
         public AssetType _assetType;
         public string _format;
@@ -30,6 +31,7 @@ namespace MonoEditorEndless.Editor
         public string _importerDetails;
         public string _mgcbText;
         public string _pathString;
+        public string _contentPathString;
         public bool _isEditorAsset;
 
         public string GetContentText() { return _mgcbText; }
@@ -43,6 +45,7 @@ namespace MonoEditorEndless.Editor
         public Asset(string name, string type, bool isUsedInGame = false, bool isEditorAsset = false)
         {
             _name = name;
+            _nameWithoutExtenstion = Path.GetFileNameWithoutExtension(_name);
             _type = type;
             _isUsedInGame = isUsedInGame;
             _isEditorAsset = isEditorAsset;
@@ -50,6 +53,7 @@ namespace MonoEditorEndless.Editor
         protected void GenerateContentText()
         {
             _pathString = _isEditorAsset ? "Editor/" + _type + "/" + _name : _type + "/" + _name;
+            _contentPathString = "Content/" + (_isEditorAsset ? "Editor/" + _type + "/" + _nameWithoutExtenstion : _type + "/" + _nameWithoutExtenstion);
             _mgcbText = "#begin " + _pathString + "\r\n" + _importerDetails +
                 "/build:" + _pathString + "\r\n";
         }
