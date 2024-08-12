@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using MonoEditorEndless.Editor.ImGuiTools;
+using ProjectRunnerTest;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -20,12 +21,16 @@ namespace MonoEditorEndless.Editor.Layouts
         private byte[] _textBuffer = new byte[100];
         private bool show_test_window = false;
 
+        FileHandler _fileHandler;
+
         ControlsAggregator _controlsAggregator;
         public LayoutEdit(ImGuiRenderer imGuiRenderer, GraphicsDeviceManager graphics, ControlsAggregator controlsAggregator)
         {
             _imGuiRenderer = imGuiRenderer;
             _graphics = graphics;
             _controlsAggregator = controlsAggregator;
+
+            _fileHandler = new FileHandler();
         }
         public void LoadContent(ContentManager content)
         {
@@ -73,6 +78,7 @@ namespace MonoEditorEndless.Editor.Layouts
                                 Console.WriteLine(result);
                             }
                         }
+                        Application._project = new Project();
                     });
                     thread.SetApartmentState(ApartmentState.STA); //Set the thread to STA
                     thread.Start();
@@ -120,9 +126,10 @@ namespace MonoEditorEndless.Editor.Layouts
                     ImGui.Text("Load background music");
                     if (ImGui.Button("Load from computer"))
                     {
-                        //_bgMusicName = string.Empty;
-                        //_bgMusicName = LoadFile();
-
+                        // TODO: check the validity here when we get the file
+                        // by passing an optional file desired file type
+                        string path = _fileHandler.LoadFileFromComputer();
+                        Application._project.AddAssetAudio(new AssetAudio(path));
                     }
                     //if (ImGui.Button("play it!!"))
                     //{

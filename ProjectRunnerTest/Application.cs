@@ -29,7 +29,7 @@ namespace ProjectRunnerTest
         private EditorHandle _editorHandle;
 
         // Current project class being used
-        private Project _project;
+        public static Project _project;
 
         private string _gameTitle = "Untitled";
 
@@ -84,7 +84,8 @@ namespace ProjectRunnerTest
                     fileHandler.SaveXml(new string("default_project"), "recent_project", Routes.SAVED_PROJECTS);
             }
 
-            
+            _project.AssetAdded += (object sender, EventArgs e) => { UpdateContent(_project.GetAllAsset()); BuildContent(); };
+
             _editorHandle = new EditorHandle(this, _graphics, aggregator);
 
 
@@ -128,81 +129,6 @@ namespace ProjectRunnerTest
         protected override void Update(GameTime gameTime)
         {
             _gameHandle.Update(gameTime);
-        }
-        private string LoadFile()
-        {
-            var fileContent = string.Empty;
-            var filePath = string.Empty;
-            var newPath = string.Empty;
-            SoundEffect soundEffect = null;
-            Thread thread = new Thread(() =>
-            {
-                using (Forms.OpenFileDialog openFileDialog = new Forms.OpenFileDialog())
-                {
-                    openFileDialog.InitialDirectory = "c:\\";
-                    openFileDialog.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
-                    openFileDialog.FilterIndex = 2;
-                    openFileDialog.RestoreDirectory = true;
-                    // Opens the Dialog 
-                    if (openFileDialog.ShowDialog() == Forms.DialogResult.OK)
-                    {
-                        //Get the path of specified file
-                        filePath = openFileDialog.FileName;
-                        _bgMusicName = filePath;
-
-                        // Copying logic
-                        //string programDataDir =
-                        //Environment.GetFolderPath(Environment.CurrentDirectory);\
-
-                        string[] paths = { Environment.CurrentDirectory, "Content", "Audio", Path.GetFileName(filePath) };
-
-                        newPath = Path.Combine(paths);
-
-
-                        //string newPath = @"C:\Users\";
-                        //File.SetAttributes(newPath, FileAttributes.Normal);
-                        try
-                        {
-                            // Check if the source file exists
-                            if (File.Exists(filePath))
-                            {
-                                // Copy the source file to the destination file
-                                File.Copy(filePath, newPath, true);
-
-                                Console.WriteLine("File copied successfully.");
-                            }
-                            else
-                            {
-                                Console.WriteLine("Source file does not exist.");
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            // Handle any exceptions that may occur
-                            Console.WriteLine("An error occurred: " + ex.Message);
-                        }
-
-                        //Read the contents of the file into a stream
-                        var fileStream = openFileDialog.OpenFile();
-
-                        using (StreamReader reader = new StreamReader(fileStream))
-                        {
-                            fileContent = reader.ReadToEnd();
-                        }
-                    }
-
-                }
-
-
-                //Forms.MessageBox.Show(fileContent, "File Content at path: " + filePath, Forms.MessageBoxButtons.OK);
-            });
-            thread.SetApartmentState(ApartmentState.STA); //Set the thread to STA
-            thread.Start();
-            thread.Join(); //Wait for the thread to end
-            soundEffect = SoundEffect.FromFile(newPath);
-
-            _soundList.Add(soundEffect);
-            return filePath;
         }
         private void BuildContent()
         {

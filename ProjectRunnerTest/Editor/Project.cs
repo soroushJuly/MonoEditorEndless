@@ -18,6 +18,7 @@ namespace MonoEditorEndless.Editor
         public EditorConfigs _editorConfigs;
         public DateTime _lastSaved;
 
+        public event EventHandler AssetAdded;
         public Project()
         {
             _audioList = new List<AssetAudio>();
@@ -63,6 +64,27 @@ namespace MonoEditorEndless.Editor
             assets.AddRange(_modelList);
             assets.AddRange(_fontList);
             return assets;
+        }
+        // TODO: better structure for these methods
+        public void AddAssetAudio(AssetAudio asset)
+        {
+            _audioList.Add(asset);
+            AssetAdded(this, EventArgs.Empty);
+        }
+        public void AddAssetTexture(AssetTexture asset)
+        {
+            _textureList.Add(asset);
+            AssetAdded(this, EventArgs.Empty);
+        }
+        public void AddAssetModel(AssetModel asset)
+        {
+            _modelList.Add(asset);
+            AssetAdded(this, EventArgs.Empty);
+        }
+        public void AddAssetFont(AssetFont asset)
+        {
+            _fontList.Add(asset);
+            AssetAdded(this, EventArgs.Empty);
         }
     }
 }

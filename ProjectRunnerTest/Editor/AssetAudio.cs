@@ -9,10 +9,13 @@ namespace MonoEditorEndless.Editor
         public AssetAudio() : base()
         {
         }
-        public AssetAudio(string name, bool isUsedInGame = false) : base(name, "Audio", isUsedInGame)
+        public AssetAudio(string name, bool isUsedInGame = false) : base(name, "Audio", new string[] { ".mp3" }, isUsedInGame)
         {
-            _importerDetails = "/importer:Mp3Importer\r\n/processor:SoundEffectProcessor\r\n/processorParam:Quality=Best\r\n";
-            GenerateContentText();
+            if (ValidityCheck(name))
+            {
+                _importerDetails = "/importer:Mp3Importer\r\n/processor:SoundEffectProcessor\r\n/processorParam:Quality=Best\r\n";
+                GenerateContentText();
+            }
         }
     }
 }

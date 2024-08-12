@@ -5,6 +5,7 @@ namespace MonoEditorEndless
 {
     internal class Routes
     {
+        // Singleton Pattern
         Routes _routes;
         public const string CONTENT_DIRECTORY = @"..\..\..\Content\Content.mgcb";
         public const string ROOT_DIRECTORY = @"..\..\..\..";
