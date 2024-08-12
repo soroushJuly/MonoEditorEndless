@@ -25,7 +25,6 @@ namespace MonoEditorEndless.Editor
         public readonly string _name;
         public string _type;
         public AssetType _assetType;
-        public string[] _allowedExtentions;
         public string _format;
         public bool _isUsedInGame;
         public string _importerDetails;
@@ -41,44 +40,18 @@ namespace MonoEditorEndless.Editor
             _type = "";
             _isUsedInGame = false;
         }
-        public Asset(string name, string type, string[] extensions, bool isUsedInGame = false, bool isEditorAsset = false)
+        public Asset(string name, string type, bool isUsedInGame = false, bool isEditorAsset = false)
         {
             _name = name;
             _type = type;
             _isUsedInGame = isUsedInGame;
             _isEditorAsset = isEditorAsset;
-            _allowedExtentions = extensions;
         }
         protected void GenerateContentText()
         {
             _pathString = _isEditorAsset ? "Editor/" + _type + "/" + _name : _type + "/" + _name;
             _mgcbText = "#begin " + _pathString + "\r\n" + _importerDetails +
                 "/build:" + _pathString + "\r\n";
-        }
-        public bool ValidityCheck(string name)
-        {
-            bool status = false;
-            string fileExtention = Path.GetExtension(name);
-
-            foreach (var allowedExtension in _allowedExtentions)
-            {
-                if (allowedExtension == fileExtention)
-                {
-                    status = true;
-                    break;
-                }
-            }
-            if (!status)
-            {
-                string allowedExt = "";
-                foreach (var allowedExtension in _allowedExtentions)
-                {
-                    allowedExt += allowedExtension + " ";
-                }
-                Forms.MessageBox.Show("Please select a proper file type\n\r" + allowedExt);
-            }
-
-            return status;
         }
 
         // TODO: If we want the members to be private

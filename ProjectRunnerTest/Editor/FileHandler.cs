@@ -11,6 +11,14 @@ namespace MonoEditorEndless.Editor
 {
     internal class FileHandler
     {
+        /// <summary>
+        /// save an object of type T into an XML type
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="instance"></param>
+        /// <param name="name"></param>
+        /// <param name="basePath"></param>
+        /// <returns></returns>
         public bool SaveXml<T>(T instance, string name, string basePath)
         {
             bool status = true;
@@ -30,13 +38,20 @@ namespace MonoEditorEndless.Editor
             }
             return status;
         }
-        public T LoadClassXml<T>(T pp, string filepath)
+        /// <summary>
+        /// Load an XML file to an object of class T and return the new object
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="pp"></param>
+        /// <param name="filepath"></param>
+        /// <returns></returns>
+        public T LoadClassXml<T>(T instance, string filepath)
         {
             try
             {
                 using (StreamReader reader = new StreamReader(filepath))
                 {
-                    pp = (T)new XmlSerializer(typeof(T)).Deserialize(reader.BaseStream);
+                    instance = (T)new XmlSerializer(typeof(T)).Deserialize(reader.BaseStream);
                 }
             }
             catch (Exception e)
@@ -46,8 +61,13 @@ namespace MonoEditorEndless.Editor
                 Console.WriteLine("ERROR: XML File could not be deserialized!");
                 Console.WriteLine("Exception Message: " + e.Message);
             }
-            return pp;
+            return instance;
         }
+        /// <summary>
+        /// Opens up a dialog and waits till it resolves
+        /// Copy the selected file in the content folder
+        /// </summary>
+        /// <returns>path to the file</returns>
         public string LoadFileFromComputer()
         {
             var fileContent = string.Empty;
@@ -69,7 +89,7 @@ namespace MonoEditorEndless.Editor
 
                         // Copying logic
                         // Create the new path to copy the file into
-                        string[] paths = { Environment.CurrentDirectory, "Content", "Audio", Path.GetFileName(filePath) };
+                        string[] paths = { Routes.CONTENT_DIRECTORY, "..", "Audio", Path.GetFileName(filePath) };
                         Path.GetExtension(filePath);
                         newPath = Path.Combine(paths);
 
@@ -103,11 +123,42 @@ namespace MonoEditorEndless.Editor
                     }
                 }
             });
-            thread.SetApartmentState(ApartmentState.STA); //Set the thread to STA
+            thread.SetApartmentState(ApartmentState.STA);
             thread.Start();
-            thread.Join(); //Wait for the thread to end
+            thread.Join();
 
             return newPath;
+        }
+        /// <summary>
+        /// Checks if a file is in right format
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="_allowedExtentions"></param>
+        /// <returns></returns>
+        public bool CheckValidity(string name, string[] _allowedExtentions)
+        {
+            bool status = false;
+            string fileExtention = Path.GetExtension(name);
+
+            foreach (var allowedExtension in _allowedExtentions)
+            {
+                if (allowedExtension == fileExtention)
+                {
+                    status = true;
+                    break;
+                }
+            }
+            if (!status)
+            {
+                string allowedExt = "";
+                foreach (var allowedExtension in _allowedExtentions)
+                {
+                    allowedExt += allowedExtension + " ";
+                }
+                Forms.MessageBox.Show("Please select a proper file type\n\r" + allowedExt);
+            }
+
+            return status;
         }
     }
 }

@@ -129,7 +129,8 @@ namespace MonoEditorEndless.Editor.Layouts
                         // TODO: check the validity here when we get the file
                         // by passing an optional file desired file type
                         string path = _fileHandler.LoadFileFromComputer();
-                        Application._project.AddAssetAudio(new AssetAudio(path));
+                        if (_fileHandler.CheckValidity(path, AssetAudio._allowedExtentions))
+                            Application._project.AddAssetAudio(new AssetAudio(Path.GetFileName(path)));
                     }
                     //if (ImGui.Button("play it!!"))
                     //{
