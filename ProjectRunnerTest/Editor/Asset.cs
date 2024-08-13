@@ -20,7 +20,7 @@ namespace MonoEditorEndless.Editor
         MODEL,
         FONT
     }
-    public class Asset
+    public abstract class Asset
     {
         public readonly string _name;
         public readonly string _nameWithoutExtenstion;
