@@ -238,11 +238,7 @@ namespace MonoEditorEndless.Editor.Layouts
                     ShowMenuFile();
                     ImGui.EndMenu();
                 }
-                if (ImGui.BeginMenu("Edit"))
-                {
-                    ShowMenuEdit();
-                    ImGui.EndMenu();
-                }
+                // TODO: add Undo and Redo logic
                 if (ImGui.BeginMenu("About"))
                 {
                     ShowMenuAbout();
@@ -302,11 +298,6 @@ namespace MonoEditorEndless.Editor.Layouts
             {
                 Environment.Exit(0);
             }
-        }
-        private void ShowMenuEdit()
-        {
-            if (ImGui.MenuItem("Undo", "CTRL+Z")) { }
-            if (ImGui.MenuItem("Redo", "CTRL+Y", false, false)) { }
         }
         private void ShowMenuAbout()
         {

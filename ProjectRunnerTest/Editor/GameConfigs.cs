@@ -17,7 +17,13 @@ namespace MonoEditorEndless.Editor
 
         // Font
 
-        // Textures 
+        // Textures
+
+        // Camera setting
+
+        // Gameplay
+
+        // 
         
 
 
