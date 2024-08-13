@@ -59,7 +59,7 @@ namespace ProjectRunnerTest
             _project = new Project();
             string recentProjectName = null;
             // Find and load the most recent Project
-            recentProjectName = fileHandler.LoadClassXml(recentProjectName, Path.Combine(Routes.SAVED_PROJECTS, "recent_project"));
+            recentProjectName = fileHandler.LoadClassXml(recentProjectName, Path.Combine(Routes.SAVED_PROJECTS, "recent_project.xml"));
             if (recentProjectName != null)
             {
                 // Load the most recent project
@@ -70,9 +70,9 @@ namespace ProjectRunnerTest
                 // If no recent project Create the default project
                 _project.CreateDefault();
                 // Then save the new project
-                if (fileHandler.SaveXml(_project, "default_project", Routes.SAVED_PROJECTS))
+                if (fileHandler.SaveXml<Project>(_project, "default_project.xml", Routes.SAVED_PROJECTS))
                     // Update recent project
-                    fileHandler.SaveXml(new string("default_project"), "recent_project", Routes.SAVED_PROJECTS);
+                    fileHandler.SaveXml<string>(new string("default_project.xml"), "recent_project.xml", Routes.SAVED_PROJECTS);
             }
 
             _project.AssetAdded += (object sender, EventArgs e) => { UpdateContent(_project.GetAllAsset()); BuildContent(); };

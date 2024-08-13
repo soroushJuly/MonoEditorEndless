@@ -6,6 +6,7 @@ using MonoEditorEndless.Editor.ImGuiTools;
 using ProjectRunnerTest;
 using System;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Threading;
 using Forms = System.Windows.Forms;
@@ -253,35 +254,48 @@ namespace MonoEditorEndless.Editor.Layouts
         }
         private void ShowMenuFile()
         {
-            //IMGUI_DEMO_MARKER("Examples/Menu");
-            ImGui.MenuItem("(demo menu)", null, false, false);
             // Create a new default project and replace current project
             if (ImGui.MenuItem("New"))
             {
                 Application._project = new Project();
                 Application._project.CreateDefault();
+                SaveAs();
                 Application.UpdateContent(Application._project.GetAllAsset());
                 Application.BuildContent();
             }
             // Open dialog and replace current project with new Project class
             if (ImGui.MenuItem("Open"))
             {
-                string file = _fileHandler.LoadFileFromComputerNoCopy();
+                string file = _fileHandler.LoadFileFromComputerNoCopy(Routes.SAVED_PROJECTS);
                 if (Path.GetExtension(file) != ".xml")
                 {
                     Forms.MessageBox.Show("Please select proper file type: .xml");
                 }
                 Application._project = _fileHandler.LoadClassXml<Project>(Application._project, file);
+                // Update recent project
+                _fileHandler.SaveXml<string>(Path.GetFileName(file), "recent_project.xml", Routes.SAVED_PROJECTS);
                 Application.UpdateContent(Application._project.GetAllAsset());
                 Application.BuildContent();
             }
             // Save the current project in the recent project location
             if (ImGui.MenuItem("Save"))
             {
-
+                string recentProjectName = null;
+                recentProjectName = _fileHandler.LoadClassXml(recentProjectName, Path.Combine(Routes.SAVED_PROJECTS, "recent_project.xml"));
+                if (recentProjectName == "default_project.xml")
+                {
+                    SaveAs();
+                }
+                else if (_fileHandler.SaveXml<Project>(Application._project, recentProjectName, Routes.SAVED_PROJECTS))
+                {
+                    Forms.MessageBox.Show("Project Saved");
+                }
             }
             // Open new window before saving for getting a new name
-            if (ImGui.MenuItem("Save As..")) { }
+            if (ImGui.MenuItem("Save As.."))
+            {
+                SaveAs();
+            }
             ImGui.Separator();
             // Exit the application
             if (ImGui.MenuItem("Exit"))
@@ -314,6 +328,56 @@ namespace MonoEditorEndless.Editor.Layouts
                 }
 
             }
+        }
+
+        private void SaveAs()
+        {
+            Forms.Form form = new Forms.Form();
+            Forms.Label label = new Forms.Label();
+            Forms.TextBox textBox = new Forms.TextBox();
+            Forms.Button buttonOk = new Forms.Button();
+            Forms.Button buttonCancel = new Forms.Button();
+
+            form.Text = "Save As..";
+            label.Text = "Project Name:";
+
+            buttonOk.Text = "OK";
+            buttonCancel.Text = "Cancel";
+            buttonOk.DialogResult = Forms.DialogResult.OK;
+            buttonCancel.DialogResult = Forms.DialogResult.Cancel;
+
+            label.SetBounds(20, 20, 250, 13);
+            textBox.SetBounds(20, 40, 250, 20);
+            buttonOk.SetBounds(20, 80, 80, 30);
+            buttonCancel.SetBounds(120, 80, 80, 30);
+
+            label.AutoSize = true;
+            form.ClientSize = new Size(300, 150);
+            form.FormBorderStyle = Forms.FormBorderStyle.FixedDialog;
+            form.StartPosition = Forms.FormStartPosition.CenterScreen;
+            form.MinimizeBox = false;
+            form.MaximizeBox = false;
+
+            form.Controls.AddRange(new Forms.Control[] { label, textBox, buttonOk, buttonCancel });
+            form.AcceptButton = buttonOk;
+            form.CancelButton = buttonCancel;
+
+            Forms.DialogResult dialogResult = form.ShowDialog();
+
+            if (dialogResult == Forms.DialogResult.OK)
+            {
+                string projectName = textBox.Text;
+                if (projectName == "")
+                    Forms.MessageBox.Show("Please choose a name for the project");
+                else if (_fileHandler.SaveXml<Project>(Application._project, projectName + ".xml", Routes.SAVED_PROJECTS))
+                {
+                    Forms.MessageBox.Show("Project Saved");
+                    // Update recent project
+                    _fileHandler.SaveXml<string>(projectName + ".xml", "recent_project.xml", Routes.SAVED_PROJECTS);
+                }
+            }
+            return;
+
         }
     }
 }

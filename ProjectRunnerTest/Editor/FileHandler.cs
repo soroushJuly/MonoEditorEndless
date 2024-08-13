@@ -34,6 +34,7 @@ namespace MonoEditorEndless.Editor
             }
             catch
             {
+                Forms.MessageBox.Show("Saving failed!");
                 status = false;
             }
             return status;
@@ -133,7 +134,7 @@ namespace MonoEditorEndless.Editor
         /// Opens up a dialog and waits till it resolves
         /// </summary>
         /// <returns></returns>
-        public string LoadFileFromComputerNoCopy()
+        public string LoadFileFromComputerNoCopy(string directory = "c:\\")
         {
             var fileContent = string.Empty;
             var filePath = string.Empty;
@@ -141,7 +142,7 @@ namespace MonoEditorEndless.Editor
             {
                 using (Forms.OpenFileDialog openFileDialog = new Forms.OpenFileDialog())
                 {
-                    openFileDialog.InitialDirectory = "c:\\";
+                    openFileDialog.InitialDirectory = directory;
                     //openFileDialog.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
                     //openFileDialog.FilterIndex = 2;
                     openFileDialog.RestoreDirectory = true;
@@ -156,7 +157,7 @@ namespace MonoEditorEndless.Editor
                         string[] paths = { Routes.CONTENT_DIRECTORY, "..", "Audio", Path.GetFileName(filePath) };
                         Path.GetExtension(filePath);
 
-                     
+
 
                         // Read the contents of the file into a stream
                         var fileStream = openFileDialog.OpenFile();

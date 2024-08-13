@@ -6,12 +6,12 @@ namespace MonoEditorEndless.Editor
     public class GameConfigs
     {
         // Game title
-        public string _title;
+        public string _title = "Asghar game";
         // Audio
-        public Song menuMusic;
-        public Song gameplayMusic;
-        public SoundEffect itemCollectionSound;
-        public SoundEffectInstance itemCollectionSoundInstance;
+        public string menuMusic;
+        public string gameplayMusic;
+        public string itemCollectionSound;
+        public string itemCollectionSoundInstance;
         // Models in the game
         public string _characterModel;
 
