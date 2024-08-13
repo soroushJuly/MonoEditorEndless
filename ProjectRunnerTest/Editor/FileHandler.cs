@@ -130,6 +130,51 @@ namespace MonoEditorEndless.Editor
             return newPath;
         }
         /// <summary>
+        /// Opens up a dialog and waits till it resolves
+        /// </summary>
+        /// <returns></returns>
+        public string LoadFileFromComputerNoCopy()
+        {
+            var fileContent = string.Empty;
+            var filePath = string.Empty;
+            Thread thread = new Thread(() =>
+            {
+                using (Forms.OpenFileDialog openFileDialog = new Forms.OpenFileDialog())
+                {
+                    openFileDialog.InitialDirectory = "c:\\";
+                    //openFileDialog.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
+                    //openFileDialog.FilterIndex = 2;
+                    openFileDialog.RestoreDirectory = true;
+                    // Opens the Dialog 
+                    if (openFileDialog.ShowDialog() == Forms.DialogResult.OK)
+                    {
+                        //Get the path of specified file
+                        filePath = openFileDialog.FileName;
+
+                        // Copying logic
+                        // Create the new path to copy the file into
+                        string[] paths = { Routes.CONTENT_DIRECTORY, "..", "Audio", Path.GetFileName(filePath) };
+                        Path.GetExtension(filePath);
+
+                     
+
+                        // Read the contents of the file into a stream
+                        var fileStream = openFileDialog.OpenFile();
+
+                        using (StreamReader reader = new StreamReader(fileStream))
+                        {
+                            fileContent = reader.ReadToEnd();
+                        }
+                    }
+                }
+            });
+            thread.SetApartmentState(ApartmentState.STA);
+            thread.Start();
+            thread.Join();
+
+            return filePath;
+        }
+        /// <summary>
         /// Checks if a file is in right format
         /// </summary>
         /// <param name="name"></param>

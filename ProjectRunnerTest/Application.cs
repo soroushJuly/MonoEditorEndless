@@ -1,10 +1,7 @@
-﻿using ImGuiNET;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoEditorEndless;
 using MonoEditorEndless.Editor;
-using MonoEditorEndless.Editor.ImGuiTools;
 using MonoEditorEndless.Game;
 using System;
 using System.Collections.Generic;
@@ -12,7 +9,6 @@ using System.Diagnostics;
 using System.IO;
 
 using System.Threading;
-using Forms = System.Windows.Forms;
 using Num = System.Numerics;
 
 namespace ProjectRunnerTest
@@ -26,7 +22,7 @@ namespace ProjectRunnerTest
         // To manage and communicate with the game
         private GameHandle _gameHandle;
         // To manage and communicate with the editor
-        private EditorHandle _editorHandle;
+        private static EditorHandle _editorHandle;
 
         // Current project class being used
         public static Project _project;
@@ -34,7 +30,7 @@ namespace ProjectRunnerTest
         private string _platform = "win-x64";
 
         // Current build mode
-        private bool _isDebug = false;
+        private static bool _isDebug = false;
 
         // encapsulate event Controls for the application
         ControlsAggregator aggregator = new ControlsAggregator();
@@ -88,7 +84,7 @@ namespace ProjectRunnerTest
 
             // Update the content file
             UpdateContent(_project.GetAllAsset());
-
+            // Build the newly updated Content file
             BuildContent();
             base.Initialize();
         }
@@ -123,7 +119,7 @@ namespace ProjectRunnerTest
         {
             _gameHandle.Update(gameTime);
         }
-        private void BuildContent()
+        public static void BuildContent()
         {
             string contentProjectPath = Routes.CONTENT_DIRECTORY; // Path to content project
             Thread thread = new Thread(() =>
@@ -157,7 +153,12 @@ namespace ProjectRunnerTest
             thread.Start();
             thread.Join(); //Wait for the thread to end
         }
-        private void UpdateContent(List<Asset> assetList)
+        /// <summary>
+        /// Updates the content.mgbc file based on the 
+        /// assets from project and assets needed by editor
+        /// </summary>
+        /// <param name="assetList"></param>
+        public static void UpdateContent(List<Asset> assetList)
         {
             string contentFileText = File.ReadAllText(Routes.CONTENT_DIRECTORY);
             foreach (Asset asset in assetList)

@@ -8,6 +8,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
+using Forms = System.Windows.Forms;
 using Num = System.Numerics;
 
 namespace MonoEditorEndless.Editor.Layouts
@@ -241,28 +242,78 @@ namespace MonoEditorEndless.Editor.Layouts
                     ShowMenuEdit();
                     ImGui.EndMenu();
                 }
+                if (ImGui.BeginMenu("About"))
+                {
+                    ShowMenuAbout();
+                    ImGui.EndMenu();
+                }
                 ImGui.EndMainMenuBar();
             }
             float height = ImGui.GetFrameHeight();
         }
-        static void ShowMenuFile()
+        private void ShowMenuFile()
         {
             //IMGUI_DEMO_MARKER("Examples/Menu");
             ImGui.MenuItem("(demo menu)", null, false, false);
-            if (ImGui.MenuItem("New")) { }
-            if (ImGui.MenuItem("Open", "Ctrl+O")) { }
-            if (ImGui.MenuItem("Save", "Ctrl+S")) { }
+            // Create a new default project and replace current project
+            if (ImGui.MenuItem("New"))
+            {
+                Application._project = new Project();
+                Application._project.CreateDefault();
+                Application.UpdateContent(Application._project.GetAllAsset());
+                Application.BuildContent();
+            }
+            // Open dialog and replace current project with new Project class
+            if (ImGui.MenuItem("Open"))
+            {
+                string file = _fileHandler.LoadFileFromComputerNoCopy();
+                if (Path.GetExtension(file) != ".xml")
+                {
+                    Forms.MessageBox.Show("Please select proper file type: .xml");
+                }
+                Application._project = _fileHandler.LoadClassXml<Project>(Application._project, file);
+                Application.UpdateContent(Application._project.GetAllAsset());
+                Application.BuildContent();
+            }
+            // Save the current project in the recent project location
+            if (ImGui.MenuItem("Save"))
+            {
+
+            }
+            // Open new window before saving for getting a new name
             if (ImGui.MenuItem("Save As..")) { }
-
             ImGui.Separator();
-            //IMGUI_DEMO_MARKER("Examples/Menu/Options");
-
-            //ImGui.Combo("Combo", ref n, "Yes\0No\0Maybe\0\0");
+            // Exit the application
+            if (ImGui.MenuItem("Exit"))
+            {
+                Environment.Exit(0);
+            }
         }
-        static void ShowMenuEdit()
+        private void ShowMenuEdit()
         {
             if (ImGui.MenuItem("Undo", "CTRL+Z")) { }
             if (ImGui.MenuItem("Redo", "CTRL+Y", false, false)) { }
+        }
+        private void ShowMenuAbout()
+        {
+            if (ImGui.MenuItem("Creator", "link"))
+            {
+                string target = "https://www.soroushjuly.com/";
+                try
+                {
+                    Process.Start(new ProcessStartInfo(target) { UseShellExecute = true });
+                }
+                catch (System.ComponentModel.Win32Exception noBrowser)
+                {
+                    if (noBrowser.ErrorCode == -2147467259)
+                        Forms.MessageBox.Show(noBrowser.Message);
+                }
+                catch (System.Exception other)
+                {
+                    Forms.MessageBox.Show(other.Message);
+                }
+
+            }
         }
     }
 }
