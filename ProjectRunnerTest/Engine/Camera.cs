@@ -6,10 +6,10 @@ namespace MonoEditorEndless.Engine
     internal class Camera
     {
         // Camera inital values
-        float _yaw = -90.0f;
-        float _pitch = 0.0f;
-        float _speed = 1.0f;
-        const float SENSITIVITY = 0.1f;
+        private float _yaw = -90.0f;
+        private float _pitch = 0.0f;
+        private float _speed = 1.0f;
+        public float _sensitivity = 0.1f;
         const float ZOOM = 45.0f;
 
         Vector3 _cameraPosition;
@@ -52,8 +52,8 @@ namespace MonoEditorEndless.Engine
         }
         public void Rotate(float amountX, float amountY)
         {
-            _yaw += 0.1f * amountX;
-            _pitch -= 0.1f * amountY;
+            _yaw += _sensitivity * amountX;
+            _pitch -= _sensitivity * amountY;
 
             Vector3 frontVector = Vector3.Zero;
             double yawRadian = (Math.PI / 180) * _yaw;

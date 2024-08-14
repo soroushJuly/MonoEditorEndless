@@ -39,53 +39,23 @@ namespace MonoEditorEndless.Editor.Layouts
             _playTexture = _imGuiRenderer.BindTexture(content.Load<Texture2D>("Content/Editor/Texture/play"));
             _pauseTexture = _imGuiRenderer.BindTexture(content.Load<Texture2D>("Content/Editor/Texture/pause"));
         }
+        unsafe
         public virtual void Draw()
         {
             var io = ImGui.GetIO();
             io.ConfigFlags = ImGuiConfigFlags.DockingEnable;
-            //int windowFlags =| ImGuiWindowFlags.
+            //string patsh = Path.Combine(Routes.ROOT_DIRECTORY, "Content", "Font", "PeaberryBase.ttf");
+            //ImFontPtr headerFont = io.Fonts.AddFontFromFileTTF(patsh, 60);
             // Left panel - Game Setting
             // Tip: if we don't call ImGui.Begin()/ImGui.End() the widgets appears in a window automatically called "Debug"
             ImGui.SetNextWindowPos(new Num.Vector2(0f, ImGui.GetFrameHeight()));
             ImGui.SetNextWindowSize(new Num.Vector2(350f, _graphics.PreferredBackBufferHeight));
             if (ImGui.Begin("Game Settings", ImGuiWindowFlags.NoTitleBar))
             {
-                float old = ImGui.GetFont().Scale;
-                ImGui.GetFont().Scale *= 1.25f;
-                ImGui.PushFont(ImGui.GetFont());
+                //ImGui.PushFont(headerFont);
                 ImGui.Text("Game Settings");
-                ImGui.GetFont().Scale = old;
-                ImGui.PopFont();
+                //ImGui.PopFont();
                 ImGui.Separator();
-                // Build the Release version from the Debug mode
-                if (ImGui.Button("Build"))
-                {
-                    Thread thread = new Thread(() =>
-                    {
-                        string CurrentDirectory = Environment.CurrentDirectory;
-                        CurrentDirectory = Path.Combine(CurrentDirectory, "..", "..", "..");
-                        var processInfo = new ProcessStartInfo("dotnet")
-                        {
-                            Arguments = "publish -c Release -r win-x64 /p:PublishReadyToRun=false /p:TieredCompilation=false --self-contained",
-                            WorkingDirectory = CurrentDirectory,
-                            RedirectStandardOutput = true,
-                            UseShellExecute = false,
-                            CreateNoWindow = true
-                        };
-                        using (var process = Process.Start(processInfo))
-                        {
-                            using (var reader = process.StandardOutput)
-                            {
-                                string result = reader.ReadToEnd();
-                                Console.WriteLine(result);
-                            }
-                        }
-                        Application._project = new Project();
-                    });
-                    thread.SetApartmentState(ApartmentState.STA); //Set the thread to STA
-                    thread.Start();
-                    thread.Join(); //Wait for the thread to end
-                }
                 // Building the Content while app is open
                 if (ImGui.Button("Rebuild Content!!!"))
                 {
@@ -181,45 +151,69 @@ namespace MonoEditorEndless.Editor.Layouts
 
 
             // Right panel - Editor
-            ImGui.SetNextWindowPos(new Num.Vector2(_graphics.PreferredBackBufferWidth - 350f, ImGui.GetFrameHeight()));
-            ImGui.SetNextWindowSize(new Num.Vector2(350f, _graphics.PreferredBackBufferHeight));
+            ImGui.SetNextWindowPos(new Num.Vector2(_graphics.PreferredBackBufferWidth - 300f, ImGui.GetFrameHeight()));
+            ImGui.SetNextWindowSize(new Num.Vector2(300f, _graphics.PreferredBackBufferHeight));
             if (ImGui.Begin("Editor", ImGuiWindowFlags.NoTitleBar))
             {
-                float old = ImGui.GetFont().Scale;
-                ImGui.GetFont().Scale *= 1.25f;
+                float old = ImGui.GetFont().FontSize;
+                ImGui.GetFont().FontSize *= 1.75f;
                 ImGui.PushFont(ImGui.GetFont());
                 ImGui.Text("Editor");
-                ImGui.GetFont().Scale = old;
+                ImGui.Separator();
+                ImGui.GetFont().FontSize = old;
                 ImGui.PopFont();
                 ImGui.Text("Run:");
-                if (ImGui.ImageButton("Play", _playTexture, new Num.Vector2(30, 30)))
+                ImGui.SameLine();
+                if (ImGui.ImageButton("Play", _playTexture, new Num.Vector2(15, 15)))
                 {
                     _controlsAggregator.RaisePlayPressed();
                 }
+                ImGui.Text("Run full game:");
                 ImGui.SameLine();
-                if (ImGui.ImageButton("Pause", _pauseTexture, new Num.Vector2(30, 30)))
-                {
-                    //_gameHandle.Start();
-                }
-                ImGui.Text("Play from main menu:");
-                if (ImGui.ImageButton("Play", _playTexture, new Num.Vector2(30, 30)))
+                if (ImGui.ImageButton("Play", _playTexture, new Num.Vector2(15, 15)))
                 {
                     _controlsAggregator.RaisePlayFromStartPressed();
                 }
-                ImGui.SameLine();
-                if (ImGui.ImageButton("Pause", _pauseTexture, new Num.Vector2(30, 30)))
+                ImGui.Separator();
+                ImGui.Text("Build");
+                // Build the Release version from the Debug mode
+                if (ImGui.Button("Create excutable files"))
                 {
-                    //_gameHandle.Start();
+                    Thread thread = new Thread(() =>
+                    {
+                        string CurrentDirectory = Environment.CurrentDirectory;
+                        CurrentDirectory = Path.Combine(CurrentDirectory, "..", "..", "..");
+                        var processInfo = new ProcessStartInfo("dotnet")
+                        {
+                            Arguments = "publish -c Release -r win-x64 /p:PublishReadyToRun=false /p:TieredCompilation=false --self-contained",
+                            WorkingDirectory = CurrentDirectory,
+                            RedirectStandardOutput = true,
+                            UseShellExecute = false,
+                            CreateNoWindow = true
+                        };
+                        using (var process = Process.Start(processInfo))
+                        {
+                            using (var reader = process.StandardOutput)
+                            {
+                                string result = reader.ReadToEnd();
+                                Console.WriteLine(result);
+                            }
+                        }
+                        Application._project = new Project();
+                    });
+                    thread.SetApartmentState(ApartmentState.STA); //Set the thread to STA
+                    thread.Start();
+                    thread.Join(); //Wait for the thread to end
                 }
                 ImGui.Separator();
-                ImGui.Text("swithch view");
-                ImGui.Text("Build");
-                //ImGui.ArrowButton("Play", ImGuiDir.Left);
-                if (ImGui.CollapsingHeader("Game Details"))
+                if (ImGui.CollapsingHeader("Spectate view", ImGuiTreeNodeFlags.DefaultOpen))
                 {
-                    ImGui.Text("Hello from game setting!");
-                    //ImGui.InputText("Game Title", ref _gameTitle, 100);
+                    ImGui.Text("Move speed:");
+                    ImGui.SliderFloat("Move speed", ref Application._project._editorConfigs._spectateSensitivity, 0.01f, 2f);
+                    ImGui.Text("Rotation sensetivity:");
+
                 }
+
                 ImGui.End();
             }
 

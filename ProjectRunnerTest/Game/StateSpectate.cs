@@ -13,6 +13,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Media;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Content;
+using ProjectRunnerTest;
 
 namespace MonoEditorEndless.Game
 {
@@ -180,7 +181,7 @@ namespace MonoEditorEndless.Game
             _mouseActiveTimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
             // ------------ Editor Controls ----------- //
             // Free Camera Control
-
+            _camera._sensitivity = Application._project._editorConfigs._spectateSensitivity;
             if (Keyboard.GetState().IsKeyDown(Keys.D))
             {
                 _camera.MoveLeft(.1f * (float)gameTime.ElapsedGameTime.Milliseconds);
