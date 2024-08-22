@@ -1,26 +1,28 @@
-﻿using Microsoft.Xna.Framework;
+﻿using ImGuiNET;
+
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
 
 using MonoEditorEndless.Engine;
-using MonoEditorEndless.Engine.Path;
 using MonoEditorEndless.Engine.Input;
+using MonoEditorEndless.Engine.Path;
 using MonoEditorEndless.Engine.StateManager;
+using ProjectRunnerTest;
 
 using System;
 using System.Collections.Generic;
-
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Media;
-using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Content;
-using ProjectRunnerTest;
 
 namespace MonoEditorEndless.Game
 {
     internal class StateSpectate : State
     {
-        ContentManager Content;
-        GraphicsDevice _graphicsDevice;
+        private ContentManager Content;
+        private GraphicsDevice _graphicsDevice;
+        private SpriteBatch _spriteBatch;
 
         private Vector2 _lastMouse;
 
@@ -63,6 +65,8 @@ namespace MonoEditorEndless.Game
         List<Song> _songList;
 
         private MonoEditorEndless.Engine.Plane _plane;
+        private SpriteFont _font;
+
 
         private Vector3 translation = Vector3.Zero;
 
@@ -81,7 +85,8 @@ namespace MonoEditorEndless.Game
             _gameSession = new GameSession();
             _pathManager = new PathManager();
             _inputManager = new InputManager();
-            //_inputManager.AddMouseBinding(eMouseInputs.X_MOVE, MoveX);
+
+            _spriteBatch = new SpriteBatch(_graphicsDevice);
 
             _pathManager.BlockAdded += (object sender, BlockEventArgs e) =>
             {
@@ -174,6 +179,9 @@ namespace MonoEditorEndless.Game
             _skybox = new Skybox(_graphicsDevice, _skyboxTextureList);
 
             Texture2D grass = Content.Load<Texture2D>("Content/Texture/grass");
+
+            _font = Content.Load<SpriteFont>("Content/Font/File");
+
             _plane = new MonoEditorEndless.Engine.Plane(_graphicsDevice, grass, 3000, 20);
         }
         public override void Execute(object owner, GameTime gameTime)
@@ -248,6 +256,9 @@ namespace MonoEditorEndless.Game
             _skybox.Draw(_graphicsDevice, Matrix.CreateTranslation(_camera.GetPosition()), _camera.GetView(), projection);
             _plane.Draw(_graphicsDevice, Matrix.CreateTranslation(-100 * Vector3.UnitY), _camera.GetView(), projection);
 
+            if (Application._project._editorConfigs._showInstructions)
+                DrawInstructions();
+
             _graphicsDevice.Viewport = lastViewport;
             _graphicsDevice.ScissorRectangle = lastScissorBox;
             _graphicsDevice.RasterizerState = lastRasterizer;
@@ -255,6 +266,19 @@ namespace MonoEditorEndless.Game
             _graphicsDevice.BlendState = lastBlendState;
             _graphicsDevice.BlendFactor = lastBlendFactor;
             _graphicsDevice.SamplerStates[0] = SamplerState.LinearWrap;
+        }
+        private void DrawInstructions()
+        {
+
+            // Draw the health bar
+            _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, DepthStencilState.DepthRead);
+            //_spriteBatch.Begin();
+            _spriteBatch.DrawString(_font, "press W,A,S,D to move around the map", new Vector2(355, ImGui.GetFrameHeight() + 5), Color.White, 
+                0, Vector2.Zero, 0.5f, SpriteEffects.None, 0);
+            _spriteBatch.DrawString(_font, "Hold right click and move the mouse to look around", new Vector2(355, ImGui.GetFrameHeight() + 30), Color.White,
+                0, Vector2.Zero, 0.5f, SpriteEffects.None, 0);
+            _spriteBatch.End();
+            // Implementation of health bar drawing will be done here
         }
     }
 }

@@ -118,6 +118,17 @@ namespace MonoEditorEndless.Editor.Layouts
                     ImGui.EndTooltip();
                 }
                 ImGui.SliderFloat("##Sensitivity", ref Application._project._editorConfigs._spectateSensitivity, 0.01f, 2f);
+                ImGui.Spacing();
+                // On Screen instructions
+                ImGui.Checkbox("Show instructions", ref Application._project._editorConfigs._showInstructions);
+                ImGui.SameLine();
+                ImGui.Image(_infoTexture, new Num.Vector2(15f));
+                if (ImGui.IsItemHovered())
+                {
+                    ImGui.BeginTooltip();
+                    ImGui.Text("Show/Hide the instruction on top left corner.");
+                    ImGui.EndTooltip();
+                }
             }
 
             // Build the Release version from the Debug mode

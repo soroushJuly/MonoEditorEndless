@@ -10,12 +10,14 @@ namespace MonoEditorEndless.Editor
     {
         public float _spectateSensitivity;
         public float _spectateMoveSpeed;
+        public bool _showInstructions;
 
         public EditorConfigs()
         {
             // Set editor default values
             _spectateSensitivity = 0.1f;
             _spectateMoveSpeed = 1f ;
+            _showInstructions = true;
         }
     }
 }
