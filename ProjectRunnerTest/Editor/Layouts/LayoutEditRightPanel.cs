@@ -18,27 +18,42 @@ namespace MonoEditorEndless.Editor.Layouts
         private GraphicsDeviceManager _graphics;
         private ControlsAggregator _controlsAggregator;
         private IntPtr _playTexture;
+        private IntPtr _infoTexture;
         private IntPtr _pauseTexture;
+
+        private bool _is3DView;
+        private bool _is2DView;
+
+        static int selectedView = 0;
+        static int selected2DView = 0;
         public LayoutEditRightPanel(ImGuiRenderer imGuiRenderer, GraphicsDeviceManager graphics, ControlsAggregator controlsAggregator)
         {
             _imGuiRenderer = imGuiRenderer;
             _controlsAggregator = controlsAggregator;
             _graphics = graphics;
+
+            _is3DView = true;
         }
         public void LoadContent(ContentManager content)
         {
             _playTexture = _imGuiRenderer.BindTexture(content.Load<Texture2D>("Content/Editor/Texture/play"));
+            _infoTexture = _imGuiRenderer.BindTexture(content.Load<Texture2D>("Content/Editor/Texture/info"));
             _pauseTexture = _imGuiRenderer.BindTexture(content.Load<Texture2D>("Content/Editor/Texture/pause"));
         }
         public void Draw()
         {
+            _is2DView = !_is3DView;
             float old = ImGui.GetFont().FontSize;
+            // Get the available width for content in the current window
+            float windowWidth = ImGui.GetContentRegionAvail().X;
             ImGui.GetFont().FontSize *= 1.75f;
             ImGui.PushFont(ImGui.GetFont());
             ImGui.Text("Editor and Tools");
             ImGui.Separator();
             ImGui.GetFont().FontSize = old;
             ImGui.PopFont();
+            ImGui.Text("Test the game");
+            ImGui.Spacing();
             ImGui.Text("Run Play:");
             ImGui.SameLine();
             if (ImGui.ImageButton("Play", _playTexture, new Num.Vector2(15, 15)))
@@ -53,12 +68,56 @@ namespace MonoEditorEndless.Editor.Layouts
             }
             ImGui.Separator();
             ImGui.Text("View");
-            ImGui.Separator();
-            if (ImGui.CollapsingHeader("Spectate view", ImGuiTreeNodeFlags.DefaultOpen))
+            ImGui.Spacing();
+            if (ImGui.RadioButton("Free 3D", selectedView == 0))
             {
+                selectedView = 0;
+            }
+            if (ImGui.RadioButton("2D View", selectedView == 1))
+            {
+                selectedView = 1;
+            }
+            if (selectedView == 1)
+            {
+                // Create a group of radio buttons
+                if (ImGui.RadioButton("Top-down", selected2DView == 0))
+                {
+                    selected2DView = 0;  // Set the selected option to 0
+                }
+                ImGui.SameLine();
+                if (ImGui.RadioButton("Side", selected2DView == 1))
+                {
+                    selected2DView = 1;  // Set the selected option to 1
+                }
+            }
+            ImGui.Separator();
+            ImGui.Text("Settings:");
+            ImGui.Spacing();
+            if (ImGui.CollapsingHeader("View", ImGuiTreeNodeFlags.DefaultOpen))
+            {
+                ImGui.SetNextItemWidth(windowWidth);
+                // Movement speed
                 ImGui.Text("Move speed:");
-                ImGui.SliderFloat("Move speed", ref Application._project._editorConfigs._spectateSensitivity, 0.01f, 2f);
+                ImGui.SameLine();
+                ImGui.Image(_infoTexture, new Num.Vector2(15f));
+                if (ImGui.IsItemHovered())
+                {
+                    ImGui.BeginTooltip();
+                    ImGui.Text("This will change the speed you can move around the map.");
+                    ImGui.EndTooltip();
+                }
+                ImGui.SliderFloat("##Speed", ref Application._project._editorConfigs._spectateMoveSpeed, 0.1f, 20f);
+                // Sensitivity
                 ImGui.Text("Rotation sensetivity:");
+                ImGui.SameLine();
+                ImGui.Image(_infoTexture, new Num.Vector2(15f));
+                if (ImGui.IsItemHovered())
+                {
+                    ImGui.BeginTooltip();
+                    ImGui.Text("This will change the speed you can look around with mouse.");
+                    ImGui.EndTooltip();
+                }
+                ImGui.SliderFloat("##Sensitivity", ref Application._project._editorConfigs._spectateSensitivity, 0.01f, 2f);
             }
 
             // Build the Release version from the Debug mode
@@ -72,8 +131,6 @@ namespace MonoEditorEndless.Editor.Layouts
             ImGui.PushStyleColor(ImGuiCol.Text, new Num.Vector4(0.0f, 0.0f, 0.0f, 1f));    // Black text
             ImGui.PushStyleColor(ImGuiCol.Button, new Num.Vector4(1.0f, 0.84f, 0.08f, 1.0f));
             ImGui.PushStyleColor(ImGuiCol.ButtonHovered, new Num.Vector4(0.8f, 0.64f, 0.08f, 1.0f));
-            // Get the available width for content in the current window
-            float windowWidth = ImGui.GetContentRegionAvail().X;
             if (ImGui.Button("Build", new Num.Vector2(windowWidth, 40.0f)))
             {
                 BuildGame();

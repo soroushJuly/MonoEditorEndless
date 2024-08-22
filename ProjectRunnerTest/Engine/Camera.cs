@@ -8,7 +8,7 @@ namespace MonoEditorEndless.Engine
         // Camera inital values
         private float _yaw = -90.0f;
         private float _pitch = 0.0f;
-        private float _speed = 1.0f;
+        public float _speed = 1.0f;
         public float _sensitivity = 0.1f;
         const float ZOOM = 45.0f;
 

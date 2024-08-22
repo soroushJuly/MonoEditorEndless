@@ -182,6 +182,7 @@ namespace MonoEditorEndless.Game
             // ------------ Editor Controls ----------- //
             // Free Camera Control
             _camera._sensitivity = Application._project._editorConfigs._spectateSensitivity;
+            _camera._speed = Application._project._editorConfigs._spectateMoveSpeed;
             if (Keyboard.GetState().IsKeyDown(Keys.D))
             {
                 _camera.MoveLeft(.1f * (float)gameTime.ElapsedGameTime.Milliseconds);
