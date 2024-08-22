@@ -47,6 +47,7 @@ namespace MonoEditorEndless.Editor
 
             _assets = new List<Asset>();
             _assets.Add(new AssetTexture("play.png", false, true));
+            _assets.Add(new AssetTexture("replay.png", false, true));
             _assets.Add(new AssetTexture("info.png", false, true));
             _assets.Add(new AssetTexture("pause.png", false, true));
         }

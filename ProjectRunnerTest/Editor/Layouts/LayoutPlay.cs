@@ -15,7 +15,7 @@ namespace MonoEditorEndless.Editor.Layouts
     {
         private ImGuiRenderer _imGuiRenderer;
         private GraphicsDeviceManager _graphics;
-        private IntPtr _playTexture;
+        private IntPtr _replayTexture;
         private IntPtr _pauseTexture;
         private byte[] _textBuffer = new byte[100];
 
@@ -28,45 +28,32 @@ namespace MonoEditorEndless.Editor.Layouts
         }
         public void LoadContent(ContentManager content)
         {
-            _playTexture = _imGuiRenderer.BindTexture(content.Load<Texture2D>("Content/Editor/Texture/play"));
+            _replayTexture = _imGuiRenderer.BindTexture(content.Load<Texture2D>("Content/Editor/Texture/replay"));
             _pauseTexture = _imGuiRenderer.BindTexture(content.Load<Texture2D>("Content/Editor/Texture/pause"));
         }
         public virtual void Draw()
         {
             var io = ImGui.GetIO();
-            io.ConfigFlags = ImGuiConfigFlags.DockingEnable;
-            //int windowFlags =| ImGuiWindowFlags.
-            // Tip: if we don't call ImGui.Begin()/ImGui.End() the widgets appears in a window automatically called "Debug"
 
-            // Right panel - Editor
-            ImGui.SetNextWindowPos(new Num.Vector2(_graphics.PreferredBackBufferWidth - 350f, ImGui.GetFrameHeight()));
-            ImGui.SetNextWindowSize(new Num.Vector2(350f, _graphics.PreferredBackBufferHeight));
-            if (ImGui.Begin("Editor", ImGuiWindowFlags.NoTitleBar))
+            // In game state in Debug mode
+            float itemSpacingY = ImGui.GetStyle().ItemSpacing.Y;  // Vertical spacing between items
+            float itemSpacingX = ImGui.GetStyle().ItemSpacing.X;  // Horizontal spacing between items
+            float windowPaddingY = ImGui.GetStyle().WindowPadding.Y;  // Padding within the window
+            float windowPaddingX = ImGui.GetStyle().WindowPadding.X;  // Padding within the window
+            float width = 2 * 30 + 3 * itemSpacingX + 2 * windowPaddingX;
+            ImGui.SetNextWindowPos(new Num.Vector2(_graphics.PreferredBackBufferWidth - width - ImGui.GetFrameHeight(), ImGui.GetFrameHeight()));
+          
+            ImGui.SetNextWindowSize(new Num.Vector2(width, 30 + itemSpacingY * 2 + windowPaddingY * 2));
+            if (ImGui.Begin("Play", ImGuiWindowFlags.NoTitleBar))
             {
-                float old = ImGui.GetFont().Scale;
-                ImGui.GetFont().Scale *= 1.25f;
-                ImGui.PushFont(ImGui.GetFont());
-                ImGui.Text("Editor");
-                ImGui.GetFont().Scale = old;
-                ImGui.PopFont();
-                ImGui.Text("Run:");
-                if (ImGui.ImageButton("Play Again", _playTexture, new Num.Vector2(30, 30)))
-                {
-                    //_gameHandle.Start();
-                }
-                ImGui.SameLine();
                 if (ImGui.ImageButton("Pause", _pauseTexture, new Num.Vector2(30, 30)))
                 {
                     _controlsAggregator.RaisePausePressed();
                 }
-                ImGui.Separator();
-                ImGui.Text("swithch view");
-                ImGui.Text("Build");
-                //ImGui.ArrowButton("Play", ImGuiDir.Left);
-                if (ImGui.CollapsingHeader("Game Details"))
+                ImGui.SameLine();
+                if (ImGui.ImageButton("Play Again", _replayTexture, new Num.Vector2(30, 30)))
                 {
-                    ImGui.Text("Hello from game setting!");
-                    //ImGui.InputText("Game Title", ref _gameTitle, 100);
+                    //_gameHandle.Start();
                 }
                 ImGui.End();
             }
