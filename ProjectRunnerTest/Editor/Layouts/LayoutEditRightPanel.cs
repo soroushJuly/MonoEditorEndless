@@ -72,24 +72,26 @@ namespace MonoEditorEndless.Editor.Layouts
             if (ImGui.RadioButton("Free 3D", selectedView == 0))
             {
                 selectedView = 0;
+                Application._project._editorConfigs._selectedView = 0;
             }
             if (ImGui.RadioButton("2D View", selectedView == 1))
             {
                 selectedView = 1;
+                Application._project._editorConfigs._selectedView = 1;
             }
-            if (selectedView == 1)
-            {
-                // Create a group of radio buttons
-                if (ImGui.RadioButton("Top-down", selected2DView == 0))
-                {
-                    selected2DView = 0;  // Set the selected option to 0
-                }
-                ImGui.SameLine();
-                if (ImGui.RadioButton("Side", selected2DView == 1))
-                {
-                    selected2DView = 1;  // Set the selected option to 1
-                }
-            }
+            //if (selectedView == 1)
+            //{
+            //    // Create a group of radio buttons
+            //    if (ImGui.RadioButton("Top-down", selected2DView == 0))
+            //    {
+            //        selected2DView = 0;  // Set the selected option to 0
+            //    }
+            //    ImGui.SameLine();
+            //    if (ImGui.RadioButton("Side", selected2DView == 1))
+            //    {
+            //        selected2DView = 1;  // Set the selected option to 1
+            //    }
+            //}
             ImGui.Separator();
             ImGui.Text("Settings:");
             ImGui.Spacing();

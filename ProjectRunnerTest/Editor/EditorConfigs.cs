@@ -11,6 +11,7 @@ namespace MonoEditorEndless.Editor
         public float _spectateSensitivity;
         public float _spectateMoveSpeed;
         public bool _showInstructions;
+        public int _selectedView;
 
         public EditorConfigs()
         {

@@ -13,9 +13,9 @@ namespace MonoEditorEndless.Engine
         const float ZOOM = 45.0f;
 
         Vector3 _cameraPosition;
-        Vector3 _frontVector;
-        Vector3 _upVector;
-        Vector3 _rightVector;
+        public Vector3 _frontVector;
+        public Vector3 _upVector;
+        public Vector3 _rightVector;
 
         private Matrix _view;
         public Matrix GetView() { return _view; }
@@ -36,19 +36,19 @@ namespace MonoEditorEndless.Engine
             _cameraPosition += _rightVector * amount * _speed;
 
             // TODO: Move to camera update
-            _view = Matrix.CreateLookAt(_cameraPosition, _cameraPosition + _frontVector, _upVector);
+            //_view = Matrix.CreateLookAt(_cameraPosition, _cameraPosition + _frontVector, _upVector);
         }
         public void MoveUp(float amount)
         {
             _cameraPosition += _upVector * amount * _speed;
             // TODO: Move to camera update
-            _view = Matrix.CreateLookAt(_cameraPosition, _cameraPosition + _frontVector, _upVector);
+            //_view = Matrix.CreateLookAt(_cameraPosition, _cameraPosition + _frontVector, _upVector);
         }
         public void MoveForward(float amount)
         {
             _cameraPosition += _frontVector * amount * _speed;
             // TODO: Move to camera update
-            _view = Matrix.CreateLookAt(_cameraPosition, _cameraPosition + _frontVector, _upVector);
+            
         }
         public void Rotate(float amountX, float amountY)
         {
@@ -74,6 +74,11 @@ namespace MonoEditorEndless.Engine
         public void LookAtTarget(Vector3 targetPosition, Vector3 targetForward, float offset = 2f, float height = 0f)
         {
             _view = Matrix.CreateLookAt(targetPosition + height * Vector3.UnitY - targetForward * offset, targetPosition + targetForward, _upVector);
+        }
+
+        public void Update()
+        {
+            _view = Matrix.CreateLookAt(_cameraPosition, _cameraPosition + _frontVector, _upVector);
         }
 
     }

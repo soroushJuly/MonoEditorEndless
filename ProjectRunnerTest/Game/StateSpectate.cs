@@ -30,6 +30,9 @@ namespace MonoEditorEndless.Game
 
         private Camera _camera;
 
+        // The most recent view that user was in. 3D or 2D
+        private int _lastView;
+
 
         private World _world;
         private GameSession _gameSession;
@@ -167,8 +170,6 @@ namespace MonoEditorEndless.Game
             _pathManager.AddTurnRight(corner);
             _pathManager.Initialize(20);
 
-            //_bgMusic = Content.Load<Song>("Content/Audio/Titan");
-
             _skyboxTextureList = new List<Texture2D>();
             _skyboxTextureList.Add(Content.Load<Texture2D>("Content/Texture/front"));
             _skyboxTextureList.Add(Content.Load<Texture2D>("Content/Texture/back"));
@@ -187,24 +188,65 @@ namespace MonoEditorEndless.Game
         public override void Execute(object owner, GameTime gameTime)
         {
             _mouseActiveTimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+            // Camera switched to 2D
+            if (Application._project._editorConfigs._selectedView == 1 && _lastView == 0)
+            {
+                _camera.LookAtTarget(new Vector3(_camera.GetPosition().X, _camera.GetPosition().Y, _camera.GetPosition().Z), -Vector3.UnitY, 0, 0);
+                _camera._frontVector = -Vector3.UnitY;
+                _camera._rightVector = Vector3.UnitZ;
+                _camera._upVector = Vector3.UnitX;
+            }
+            // Save the latest camera view
+            _lastView = Application._project._editorConfigs._selectedView;
             // ------------ Editor Controls ----------- //
             // Free Camera Control
             _camera._sensitivity = Application._project._editorConfigs._spectateSensitivity;
             _camera._speed = Application._project._editorConfigs._spectateMoveSpeed;
-            if (Keyboard.GetState().IsKeyDown(Keys.D))
+            // 3D camera control
+            if (Application._project._editorConfigs._selectedView == 0)
             {
-                _camera.MoveLeft(.1f * (float)gameTime.ElapsedGameTime.Milliseconds);
+                if (Keyboard.GetState().IsKeyDown(Keys.D))
+                {
+                    _camera.MoveLeft(.1f * (float)gameTime.ElapsedGameTime.Milliseconds);
+                }
+                if (Keyboard.GetState().IsKeyDown(Keys.A))
+                {
+                    _camera.MoveLeft(-.1f * (float)gameTime.ElapsedGameTime.Milliseconds);
+                }
+                if (Mouse.GetState().RightButton == ButtonState.Pressed)
+                {
+                    _camera.Rotate(Mouse.GetState().X - _lastMouse.X, Mouse.GetState().Y - _lastMouse.Y);
+                }
+                if (Mouse.GetState().LeftButton == ButtonState.Pressed)
+                {
+                    if (Keyboard.GetState().IsKeyDown(Keys.W))
+                    {
+                        _camera.MoveUp(.1f * (float)gameTime.ElapsedGameTime.Milliseconds);
+                    }
+                    if (Keyboard.GetState().IsKeyDown(Keys.S))
+                    {
+                        _camera.MoveUp(-.1f * (float)gameTime.ElapsedGameTime.Milliseconds);
+                    }
+                }
+                else
+                {
+                    if (Keyboard.GetState().IsKeyDown(Keys.W))
+                    {
+                        _camera.MoveForward(.1f * (float)gameTime.ElapsedGameTime.Milliseconds);
+                    }
+                    if (Keyboard.GetState().IsKeyDown(Keys.S))
+                    {
+                        _camera.MoveForward(-.1f * (float)gameTime.ElapsedGameTime.Milliseconds);
+                    }
+                }
             }
-            if (Keyboard.GetState().IsKeyDown(Keys.A))
+            // 2D Camera Control - Top-down view
+            else if (Application._project._editorConfigs._selectedView == 1)
             {
-                _camera.MoveLeft(-.1f * (float)gameTime.ElapsedGameTime.Milliseconds);
-            }
-            if (Mouse.GetState().RightButton == ButtonState.Pressed)
-            {
-                _camera.Rotate(Mouse.GetState().X - _lastMouse.X, Mouse.GetState().Y - _lastMouse.Y);
-            }
-            if (Mouse.GetState().LeftButton == ButtonState.Pressed)
-            {
+                if (Keyboard.GetState().IsKeyDown(Keys.D))
+                {
+                    _camera.MoveLeft(.1f * (float)gameTime.ElapsedGameTime.Milliseconds);
+                }
                 if (Keyboard.GetState().IsKeyDown(Keys.W))
                 {
                     _camera.MoveUp(.1f * (float)gameTime.ElapsedGameTime.Milliseconds);
@@ -213,28 +255,25 @@ namespace MonoEditorEndless.Game
                 {
                     _camera.MoveUp(-.1f * (float)gameTime.ElapsedGameTime.Milliseconds);
                 }
-            }
-            else
-            {
-                if (Keyboard.GetState().IsKeyDown(Keys.W))
+                if (Keyboard.GetState().IsKeyDown(Keys.A))
                 {
-                    _camera.MoveForward(.1f * (float)gameTime.ElapsedGameTime.Milliseconds);
+                    _camera.MoveLeft(-.1f * (float)gameTime.ElapsedGameTime.Milliseconds);
                 }
-                if (Keyboard.GetState().IsKeyDown(Keys.S))
-                {
-                    _camera.MoveForward(-.1f * (float)gameTime.ElapsedGameTime.Milliseconds);
-                }
+                // Zoom In/Zoom Out
+                float diff = Mouse.GetState().ScrollWheelValue - prevMouse.ScrollWheelValue;
+                _camera.MoveForward(diff * 0.005f * (float)gameTime.ElapsedGameTime.Milliseconds);
             }
-
-            _lastMouse.X = Mouse.GetState().X;
-            _lastMouse.Y = Mouse.GetState().Y;
 
             curMouse = Mouse.GetState();
+            _lastMouse.X = curMouse.X;
+            _lastMouse.Y = curMouse.Y;
             prevMouse = curMouse;
 
             world = Matrix.CreateTranslation(actor.GetPosition());
 
             _prevKeyState = Keyboard.GetState();
+
+            _camera.Update();
         }
         public override void Exit(object owner) { }
         public override void Draw(GraphicsDevice GraphicsDevice = null, SpriteBatch spriteBatch = null)
@@ -247,9 +286,7 @@ namespace MonoEditorEndless.Game
             var lastBlendState = _graphicsDevice.BlendState;
             var lastSamplerStates = _graphicsDevice.SamplerStates;
 
-            //actor.Draw(world, _camera.GetView(), projection);
             _pathManager.Draw(world, _camera.GetView(), projection);
-            //obstacle.Draw(Matrix.CreateTranslation(Vector3.Zero), _camera.GetView(), projection);
             _world.Draw(_camera.GetView(), projection);
 
 
@@ -269,16 +306,15 @@ namespace MonoEditorEndless.Game
         }
         private void DrawInstructions()
         {
-
-            // Draw the health bar
             _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, DepthStencilState.DepthRead);
-            //_spriteBatch.Begin();
-            _spriteBatch.DrawString(_font, "press W,A,S,D to move around the map", new Vector2(355, ImGui.GetFrameHeight() + 5), Color.White, 
+            _spriteBatch.DrawString(_font, "press W,A,S,D to move around the map", new Vector2(355, ImGui.GetFrameHeight() + 5), Color.White,
                 0, Vector2.Zero, 0.5f, SpriteEffects.None, 0);
             _spriteBatch.DrawString(_font, "Hold right click and move the mouse to look around", new Vector2(355, ImGui.GetFrameHeight() + 30), Color.White,
                 0, Vector2.Zero, 0.5f, SpriteEffects.None, 0);
+            if (Application._project._editorConfigs._selectedView == 1)
+                _spriteBatch.DrawString(_font, "Mouse scroll wheel to zoom in/out", new Vector2(355, ImGui.GetFrameHeight() + 55), Color.White,
+                0, Vector2.Zero, 0.5f, SpriteEffects.None, 0);
             _spriteBatch.End();
-            // Implementation of health bar drawing will be done here
         }
     }
 }
