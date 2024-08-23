@@ -7,6 +7,7 @@ using ProjectRunnerTest;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Threading;
 using Num = System.Numerics;
 
@@ -40,6 +41,12 @@ namespace MonoEditorEndless.Editor.Layouts
             _infoTexture = _imGuiRenderer.BindTexture(content.Load<Texture2D>("Content/Editor/Texture/info"));
             _pauseTexture = _imGuiRenderer.BindTexture(content.Load<Texture2D>("Content/Editor/Texture/pause"));
         }
+        public void Unload()
+        {
+            _playTexture = IntPtr.Zero;
+            _infoTexture = IntPtr.Zero;
+            _pauseTexture = IntPtr.Zero;
+        }
         public void Draw()
         {
             _is2DView = !_is3DView;
@@ -55,6 +62,11 @@ namespace MonoEditorEndless.Editor.Layouts
             ImGui.Text("Test the game");
             ImGui.Spacing();
             ImGui.Text("Run Play:");
+            //Debug.WriteLine("Play editor");
+            //Debug.WriteLine(_playTexture);
+            //Debug.WriteLine("info editor");
+            //Debug.WriteLine(_infoTexture);
+
             ImGui.SameLine();
             if (ImGui.ImageButton("Play", _playTexture, new Num.Vector2(15, 15)))
             {

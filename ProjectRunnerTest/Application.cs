@@ -117,6 +117,7 @@ namespace ProjectRunnerTest
 
         protected override void Update(GameTime gameTime)
         {
+            _editorHandle.Update(gameTime);
             _gameHandle.Update(gameTime);
         }
         public static void BuildContent()

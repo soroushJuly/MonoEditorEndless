@@ -15,7 +15,8 @@ namespace MonoEditorEndless.Editor.Layouts
     {
         private ImGuiRenderer _imGuiRenderer;
         private GraphicsDeviceManager _graphics;
-        private IntPtr _replayTexture;
+        private Texture2D _replayTexture;
+        private IntPtr _replayTextureGui;
         private IntPtr _pauseTexture;
         private byte[] _textBuffer = new byte[100];
 
@@ -28,13 +29,17 @@ namespace MonoEditorEndless.Editor.Layouts
         }
         public void LoadContent(ContentManager content)
         {
-            _replayTexture = _imGuiRenderer.BindTexture(content.Load<Texture2D>("Content/Editor/Texture/replay"));
+            _replayTexture = content.Load<Texture2D>("Content/Editor/Texture/replay");
+            _replayTextureGui = _imGuiRenderer.BindTexture(_replayTexture);
             _pauseTexture = _imGuiRenderer.BindTexture(content.Load<Texture2D>("Content/Editor/Texture/pause"));
+        }
+        public void Unload()
+        {
+            _replayTextureGui = IntPtr.Zero;
+            _pauseTexture = IntPtr.Zero;
         }
         public virtual void Draw()
         {
-            var io = ImGui.GetIO();
-
             // In game state in Debug mode
             float itemSpacingY = ImGui.GetStyle().ItemSpacing.Y;  // Vertical spacing between items
             float itemSpacingX = ImGui.GetStyle().ItemSpacing.X;  // Horizontal spacing between items
@@ -42,7 +47,10 @@ namespace MonoEditorEndless.Editor.Layouts
             float windowPaddingX = ImGui.GetStyle().WindowPadding.X;  // Padding within the window
             float width = 2 * 30 + 3 * itemSpacingX + 2 * windowPaddingX;
             ImGui.SetNextWindowPos(new Num.Vector2(_graphics.PreferredBackBufferWidth - width - ImGui.GetFrameHeight(), ImGui.GetFrameHeight()));
-          
+            //Debug.WriteLine("pause:");
+            //Debug.WriteLine(_pauseTexture);
+            //Debug.WriteLine("Play Again:");
+            //Debug.WriteLine(_replayTextureGui);
             ImGui.SetNextWindowSize(new Num.Vector2(width, 30 + itemSpacingY * 2 + windowPaddingY * 2));
             if (ImGui.Begin("Play", ImGuiWindowFlags.NoTitleBar))
             {
@@ -51,7 +59,7 @@ namespace MonoEditorEndless.Editor.Layouts
                     _controlsAggregator.RaisePausePressed();
                 }
                 ImGui.SameLine();
-                if (ImGui.ImageButton("Play Again", _replayTexture, new Num.Vector2(30, 30)))
+                if (ImGui.ImageButton("Play Again", _replayTextureGui, new Num.Vector2(30, 30)))
                 {
                     //_gameHandle.Start();
                 }

@@ -19,12 +19,14 @@ namespace MonoEditorEndless.Editor
         private GraphicsDeviceManager _graphics;
         private ImGuiRenderer _imGuiRenderer;
         private Texture2D _xnaTexture;
+        private ContentManager _content;
 
         private LayoutEdit _layoutEdit;
         private LayoutPlay _layoutPlay;
         private List<Asset> _assets;
 
         private bool _isPlaying;
+        private bool _lastState;
         public List<Asset> GetAssets() { return _assets; }
 
         //ControlsAggregator _controlsAggregator;
@@ -44,6 +46,7 @@ namespace MonoEditorEndless.Editor
             controlsAggregator.PausePressed += (object sender, EventArgs e) => { _isPlaying = false; };
 
             _isPlaying = false;
+            _lastState = _isPlaying;
 
             _assets = new List<Asset>();
             _assets.Add(new AssetTexture("play.png", false, true));
@@ -54,10 +57,28 @@ namespace MonoEditorEndless.Editor
 
         public void LoadContent(ContentManager content)
         {
-            _layoutPlay.LoadContent(content);
+            _content = content;
             _layoutEdit.LoadContent(content);
+            _layoutPlay.LoadContent(content);
         }
-
+        public void Update(GameTime gameTime)
+        {
+            if (_lastState != _isPlaying)
+            {
+                Debug.WriteLine("gg");
+            }
+            if (_isPlaying && (_lastState != _isPlaying))
+            {
+                _layoutEdit.Unload();
+                _layoutPlay.LoadContent(_content);
+            }
+            else if (!_isPlaying && (_lastState != _isPlaying))
+            {
+                _layoutPlay.Unload();
+                _layoutEdit.LoadContent(_content);
+            }
+            _lastState = _isPlaying;
+        }
         public void Draw(GameTime gameTime)
         {
             // Call BeforeLayout first to set things up
@@ -65,9 +86,13 @@ namespace MonoEditorEndless.Editor
 
             // Draw our UI
             if (_isPlaying)
+            {
                 _layoutPlay.Draw();
-            else
+            }
+            else if (!_isPlaying)
+            {
                 _layoutEdit.Draw();
+            }
 
             // Call AfterLayout now to finish up and draw all the things
             _imGuiRenderer.AfterLayout();

@@ -40,6 +40,10 @@ namespace MonoEditorEndless.Editor.Layouts
         {
             _rightPanel.LoadContent(content);
         }
+        public void Unload()
+        {
+            _rightPanel.Unload();
+        }
         unsafe
         public virtual void Draw()
         {
