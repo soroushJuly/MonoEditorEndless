@@ -16,7 +16,6 @@ namespace MonoEditorEndless.Editor.Layouts
 {
     internal class LayoutEdit
     {
-        private ImGuiRenderer _imGuiRenderer;
         private GraphicsDeviceManager _graphics;
 
         private byte[] _textBuffer = new byte[100];
@@ -27,28 +26,19 @@ namespace MonoEditorEndless.Editor.Layouts
         private FileHandler _fileHandler;
 
         ControlsAggregator _controlsAggregator;
-        public LayoutEdit(ImGuiRenderer imGuiRenderer, GraphicsDeviceManager graphics, ControlsAggregator controlsAggregator)
+        public LayoutEdit(GraphicsDeviceManager graphics, ControlsAggregator controlsAggregator)
         {
-            _imGuiRenderer = imGuiRenderer;
             _graphics = graphics;
             _controlsAggregator = controlsAggregator;
-            _rightPanel = new LayoutEditRightPanel(_imGuiRenderer, _graphics, _controlsAggregator);
+            _rightPanel = new LayoutEditRightPanel(_graphics, _controlsAggregator);
 
             _fileHandler = new FileHandler();
         }
-        public void LoadContent(ContentManager content)
-        {
-            _rightPanel.LoadContent(content);
-        }
-        public void Unload()
-        {
-            _rightPanel.Unload();
-        }
         unsafe
-        public virtual void Draw()
+        public void Draw()
         {
-            var io = ImGui.GetIO();
-            io.ConfigFlags = ImGuiConfigFlags.DockingEnable;
+            //var io = ImGui.GetIO();
+            //io.ConfigFlags = ImGuiConfigFlags.DockingEnable;
             //string patsh = Path.Combine(Routes.ROOT_DIRECTORY, "Content", "Font", "PeaberryBase.ttf");
             //ImFontPtr headerFont = io.Fonts.AddFontFromFileTTF(patsh, 60);
             // Left panel - Game Setting

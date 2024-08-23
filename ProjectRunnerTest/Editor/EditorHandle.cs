@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection.Metadata;
 using System.Threading;
 using Num = System.Numerics;
 
@@ -27,6 +28,13 @@ namespace MonoEditorEndless.Editor
 
         private bool _isPlaying;
         private bool _lastState;
+
+        // Icons used in the editor
+        public static IntPtr _playTexture;
+        public static IntPtr _infoTexture;
+        public static IntPtr _replayTexture;
+        public static IntPtr _pauseTexture;
+
         public List<Asset> GetAssets() { return _assets; }
 
         //ControlsAggregator _controlsAggregator;
@@ -36,8 +44,8 @@ namespace MonoEditorEndless.Editor
             _imGuiRenderer.RebuildFontAtlas();
             _graphics = graphics;
 
-            _layoutEdit = new LayoutEdit(_imGuiRenderer, _graphics, controlsAggregator);
-            _layoutPlay = new LayoutPlay(_imGuiRenderer, _graphics, controlsAggregator);
+            _layoutEdit = new LayoutEdit(_graphics, controlsAggregator);
+            _layoutPlay = new LayoutPlay(_graphics, controlsAggregator);
 
             //_controlsAggregator = controlsAggregator;
             controlsAggregator.PlayPressed += (object sender, EventArgs e) => { _isPlaying = true; };
@@ -58,24 +66,25 @@ namespace MonoEditorEndless.Editor
         public void LoadContent(ContentManager content)
         {
             _content = content;
-            _layoutEdit.LoadContent(content);
-            _layoutPlay.LoadContent(content);
+            BindTextures();
+
+        }
+        private void BindTextures()
+        {
+            _playTexture = _imGuiRenderer.BindTexture(_content.Load<Texture2D>("Content/Editor/Texture/play"));
+            _infoTexture = _imGuiRenderer.BindTexture(_content.Load<Texture2D>("Content/Editor/Texture/info"));
+            _pauseTexture = _imGuiRenderer.BindTexture(_content.Load<Texture2D>("Content/Editor/Texture/pause"));
+            _replayTexture = _imGuiRenderer.BindTexture(_content.Load<Texture2D>("Content/Editor/Texture/replay"));
         }
         public void Update(GameTime gameTime)
         {
-            if (_lastState != _isPlaying)
-            {
-                Debug.WriteLine("gg");
-            }
             if (_isPlaying && (_lastState != _isPlaying))
             {
-                _layoutEdit.Unload();
-                _layoutPlay.LoadContent(_content);
+                // It was editor switched to playing
             }
             else if (!_isPlaying && (_lastState != _isPlaying))
             {
-                _layoutPlay.Unload();
-                _layoutEdit.LoadContent(_content);
+                // It was playing switched to editor
             }
             _lastState = _isPlaying;
         }
@@ -84,6 +93,8 @@ namespace MonoEditorEndless.Editor
             // Call BeforeLayout first to set things up
             _imGuiRenderer.BeforeLayout(gameTime);
 
+            // TODO: find a better fix than binding everytime
+            BindTextures();
             // Draw our UI
             if (_isPlaying)
             {
@@ -93,11 +104,10 @@ namespace MonoEditorEndless.Editor
             {
                 _layoutEdit.Draw();
             }
+            ImGui.End();
 
             // Call AfterLayout now to finish up and draw all the things
             _imGuiRenderer.AfterLayout();
         }
-
-
     }
 }

@@ -15,37 +15,20 @@ namespace MonoEditorEndless.Editor.Layouts
 {
     internal class LayoutEditRightPanel
     {
-        private ImGuiRenderer _imGuiRenderer;
         private GraphicsDeviceManager _graphics;
         private ControlsAggregator _controlsAggregator;
-        private IntPtr _playTexture;
-        private IntPtr _infoTexture;
-        private IntPtr _pauseTexture;
 
         private bool _is3DView;
         private bool _is2DView;
 
         static int selectedView = 0;
         static int selected2DView = 0;
-        public LayoutEditRightPanel(ImGuiRenderer imGuiRenderer, GraphicsDeviceManager graphics, ControlsAggregator controlsAggregator)
+        public LayoutEditRightPanel(GraphicsDeviceManager graphics, ControlsAggregator controlsAggregator)
         {
-            _imGuiRenderer = imGuiRenderer;
             _controlsAggregator = controlsAggregator;
             _graphics = graphics;
 
             _is3DView = true;
-        }
-        public void LoadContent(ContentManager content)
-        {
-            _playTexture = _imGuiRenderer.BindTexture(content.Load<Texture2D>("Content/Editor/Texture/play"));
-            _infoTexture = _imGuiRenderer.BindTexture(content.Load<Texture2D>("Content/Editor/Texture/info"));
-            _pauseTexture = _imGuiRenderer.BindTexture(content.Load<Texture2D>("Content/Editor/Texture/pause"));
-        }
-        public void Unload()
-        {
-            _playTexture = IntPtr.Zero;
-            _infoTexture = IntPtr.Zero;
-            _pauseTexture = IntPtr.Zero;
         }
         public void Draw()
         {
@@ -62,21 +45,23 @@ namespace MonoEditorEndless.Editor.Layouts
             ImGui.Text("Test the game");
             ImGui.Spacing();
             ImGui.Text("Run Play:");
-            //Debug.WriteLine("Play editor");
-            //Debug.WriteLine(_playTexture);
-            //Debug.WriteLine("info editor");
-            //Debug.WriteLine(_infoTexture);
 
             ImGui.SameLine();
-            if (ImGui.ImageButton("Play Game", _playTexture, new Num.Vector2(15, 15)))
+            if (EditorHandle._playTexture != IntPtr.Zero)
             {
-                _controlsAggregator.RaisePlayPressed();
+                if (ImGui.ImageButton("Play Game", EditorHandle._playTexture, new Num.Vector2(15, 15)))
+                {
+                    _controlsAggregator.RaisePlayPressed();
+                }
             }
             ImGui.Text("Run Completely:");
             ImGui.SameLine();
-            if (ImGui.ImageButton("Play Complete", _playTexture, new Num.Vector2(15, 15)))
+            if (EditorHandle._playTexture != IntPtr.Zero)
             {
-                _controlsAggregator.RaisePlayFromStartPressed();
+                if (ImGui.ImageButton("Play Complete", EditorHandle._playTexture, new Num.Vector2(15, 15)))
+                {
+                    _controlsAggregator.RaisePlayFromStartPressed();
+                }
             }
             ImGui.Separator();
             ImGui.Text("View");
@@ -113,7 +98,11 @@ namespace MonoEditorEndless.Editor.Layouts
                 // Movement speed
                 ImGui.Text("Move speed:");
                 ImGui.SameLine();
-                ImGui.Image(_infoTexture, new Num.Vector2(15f));
+                if (EditorHandle._infoTexture != IntPtr.Zero)
+                {
+                    ImGui.Image(EditorHandle._infoTexture, new Num.Vector2(128, 128));
+                }
+                //ImGui.Image(EditorHandle._infoTexture, new Num.Vector2(15f));
                 if (ImGui.IsItemHovered())
                 {
                     ImGui.BeginTooltip();
@@ -124,7 +113,7 @@ namespace MonoEditorEndless.Editor.Layouts
                 // Sensitivity
                 ImGui.Text("Rotation sensetivity:");
                 ImGui.SameLine();
-                ImGui.Image(_infoTexture, new Num.Vector2(15f));
+                ImGui.Image(EditorHandle._infoTexture, new Num.Vector2(15f));
                 if (ImGui.IsItemHovered())
                 {
                     ImGui.BeginTooltip();
@@ -136,7 +125,7 @@ namespace MonoEditorEndless.Editor.Layouts
                 // On Screen instructions
                 ImGui.Checkbox("Show instructions", ref Application._project._editorConfigs._showInstructions);
                 ImGui.SameLine();
-                ImGui.Image(_infoTexture, new Num.Vector2(15f));
+                ImGui.Image(EditorHandle._infoTexture, new Num.Vector2(15f));
                 if (ImGui.IsItemHovered())
                 {
                     ImGui.BeginTooltip();
