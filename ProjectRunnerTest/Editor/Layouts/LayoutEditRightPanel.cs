@@ -68,13 +68,13 @@ namespace MonoEditorEndless.Editor.Layouts
             //Debug.WriteLine(_infoTexture);
 
             ImGui.SameLine();
-            if (ImGui.ImageButton("Play", _playTexture, new Num.Vector2(15, 15)))
+            if (ImGui.ImageButton("Play Game", _playTexture, new Num.Vector2(15, 15)))
             {
                 _controlsAggregator.RaisePlayPressed();
             }
             ImGui.Text("Run Completely:");
             ImGui.SameLine();
-            if (ImGui.ImageButton("Play", _playTexture, new Num.Vector2(15, 15)))
+            if (ImGui.ImageButton("Play Complete", _playTexture, new Num.Vector2(15, 15)))
             {
                 _controlsAggregator.RaisePlayFromStartPressed();
             }

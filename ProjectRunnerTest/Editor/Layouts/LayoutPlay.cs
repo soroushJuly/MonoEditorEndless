@@ -61,6 +61,7 @@ namespace MonoEditorEndless.Editor.Layouts
                 ImGui.SameLine();
                 if (ImGui.ImageButton("Play Again", _replayTextureGui, new Num.Vector2(30, 30)))
                 {
+                    _controlsAggregator.RaiseLastEvent();
                     //_gameHandle.Start();
                 }
                 ImGui.End();

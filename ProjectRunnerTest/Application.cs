@@ -97,6 +97,9 @@ namespace ProjectRunnerTest
             _gameHandle = new GameHandle(Content, GraphicsDevice);
             aggregator.PlayPressed += (object sender, EventArgs e) => { _gameHandle.Start(); };
             aggregator.PausePressed += (object sender, EventArgs e) => { _gameHandle.Stop(); };
+            aggregator.PlayFromStartPressed += (object sender, EventArgs e) => { _gameHandle.Start(true); };
+            aggregator.RestartPressed += (object sender, ReplayEventArgs e) => { _gameHandle.Restart(e.IsFromStart()); };
+
 
 
             base.LoadContent();

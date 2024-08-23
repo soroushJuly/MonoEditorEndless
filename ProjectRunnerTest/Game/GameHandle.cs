@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using MonoEditorEndless.Engine;
 using MonoEditorEndless.Engine.StateManager;
 using System;
+using System.Threading.Tasks;
 
 namespace MonoEditorEndless.Game
 {
@@ -48,10 +49,11 @@ namespace MonoEditorEndless.Game
             StateSpectate spectate = new StateSpectate(_contentManger, _graphicsDevice);
 
             spectate.AddTransition(new Transition(play, () => { return _isPlaying; }));
+            spectate.AddTransition(new Transition(menu, () => { return _isFromStartPlaying; }));
             play.AddTransition(new Transition(finish, () => { return _isFinish; }));
             play.AddTransition(new Transition(spectate, () => { return !_isPlaying; }));
             finish.AddTransition(new Transition(spectate, () => { return !_isPlaying; }));
-            menu.AddTransition(new Transition(play, () => { return _isFromStartPlaying; }));
+            menu.AddTransition(new Transition(play, () => { return _isPlaying; }));
             menu.AddTransition(new Transition(spectate, () => { return !_isFromStartPlaying; }));
 
             _fsm.AddState(play);
@@ -69,6 +71,19 @@ namespace MonoEditorEndless.Game
                 _isFromStartPlaying = true;
             else
                 _isPlaying = true;
+
+        }
+        async public void Restart(bool isFromStart = false)
+        {
+            _isPlaying = false;
+            _isFromStartPlaying = false;
+            await Task.Delay(1000);
+            // TODO: Showing Loading here
+            if (isFromStart)
+                _isFromStartPlaying = true;
+            else
+                _isPlaying = true;
+
 
         }
         public void Stop()
