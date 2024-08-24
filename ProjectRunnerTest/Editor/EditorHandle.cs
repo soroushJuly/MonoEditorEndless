@@ -56,10 +56,9 @@ namespace MonoEditorEndless.Editor
             _introMessages = new IntroductionMessages();
             _introMessages.IntroductionFinished += (object sender, EventArgs e) =>
             {
-
+                // Saved that the user saw the introduction
                 _hasSeenIntroduction = true;
-                // Saved the fact that user saw the introduction
-                //_fileHandler.SaveXml<bool>(false, "seen_introduction.xml", Routes.SAVED_PROJECTS);
+                _fileHandler.SaveXml<bool>(true, "seen_introduction.xml", Routes.SAVED_PROJECTS);
             };
             // Check if user has seen the instruction
             _hasSeenIntroduction = _fileHandler.LoadClassXml(_hasSeenIntroduction, Path.Combine(Routes.SAVED_PROJECTS, "seen_introduction.xml"));
