@@ -22,6 +22,8 @@ namespace MonoEditorEndless.Editor
         private Texture2D _xnaTexture;
         private ContentManager _content;
 
+        private FileHandler _fileHandler;
+
         private LayoutEdit _layoutEdit;
         private LayoutPlay _layoutPlay;
         private List<Asset> _assets;
@@ -29,11 +31,17 @@ namespace MonoEditorEndless.Editor
         private bool _isPlaying;
         private bool _lastState;
 
+        // Has user seen the introduction
+        private bool _hasSeenIntroduction;
+
         // Icons used in the editor
         public static IntPtr _playTexture;
         public static IntPtr _infoTexture;
         public static IntPtr _replayTexture;
         public static IntPtr _pauseTexture;
+
+        // Introduction Modal messages
+        private IntroductionMessages _introMessages;
 
         public List<Asset> GetAssets() { return _assets; }
 
@@ -43,6 +51,16 @@ namespace MonoEditorEndless.Editor
             _imGuiRenderer = new ImGuiRenderer(game);
             _imGuiRenderer.RebuildFontAtlas();
             _graphics = graphics;
+            _fileHandler = new FileHandler();
+
+            _introMessages = new IntroductionMessages();
+            _introMessages.IntroductionFinished += (object sender, EventArgs e) =>
+            {
+                // Saved the fact that user saw the introduction
+                //_fileHandler.SaveXml<bool>(false, "seen_introduction.xml", Routes.SAVED_PROJECTS);
+            };
+            // Check if user has seen the instruction
+            _hasSeenIntroduction = _fileHandler.LoadClassXml(_hasSeenIntroduction, Path.Combine(Routes.SAVED_PROJECTS, "seen_introduction.xml"));
 
             _layoutEdit = new LayoutEdit(_graphics, controlsAggregator);
             _layoutPlay = new LayoutPlay(_graphics, controlsAggregator);
@@ -95,6 +113,14 @@ namespace MonoEditorEndless.Editor
 
             // TODO: find a better fix than binding everytime
             BindTextures();
+
+            // Start showing the introduction if user hasnt seen it
+            if (!_hasSeenIntroduction)
+            {
+                ImGui.OpenPopup("Introduction ##Modal");
+                _introMessages.Draw();
+            }
+
             // Draw our UI
             if (_isPlaying)
             {
@@ -104,7 +130,6 @@ namespace MonoEditorEndless.Editor
             {
                 _layoutEdit.Draw();
             }
-            ImGui.End();
 
             // Call AfterLayout now to finish up and draw all the things
             _imGuiRenderer.AfterLayout();

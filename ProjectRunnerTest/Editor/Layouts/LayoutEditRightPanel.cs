@@ -100,7 +100,7 @@ namespace MonoEditorEndless.Editor.Layouts
                 ImGui.SameLine();
                 if (EditorHandle._infoTexture != IntPtr.Zero)
                 {
-                    ImGui.Image(EditorHandle._infoTexture, new Num.Vector2(128, 128));
+                    ImGui.Image(EditorHandle._infoTexture, new Num.Vector2(15f));
                 }
                 //ImGui.Image(EditorHandle._infoTexture, new Num.Vector2(15f));
                 if (ImGui.IsItemHovered())
