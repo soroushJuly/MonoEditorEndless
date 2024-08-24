@@ -18,7 +18,7 @@ namespace ProjectRunnerTest
     /// </summary>
     public class Application : Game
     {
-        private GraphicsDeviceManager _graphics;
+        public static GraphicsDeviceManager _graphics;
         // To manage and communicate with the game
         private GameHandle _gameHandle;
         // To manage and communicate with the editor

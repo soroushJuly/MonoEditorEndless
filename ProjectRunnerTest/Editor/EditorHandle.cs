@@ -56,6 +56,8 @@ namespace MonoEditorEndless.Editor
             _introMessages = new IntroductionMessages();
             _introMessages.IntroductionFinished += (object sender, EventArgs e) =>
             {
+
+                _hasSeenIntroduction = true;
                 // Saved the fact that user saw the introduction
                 //_fileHandler.SaveXml<bool>(false, "seen_introduction.xml", Routes.SAVED_PROJECTS);
             };
@@ -114,13 +116,6 @@ namespace MonoEditorEndless.Editor
             // TODO: find a better fix than binding everytime
             BindTextures();
 
-            // Start showing the introduction if user hasnt seen it
-            if (!_hasSeenIntroduction)
-            {
-                ImGui.OpenPopup("Introduction ##Modal");
-                _introMessages.Draw();
-            }
-
             // Draw our UI
             if (_isPlaying)
             {
@@ -129,6 +124,13 @@ namespace MonoEditorEndless.Editor
             else if (!_isPlaying)
             {
                 _layoutEdit.Draw();
+            }
+
+            // Start showing the introduction if user hasnt seen it
+            if (!_hasSeenIntroduction)
+            {
+                ImGui.OpenPopup("Introduction ##Modal");
+                _introMessages.Draw();
             }
 
             // Call AfterLayout now to finish up and draw all the things

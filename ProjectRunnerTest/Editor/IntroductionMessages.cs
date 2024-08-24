@@ -1,6 +1,8 @@
 ﻿using ImGuiNET;
+using ProjectRunnerTest;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,92 +20,108 @@ namespace MonoEditorEndless.Editor
     }
     internal class IntroductionMessages
     {
-        private int currentStep = 0;
         private IntroductionSteps _currentStep;
         private bool showModal = true;
+        private float MODAL_WIDTH = 400;
+        private float MODAL_HEIGHT = 170;
 
         public event EventHandler IntroductionFinished;
 
         public void Draw()
         {
-            //if (ImGui.Button("Open Modal"))
-            //{
-            //    // Show the modal when the button is clicked
-            //    ImGui.OpenPopup("IntroductionModal");
-            //    showModal = true;
-            //}
-            // Modal window
-            //ImGui.SetNextWindowSize(new Num.Vector2(10f));
+            // Set the modals size
+            ImGui.SetNextWindowSize(new Num.Vector2(MODAL_WIDTH, MODAL_HEIGHT));
+            // Change the position of the modal based on the step
             switch (_currentStep)
             {
                 case IntroductionSteps.VIEW:
-                    ImGui.SetNextWindowPos(new Num.Vector2(Statics.RIGHT_PANEL_WIDTH + currentStep * 10));
+                    ImGui.SetNextWindowPos(new Num.Vector2(
+                        Application._graphics.PreferredBackBufferWidth / 2 - ImGui.GetWindowWidth() / 2,
+                        Application._graphics.PreferredBackBufferHeight / 2 - ImGui.GetWindowHeight() / 2));
                     break;
                 case IntroductionSteps.RIGHT:
-                    ImGui.SetNextWindowPos(new Num.Vector2(Statics.RIGHT_PANEL_WIDTH + currentStep * 10));
+                    ImGui.SetNextWindowPos(new Num.Vector2(Application._graphics.PreferredBackBufferWidth - 2 * Statics.RIGHT_PANEL_WIDTH, 40));
                     break;
                 case IntroductionSteps.LEFT:
-                    ImGui.SetNextWindowPos(new Num.Vector2(Statics.RIGHT_PANEL_WIDTH + currentStep * 10));
+                    ImGui.SetNextWindowPos(new Num.Vector2(Statics.LEFT_PANEL_WIDTH, 40));
                     break;
                 case IntroductionSteps.BUILD:
-                    ImGui.SetNextWindowPos(new Num.Vector2(Statics.RIGHT_PANEL_WIDTH + currentStep * 10));
+                    ImGui.SetNextWindowPos(new Num.Vector2(
+                        Application._graphics.PreferredBackBufferWidth - 2 * Statics.RIGHT_PANEL_WIDTH,
+                        Application._graphics.PreferredBackBufferHeight - ImGui.GetWindowHeight() / 2));
                     break;
                 default:
                     break;
             }
-            // Step 1
-            if (ImGui.BeginPopupModal("Introduction ##Modal", ref showModal))
+            if (ImGui.BeginPopupModal("Introduction ##Modal", ref showModal, ImGuiWindowFlags.NoTitleBar))
             {
-                //ImGui.Begin("Step-by-Step Instructions");
-
                 // Display the current step
                 switch (_currentStep)
                 {
                     case IntroductionSteps.VIEW:
-                        ImGui.Text("Preview ");
-                        ImGui.Text("Make sure everything is set up properly.");
-
+                        // Changed the color of introduction text
+                        ImGui.PushStyleColor(ImGuiCol.Text, new Num.Vector4(1.0f, 0.64f, 0.0f, 1.0f)); // Red color
+                        ImGui.TextWrapped("Introduction");
+                        ImGui.PopStyleColor();
+                        ImGui.TextWrapped("1/4 Preview");
+                        ImGui.TextWrapped("In the middle of the screen you can see a preview of the game environment.");
+                        ImGui.TextWrapped("You can freely explore the map following instructions on top left corner.");
+                        ImGui.NewLine();
                         break;
                     case IntroductionSteps.RIGHT:
-                        ImGui.Text("You can change everything related to the editor.");
-                        ImGui.Text("Load the configurations and resources.");
+                        ImGui.PushStyleColor(ImGuiCol.Text, new Num.Vector4(1.0f, 0.64f, 0.0f, 1.0f)); // Red color
+                        ImGui.TextWrapped("Introduction");
+                        ImGui.PopStyleColor();
+                        ImGui.TextWrapped("2/4 Editor Settings");
+                        ImGui.TextWrapped("Here you can change how you want to work with this application.");
                         break;
                     case IntroductionSteps.LEFT:
-                        ImGui.Text("You can change everything you want in the game here");
-                        ImGui.Text("Run the application's main functionality.");
+                        ImGui.PushStyleColor(ImGuiCol.Text, new Num.Vector4(1.0f, 0.64f, 0.0f, 1.0f)); // Red color
+                        ImGui.TextWrapped("Introduction");
+                        ImGui.PopStyleColor();
+                        ImGui.TextWrapped("3/4 Game Settings");
+                        ImGui.TextWrapped("Here you can define how you want your to be.");
+                        ImGui.TextWrapped("Each section has parameters and small details helping you getting the result you want.");
                         break;
                     case IntroductionSteps.BUILD:
-                        ImGui.Text("After you finished your changes Click on this button to create the production ready files.");
+                        ImGui.PushStyleColor(ImGuiCol.Text, new Num.Vector4(1.0f, 0.64f, 0.0f, 1.0f)); // Red color
+                        ImGui.TextWrapped("Introduction");
+                        ImGui.PopStyleColor();
+                        ImGui.TextWrapped("4/4 Publish!");
+                        ImGui.TextWrapped("It is that easy!");
+                        ImGui.TextWrapped("After you finished your changes Click on this button to create the production ready files.");
                         break;
                     default:
-                        ImGui.Text("All steps completed!");
                         break;
                 }
 
                 // Navigation buttons
-                if (currentStep > 0)
+                if (_currentStep > 0)
                 {
+                    ImGui.NewLine();
                     if (ImGui.Button("Previous"))
                     {
-                        currentStep--;
+                        _currentStep--;
                     }
+                    ImGui.SameLine();
                 }
 
-                ImGui.SameLine();
 
-                if (currentStep < 3)
+                if (_currentStep < IntroductionSteps.BUILD)
                 {
                     if (ImGui.Button("Next"))
                     {
-                        currentStep++;
+                        _currentStep++;
                     }
                 }
-                else if (currentStep == 3)
+                else if (_currentStep == IntroductionSteps.BUILD)
                 {
                     if (ImGui.Button("Finish"))
                     {
                         IntroductionFinished?.Invoke(this, EventArgs.Empty);
-                        currentStep = 0;
+                        ImGui.CloseCurrentPopup();
+                        showModal = false;
+                        _currentStep = 0;
                     }
                 }
 
