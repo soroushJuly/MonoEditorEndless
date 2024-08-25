@@ -12,6 +12,7 @@ namespace MonoEditorEndless.Game
     {
         private FSM _fsm;
         private bool _isPlaying;
+        private bool _isMenuMaking;
         private bool _isFromStartPlaying;
         private bool _isFinish;
         private ContentManager _contentManger;
@@ -26,6 +27,7 @@ namespace MonoEditorEndless.Game
             _isPlaying = false;
             _isFromStartPlaying = false;
             _isFinish = false;
+            _isMenuMaking = false;
             _contentManger = content;
             _graphicsDevice = graphicsDevice;
 
@@ -50,6 +52,7 @@ namespace MonoEditorEndless.Game
 
             spectate.AddTransition(new Transition(play, () => { return _isPlaying; }));
             spectate.AddTransition(new Transition(menu, () => { return _isFromStartPlaying; }));
+            spectate.AddTransition(new Transition(menuMaker, () => { return _isMenuMaking; }));
             play.AddTransition(new Transition(finish, () => { return _isFinish; }));
             play.AddTransition(new Transition(spectate, () => { return !_isPlaying; }));
             finish.AddTransition(new Transition(spectate, () => { return !_isPlaying; }));
@@ -71,7 +74,10 @@ namespace MonoEditorEndless.Game
                 _isFromStartPlaying = true;
             else
                 _isPlaying = true;
-
+        }
+        public void MenuMaker()
+        {
+            _isMenuMaking = true;
         }
         async public void Restart(bool isFromStart = false)
         {

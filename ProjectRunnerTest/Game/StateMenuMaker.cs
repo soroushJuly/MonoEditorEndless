@@ -39,8 +39,8 @@ namespace MonoEditorEndless.Game
         }
         public override void Enter(object owner)
         {
-            _font = Content.Load<SpriteFont>("Content/Fonts/File");
-            _background = Content.Load<Texture2D>("Content/Textures/bg");
+            _font = Content.Load<SpriteFont>("Content/Font/File");
+            _background = Content.Load<Texture2D>("Content/Texture/bg");
             // Initialize the button list with button indicator and padding between buttons
             _buttonList = new ButtonList(null, 10, 50, _font, 50);
             _title = new Text("Game Title", new Vector2(10, 10), _font, Color.Gainsboro);

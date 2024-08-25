@@ -84,6 +84,7 @@ namespace MonoEditorEndless.Editor.Layouts
                 }
                 if (ImGui.CollapsingHeader("MenuMaker"))
                 {
+                    _controlsAggregator.RaiseMenuMaker();
                     ImGui.Text("Hello from camera setting!");
                 }
                 if (ImGui.CollapsingHeader("Audio"))

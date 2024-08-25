@@ -42,6 +42,8 @@ namespace ProjectRunnerTest
             _graphics.PreferredBackBufferHeight = 900;
             _graphics.PreferMultiSampling = true;
 
+            //_graphics.IsFullScreen = true;
+
             IsMouseVisible = true;
         }
 
@@ -99,6 +101,7 @@ namespace ProjectRunnerTest
             aggregator.PausePressed += (object sender, EventArgs e) => { _gameHandle.Stop(); };
             aggregator.PlayFromStartPressed += (object sender, EventArgs e) => { _gameHandle.Start(true); };
             aggregator.RestartPressed += (object sender, ReplayEventArgs e) => { _gameHandle.Restart(e.IsFromStart()); };
+            aggregator.MenuMakerPressed += (object sender, EventArgs e) => { _gameHandle.MenuMaker(); };
 
 
 
