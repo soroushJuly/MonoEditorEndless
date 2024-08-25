@@ -17,10 +17,42 @@ namespace MonoEditorEndless.Editor.Components
         // True if the building process finished successfully
         private bool _isBuilt;
 
+        private bool _showModal;
+        // Build work thread
+        private Thread _buildThread;
         public ButtonBuild()
         {
             _fileHandler = new FileHandler();
             _folderPath = "-";
+            _showModal = false;
+
+            _buildThread = new Thread(() =>
+            {
+                // Current Directory is Debug build directory
+                string CurrentDirectory = Environment.CurrentDirectory;
+                // We going to root and run the project in Release mode
+                CurrentDirectory = Path.Combine(CurrentDirectory, "..", "..", "..");
+                var processInfo = new ProcessStartInfo("dotnet")
+                {
+                    Arguments = $"publish -c Release -r win-x64 /p:PublishReadyToRun=false /p:TieredCompilation=false --self-contained -o \"{_folderPath}\"",
+                    WorkingDirectory = CurrentDirectory,
+                    RedirectStandardOutput = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                };
+                using (var process = Process.Start(processInfo))
+                {
+                    using (var reader = process.StandardOutput)
+                    {
+                        string result = reader.ReadToEnd();
+                        Console.WriteLine(result);
+                    }
+                }
+                _isBuilt = true;
+                _showModal = true;
+                ModalLoading.Instance.Stop();
+            });
+            //_buildThread.SetApartmentState(ApartmentState.STA); //Set the thread to STA
         }
         public void Draw()
         {
@@ -32,11 +64,15 @@ namespace MonoEditorEndless.Editor.Components
             if (ImGui.Button("Build", new Num.Vector2(ImGui.GetContentRegionAvail().X, 40.0f)))
             {
                 // Open the build process modal on click
-                ImGui.OpenPopup("Build Details ##Modal");
+                _showModal = true;
             }
             ImGui.PopStyleVar();
             ImGui.PopStyleColor(3);
-
+            if (!_showModal) { return; }
+            else if (_showModal)
+            {
+                ImGui.OpenPopup("Build Details ##Modal");
+            }
             // Modal of the build process
             ImGui.SetNextWindowSize(new Num.Vector2(350, 200));
             // Getting the folder for the output files
@@ -72,6 +108,7 @@ namespace MonoEditorEndless.Editor.Components
                     {
                         ImGui.CloseCurrentPopup();
                         _isBuilt = false;
+                        _showModal = false;
                     }
                     ImGui.PopStyleVar();
                 }
@@ -83,6 +120,7 @@ namespace MonoEditorEndless.Editor.Components
                     {
                         ImGui.CloseCurrentPopup();
                         _isBuilt = false;
+                        _showModal = false;
                     }
                 }
 
@@ -91,35 +129,11 @@ namespace MonoEditorEndless.Editor.Components
         }
         void BuildGame(string outputDirectory)
         {
-            Thread thread = new Thread(() =>
-            {
-                // Current Directory is Debug build directory
-                string CurrentDirectory = Environment.CurrentDirectory;
-                // We going to root and run the project in Release mode
-                CurrentDirectory = Path.Combine(CurrentDirectory, "..", "..", "..");
-                var processInfo = new ProcessStartInfo("dotnet")
-                {
-                    Arguments = $"publish -c Release -r win-x64 /p:PublishReadyToRun=false /p:TieredCompilation=false --self-contained -o \"{outputDirectory}\"",
-                    WorkingDirectory = CurrentDirectory,
-                    RedirectStandardOutput = true,
-                    UseShellExecute = false,
-                    CreateNoWindow = true
-                };
-                using (var process = Process.Start(processInfo))
-                {
-                    using (var reader = process.StandardOutput)
-                    {
-                        string result = reader.ReadToEnd();
-                        Console.WriteLine(result);
-                    }
-                }
-                Application._project = new Project();
-            });
-            thread.SetApartmentState(ApartmentState.STA); //Set the thread to STA
-            thread.Start();
-            thread.Join(); //Wait for the thread to end
-
-            _isBuilt = true;
+            _showModal = false;
+            ImGui.CloseCurrentPopup();
+            ModalLoading.Instance.Start();
+            // Start the building process
+            _buildThread.Start();
         }
     }
 }

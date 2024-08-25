@@ -1,5 +1,6 @@
 ﻿using ImGuiNET;
 using Microsoft.Xna.Framework;
+using MonoEditorEndless.Editor.Components;
 using ProjectRunnerTest;
 using System;
 using System.Diagnostics;
@@ -185,6 +186,8 @@ namespace MonoEditorEndless.Editor.Layouts
                 ImGui.OpenPopup("Save Reminder ##modal");
             }
             SaveReminder();
+            // Loading modal - can be controlled from anywhere
+            ModalLoading.Instance.Draw();
             float height = ImGui.GetFrameHeight();
         }
         private void ShowMenuFile()
@@ -272,6 +275,18 @@ namespace MonoEditorEndless.Editor.Layouts
                 if (ImGui.Button("Save Changes")) { Save(); Environment.Exit(0); }
                 ImGui.PopStyleVar();
                 ImGui.PopStyleColor(3);
+                ImGui.EndPopup();
+            }
+        }
+        private void Loading()
+        {
+            // Modal of the build process
+            ImGui.SetNextWindowSize(new Num.Vector2(450, 100));
+            if (ImGui.BeginPopupModal("Loading Modal"))
+            {
+                ImGui.NewLine();
+                ImGui.ProgressBar((float)ImGui.GetTime() * -0.4f, Num.Vector2.Zero, "Loading...");
+                ImGui.NewLine();
                 ImGui.EndPopup();
             }
         }

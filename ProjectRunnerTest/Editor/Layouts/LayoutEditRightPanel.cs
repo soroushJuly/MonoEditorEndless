@@ -129,6 +129,6 @@ namespace MonoEditorEndless.Editor.Layouts
             _buttonBuild.Draw();
             ImGui.Spacing();
         }
-        
+
     }
 }
