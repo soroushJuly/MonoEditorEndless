@@ -1,14 +1,10 @@
 ﻿using ImGuiNET;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Graphics;
-using MonoEditorEndless.Editor.ImGuiTools;
 using ProjectRunnerTest;
 using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
-using System.Threading;
 using Forms = System.Windows.Forms;
 using Num = System.Numerics;
 
@@ -25,12 +21,16 @@ namespace MonoEditorEndless.Editor.Layouts
 
         private FileHandler _fileHandler;
 
+        private bool _showSaveModal;
+
         ControlsAggregator _controlsAggregator;
         public LayoutEdit(GraphicsDeviceManager graphics, ControlsAggregator controlsAggregator)
         {
             _graphics = graphics;
             _controlsAggregator = controlsAggregator;
             _rightPanel = new LayoutEditRightPanel(_graphics, _controlsAggregator);
+
+            _showSaveModal = false;
 
             _fileHandler = new FileHandler();
         }
@@ -177,6 +177,13 @@ namespace MonoEditorEndless.Editor.Layouts
                 }
                 ImGui.EndMainMenuBar();
             }
+            // Modal that notifies users to save before leave
+            // This call should be OUTSIDE of the mainmenubar definition
+            if (_showSaveModal)
+            {
+                ImGui.OpenPopup("Save Reminder ##modal");
+            }
+            SaveReminder();
             float height = ImGui.GetFrameHeight();
         }
         private void ShowMenuFile()
@@ -205,29 +212,15 @@ namespace MonoEditorEndless.Editor.Layouts
                 Application.BuildContent();
             }
             // Save the current project in the recent project location
-            if (ImGui.MenuItem("Save"))
-            {
-                string recentProjectName = null;
-                recentProjectName = _fileHandler.LoadClassXml(recentProjectName, Path.Combine(Routes.SAVED_PROJECTS, "recent_project.xml"));
-                if (recentProjectName == "default_project.xml")
-                {
-                    SaveAs();
-                }
-                else if (_fileHandler.SaveXml<Project>(Application._project, recentProjectName, Routes.SAVED_PROJECTS))
-                {
-                    Forms.MessageBox.Show("Project Saved");
-                }
-            }
+            if (ImGui.MenuItem("Save")) { Save(); }
             // Open new window before saving for getting a new name
-            if (ImGui.MenuItem("Save As.."))
-            {
-                SaveAs();
-            }
+            if (ImGui.MenuItem("Save As..")) { SaveAs(); }
             ImGui.Separator();
-            // Exit the application
+            // User click Exit application
             if (ImGui.MenuItem("Exit"))
             {
-                Environment.Exit(0);
+                // Reminding user to save before leaving the application
+                _showSaveModal = true;
             }
         }
         private void ShowMenuAbout()
@@ -248,10 +241,52 @@ namespace MonoEditorEndless.Editor.Layouts
                 {
                     Forms.MessageBox.Show(other.Message);
                 }
-
             }
         }
+        private void SaveReminder()
+        {
+            // Modal of the build process
+            ImGui.SetNextWindowSize(new Num.Vector2(450, 100));
+            if (ImGui.BeginPopupModal("Save Reminder ##modal", ref _showSaveModal))
+            {
+                ImGui.TextWrapped("Do you want to save changes?");
+                ImGui.NewLine();
+                ImGui.PushStyleVar(ImGuiStyleVar.FrameRounding, 10.0f);     // Rounded corners
 
+                if (ImGui.Button("Don't Save")) { Environment.Exit(0); }
+
+                // Calculate the position for the second button
+                float windowWidth = ImGui.GetWindowSize().X;
+                float buttonWidth = ImGui.CalcTextSize("Save ChangesCancel").X + ImGui.GetStyle().FramePadding.X * 2 * 2 + ImGui.GetStyle().ItemSpacing.X;
+                float availableWidth = ImGui.GetContentRegionAvail().X;
+
+                ImGui.SameLine();
+                ImGui.SetCursorPosX(windowWidth - buttonWidth - ImGui.GetStyle().WindowPadding.X);
+
+                if (ImGui.Button("Cancel")) { ImGui.CloseCurrentPopup(); _showSaveModal = false; }
+                ImGui.SameLine();
+                ImGui.PushStyleColor(ImGuiCol.Text, new Num.Vector4(0.0f, 0.0f, 0.0f, 1f));    // Black text
+                ImGui.PushStyleColor(ImGuiCol.Button, new Num.Vector4(1.0f, 0.84f, 0.08f, 1.0f));
+                ImGui.PushStyleColor(ImGuiCol.ButtonHovered, new Num.Vector4(0.8f, 0.64f, 0.08f, 1.0f));
+                if (ImGui.Button("Save Changes")) { Save(); Environment.Exit(0); }
+                ImGui.PopStyleVar();
+                ImGui.PopStyleColor(3);
+                ImGui.EndPopup();
+            }
+        }
+        private void Save()
+        {
+            string recentProjectName = null;
+            recentProjectName = _fileHandler.LoadClassXml(recentProjectName, Path.Combine(Routes.SAVED_PROJECTS, "recent_project.xml"));
+            if (recentProjectName == "default_project.xml")
+            {
+                SaveAs();
+            }
+            else if (_fileHandler.SaveXml<Project>(Application._project, recentProjectName, Routes.SAVED_PROJECTS))
+            {
+                Forms.MessageBox.Show("Project Saved");
+            }
+        }
         private void SaveAs()
         {
             Forms.Form form = new Forms.Form();
