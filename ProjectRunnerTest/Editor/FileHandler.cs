@@ -130,6 +130,27 @@ namespace MonoEditorEndless.Editor
 
             return newPath;
         }
+        public string FolderSelector()
+        {
+            var path = string.Empty;
+            Thread thread = new Thread(() =>
+            {
+                using (var fbd = new Forms.FolderBrowserDialog())
+                {
+                    Forms.DialogResult result = fbd.ShowDialog();
+
+                    if (result == Forms.DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
+                    {
+                        path = fbd.SelectedPath;
+                    }
+                }
+            });
+            thread.SetApartmentState(ApartmentState.STA);
+            thread.Start();
+            thread.Join();
+
+            return path;
+        }
         /// <summary>
         /// Opens up a dialog and waits till it resolves
         /// </summary>

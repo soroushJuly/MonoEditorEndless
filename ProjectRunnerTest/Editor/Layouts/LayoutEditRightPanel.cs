@@ -1,14 +1,8 @@
 ﻿using ImGuiNET;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Graphics;
-using MonoEditorEndless.Editor.ImGuiTools;
+using MonoEditorEndless.Editor.Components;
 using ProjectRunnerTest;
 using System;
-using System.Diagnostics;
-using System.IO;
-using System.Reflection;
-using System.Threading;
 using Num = System.Numerics;
 
 namespace MonoEditorEndless.Editor.Layouts
@@ -17,6 +11,8 @@ namespace MonoEditorEndless.Editor.Layouts
     {
         private GraphicsDeviceManager _graphics;
         private ControlsAggregator _controlsAggregator;
+
+        private ButtonBuild _buttonBuild;
 
         private bool _is3DView;
         private bool _is2DView;
@@ -27,6 +23,8 @@ namespace MonoEditorEndless.Editor.Layouts
         {
             _controlsAggregator = controlsAggregator;
             _graphics = graphics;
+
+            _buttonBuild = new ButtonBuild();
 
             _is3DView = true;
         }
@@ -76,19 +74,6 @@ namespace MonoEditorEndless.Editor.Layouts
                 selectedView = 1;
                 Application._project._editorConfigs._selectedView = 1;
             }
-            //if (selectedView == 1)
-            //{
-            //    // Create a group of radio buttons
-            //    if (ImGui.RadioButton("Top-down", selected2DView == 0))
-            //    {
-            //        selected2DView = 0;  // Set the selected option to 0
-            //    }
-            //    ImGui.SameLine();
-            //    if (ImGui.RadioButton("Side", selected2DView == 1))
-            //    {
-            //        selected2DView = 1;  // Set the selected option to 1
-            //    }
-            //}
             ImGui.Separator();
             ImGui.Text("Settings:");
             ImGui.Spacing();
@@ -141,45 +126,9 @@ namespace MonoEditorEndless.Editor.Layouts
             ImGui.SetCursorPosY(_graphics.PreferredBackBufferHeight - 40 - windowPaddingY - 2 * itemSpacingY - ImGui.GetFrameHeight());
             ImGui.Separator();
             ImGui.Spacing();
-            ImGui.PushStyleVar(ImGuiStyleVar.FrameRounding, 10.0f);    // Rounded corners
-            ImGui.PushStyleColor(ImGuiCol.Text, new Num.Vector4(0.0f, 0.0f, 0.0f, 1f));    // Black text
-            ImGui.PushStyleColor(ImGuiCol.Button, new Num.Vector4(1.0f, 0.84f, 0.08f, 1.0f));
-            ImGui.PushStyleColor(ImGuiCol.ButtonHovered, new Num.Vector4(0.8f, 0.64f, 0.08f, 1.0f));
-            if (ImGui.Button("Build", new Num.Vector2(windowWidth, 40.0f)))
-            {
-                BuildGame();
-            }
-            ImGui.PopStyleVar();
-            ImGui.PopStyleColor(3);
+            _buttonBuild.Draw();
             ImGui.Spacing();
         }
-        void BuildGame()
-        {
-            Thread thread = new Thread(() =>
-            {
-                string CurrentDirectory = Environment.CurrentDirectory;
-                CurrentDirectory = Path.Combine(CurrentDirectory, "..", "..", "..");
-                var processInfo = new ProcessStartInfo("dotnet")
-                {
-                    Arguments = "publish -c Release -r win-x64 /p:PublishReadyToRun=false /p:TieredCompilation=false --self-contained",
-                    WorkingDirectory = CurrentDirectory,
-                    RedirectStandardOutput = true,
-                    UseShellExecute = false,
-                    CreateNoWindow = true
-                };
-                using (var process = Process.Start(processInfo))
-                {
-                    using (var reader = process.StandardOutput)
-                    {
-                        string result = reader.ReadToEnd();
-                        Console.WriteLine(result);
-                    }
-                }
-                Application._project = new Project();
-            });
-            thread.SetApartmentState(ApartmentState.STA); //Set the thread to STA
-            thread.Start();
-            thread.Join(); //Wait for the thread to end
-        }
+        
     }
 }
