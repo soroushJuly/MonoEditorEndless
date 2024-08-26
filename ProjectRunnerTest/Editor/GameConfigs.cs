@@ -20,7 +20,8 @@ namespace MonoEditorEndless.Editor
         // Textures
 
         // Camera setting
-
+        public float distanceFromCharacter;
+        public float cameraHeight;
         // Gameplay
 
         // 
@@ -33,6 +34,8 @@ namespace MonoEditorEndless.Editor
             menuMusic = null;
             gameplayMusic = null;
             itemCollectionSound = null;
+            distanceFromCharacter = 250f;
+            cameraHeight = 100f;
         }
     }
 }

@@ -45,6 +45,7 @@ namespace MonoEditorEndless.Game
         private Actor corner;
         private Actor roadR;
         private Actor collectable;
+        private Actor collectable2;
         private Actor obstacle;
 
         private float _mouseActiveTimer = 0f;
@@ -153,6 +154,7 @@ namespace MonoEditorEndless.Game
             collectable.LoadModel(Content.Load<Model>("Content/Model/Coin"));
             collectable.SetScale(.1f);
             collectable.SetName("collectable");
+            collectable2 = new Actor(collectable);
 
             obstacle.LoadModel(Content.Load<Model>("Content/Model/rocks-small"));
             obstacle.SetScale(0.15f);
@@ -187,6 +189,9 @@ namespace MonoEditorEndless.Game
         }
         public override void Execute(object owner, GameTime gameTime)
         {
+            collectable2.SetPosition(actor.GetPosition() 
+                + Application._project._gameConfigs.cameraHeight * Vector3.UnitY 
+                - Application._project._gameConfigs.distanceFromCharacter * actor.GetForward());
             _mouseActiveTimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
             // Camera switched to 2D
             if (Application._project._editorConfigs._selectedView == 1 && _lastView == 0)
@@ -289,6 +294,7 @@ namespace MonoEditorEndless.Game
             _pathManager.Draw(world, _camera.GetView(), projection);
             _world.Draw(_camera.GetView(), projection);
 
+            collectable2.Draw(Matrix.CreateTranslation(collectable2.GetPosition()), _camera.GetView(), projection);
 
             _skybox.Draw(_graphicsDevice, Matrix.CreateTranslation(_camera.GetPosition()), _camera.GetView(), projection);
             _plane.Draw(_graphicsDevice, Matrix.CreateTranslation(-100 * Vector3.UnitY), _camera.GetView(), projection);

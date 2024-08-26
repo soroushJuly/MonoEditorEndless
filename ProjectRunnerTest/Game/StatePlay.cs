@@ -15,6 +15,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Media;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Content;
+using ProjectRunnerTest;
 
 namespace MonoEditorEndless.Game
 {
@@ -230,8 +231,12 @@ namespace MonoEditorEndless.Game
             _mouseActiveTimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             // third person camera
+            // Here we update position of camera
+            _camera.LookAtTarget(actor.GetPosition() + 100 * actor.GetForward(), 
+                actor.GetForward(), Application._project._gameConfigs.distanceFromCharacter, Application._project._gameConfigs.cameraHeight);
+            // We need to update camera position again too, because skybox is dependent on it
             _camera.SetPosition(actor.GetPosition() - 50 * actor.GetForward());
-            _camera.LookAtTarget(actor.GetPosition() + 100 * actor.GetForward(), actor.GetForward(), 300f, 100f);
+
 
             if (_prevKeyState.IsKeyDown(Keys.F) && Keyboard.GetState().IsKeyUp(Keys.F))
             {
