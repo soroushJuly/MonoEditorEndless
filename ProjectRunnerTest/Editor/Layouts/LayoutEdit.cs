@@ -71,17 +71,42 @@ namespace MonoEditorEndless.Editor.Layouts
                     Tooltip.Instance.Draw("Change how far from the character the camera should look at.");
                     ImGui.InputFloat("##camera_look_distance_input", ref Application._project._gameConfigs.cameraLookDistance, 5f);
                 }
-                if (ImGui.CollapsingHeader("Gameplay"))
+                if (ImGui.CollapsingHeader("Gameplay", ImGuiTreeNodeFlags.DefaultOpen))
                 {
-                    ImGui.Text("Hello from camera setting!");
+                    ImGui.SeparatorText("Character");
+                    ImGui.Text("Character starting speed:");
+                    ImGui.Text("Character maximum speed:");
+                    ImGui.Text("Character health:");
+                    ImGui.Text("Character movements mouse sensitivity:");
+                    ImGui.SeparatorText("Items");
+                    ImGui.Text("Items value:");
+                    ImGui.Text("How often items will appear:");
+                    ImGui.Text("How often obstacles will appear:");
+                    ImGui.Text("Obstacle behavioy");
+                    ImGui.SeparatorText("Game Speed");
+                    ImGui.Text("Game progress pace:");
+                }
+                if (ImGui.CollapsingHeader("Environemnt"))
+                {
+                    ImGui.Text("Sky");
+                    ImGui.Text("Plane");
+                    ImGui.SeparatorText("fdf");
+                    ImGui.Text("Road Generator");
+                }
+                if (ImGui.CollapsingHeader("Change 3D models"))
+                {
+                    ImGui.Text("Road Models");
+                    ImGui.Text("Character");
+                    ImGui.Text("items");
+                    ImGui.Text("obstacles");
                 }
                 if (ImGui.CollapsingHeader("Lights"))
                 {
                     ImGui.Text("Hello from camera setting!");
                 }
-                if (ImGui.CollapsingHeader("Character"))
+                if (ImGui.CollapsingHeader("Fog"))
                 {
-                    ImGui.Text("Hello from camera setting!");
+                    ImGui.Text("fog");
                 }
                 if (ImGui.CollapsingHeader("HUD"))
                 {
@@ -117,19 +142,7 @@ namespace MonoEditorEndless.Editor.Layouts
 
                     ImGui.Text("Hello from camera setting!");
                 }
-                if (ImGui.CollapsingHeader("Environemnt"))
-                {
-                    ImGui.Text("Skybox");
-                    ImGui.SeparatorText("fdf");
-                    ImGui.Text("Sourandings");
-                    ImGui.Separator();
-                    ImGui.Text("Road Generator");
-                    ImGui.Separator();
-                    ImGui.Text("Road Models");
-                    ImGui.Separator();
-                    ImGui.Text("Pickups/Obstacle Models");
-                    ImGui.Text("Hello from camera setting!");
-                }
+
 
                 //ImGui.InputFloat("Scale:", ref _actorScale);
                 if (ImGui.Button("Set Scale"))
