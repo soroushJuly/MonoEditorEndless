@@ -83,40 +83,18 @@ namespace MonoEditorEndless.Editor.Layouts
                 // Movement speed
                 ImGui.Text("Move speed:");
                 ImGui.SameLine();
-                if (EditorHandle._infoTexture != IntPtr.Zero)
-                {
-                    ImGui.Image(EditorHandle._infoTexture, new Num.Vector2(15f));
-                }
-                //ImGui.Image(EditorHandle._infoTexture, new Num.Vector2(15f));
-                if (ImGui.IsItemHovered())
-                {
-                    ImGui.BeginTooltip();
-                    ImGui.Text("This will change the speed you can move around the map.");
-                    ImGui.EndTooltip();
-                }
+                Tooltip.Instance.Draw("This will change the speed you can move around the map.");
                 ImGui.SliderFloat("##Speed", ref Application._project._editorConfigs._spectateMoveSpeed, 0.1f, 20f);
                 // Sensitivity
                 ImGui.Text("Rotation sensetivity:");
                 ImGui.SameLine();
-                ImGui.Image(EditorHandle._infoTexture, new Num.Vector2(15f));
-                if (ImGui.IsItemHovered())
-                {
-                    ImGui.BeginTooltip();
-                    ImGui.Text("This will change the speed you can look around with mouse.");
-                    ImGui.EndTooltip();
-                }
+                Tooltip.Instance.Draw("This will change the speed you can look around with mouse.");
                 ImGui.SliderFloat("##Sensitivity", ref Application._project._editorConfigs._spectateSensitivity, 0.01f, 2f);
                 ImGui.Spacing();
                 // On Screen instructions
                 ImGui.Checkbox("Show instructions", ref Application._project._editorConfigs._showInstructions);
                 ImGui.SameLine();
-                ImGui.Image(EditorHandle._infoTexture, new Num.Vector2(15f));
-                if (ImGui.IsItemHovered())
-                {
-                    ImGui.BeginTooltip();
-                    ImGui.Text("Show/Hide the instruction on top left corner.");
-                    ImGui.EndTooltip();
-                }
+                Tooltip.Instance.Draw("Show/Hide the instruction on top left corner.");
             }
 
             // Build the Release version from the Debug mode
@@ -129,6 +107,5 @@ namespace MonoEditorEndless.Editor.Layouts
             _buttonBuild.Draw();
             ImGui.Spacing();
         }
-
     }
 }

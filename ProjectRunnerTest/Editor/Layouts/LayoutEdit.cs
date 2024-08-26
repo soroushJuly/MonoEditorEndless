@@ -43,29 +43,29 @@ namespace MonoEditorEndless.Editor.Layouts
             //string patsh = Path.Combine(Routes.ROOT_DIRECTORY, "Content", "Font", "PeaberryBase.ttf");
             //ImFontPtr headerFont = io.Fonts.AddFontFromFileTTF(patsh, 60);
             // Left panel - Game Setting
-            // Tip: if we don't call ImGui.Begin()/ImGui.End() the widgets appears in a window automatically called "Debug"
             ImGui.SetNextWindowPos(new Num.Vector2(0f, ImGui.GetFrameHeight()));
             ImGui.SetNextWindowSize(new Num.Vector2(350f, _graphics.PreferredBackBufferHeight));
             if (ImGui.Begin("Game Settings", ImGuiWindowFlags.NoTitleBar))
             {
-                //ImGui.PushFont(headerFont);
                 ImGui.Text("Game Settings");
-                //ImGui.PopFont();
                 ImGui.Separator();
-                // Building the Content while app is open
-                if (ImGui.Button("Rebuild Content!!!"))
+                if (ImGui.CollapsingHeader("Game Details", ImGuiTreeNodeFlags.DefaultOpen))
                 {
-                    //BuildContent();
-
+                    ImGui.Text("Title:");
+                    ImGui.SameLine();
+                    Tooltip.Instance.Draw("Type the title of your game.");
+                    ImGui.InputText("##Text input", ref Application._project._gameConfigs._title, 100);
                 }
-                bool gameDetailVisible = true;
-                if (ImGui.CollapsingHeader("Game Details", ref gameDetailVisible, ImGuiTreeNodeFlags.Selected))
+                if (ImGui.CollapsingHeader("Camera", ImGuiTreeNodeFlags.DefaultOpen))
                 {
-                    ImGui.InputText("Text input", ref Application._project._gameConfigs._title, 100);
-                }
-                if (ImGui.CollapsingHeader("Camera"))
-                {
-                    ImGui.Text("Hello from camera setting!");
+                    ImGui.Text("Distance from character:");
+                    ImGui.SameLine();
+                    Tooltip.Instance.Draw("Enter the distance from camera to Type the title of your game.");
+                    ImGui.InputFloat("##camera distance input", ref Application._project._gameConfigs.distanceFromCharacter, 5f);
+                    ImGui.Text("Height of camera:");
+                    ImGui.SameLine();
+                    Tooltip.Instance.Draw("Change how high is the camera relative to the character.");
+                    ImGui.InputFloat("##camera height input", ref Application._project._gameConfigs.cameraHeight, 5f);
                 }
                 if (ImGui.CollapsingHeader("Gameplay"))
                 {
@@ -133,10 +133,6 @@ namespace MonoEditorEndless.Editor.Layouts
                     //actor.SetScale(_actorScale);
                 };
 
-                ImGui.Text("POINTS");
-                //ImGui.Text(_gameSession.GetPoints().ToString());
-
-
 
                 if (ImGui.Button("Test Window")) show_test_window = !show_test_window;
                 ImGui.Text(string.Format("Application average {0:F3} ms/frame ({1:F1} FPS)", 1000f / ImGui.GetIO().Framerate, ImGui.GetIO().Framerate));
@@ -197,7 +193,7 @@ namespace MonoEditorEndless.Editor.Layouts
             {
                 Application._project = new Project();
                 Application._project.CreateDefault();
-                SaveAs();
+                SaveAs(false);
                 Application.UpdateContent(Application._project.GetAllAsset());
                 Application.BuildContent();
             }
@@ -303,7 +299,7 @@ namespace MonoEditorEndless.Editor.Layouts
                 Forms.MessageBox.Show("Project Saved");
             }
         }
-        private void SaveAs()
+        private void SaveAs(bool isNotify = true)
         {
             Forms.Form form = new Forms.Form();
             Forms.Label label = new Forms.Label();
@@ -344,7 +340,8 @@ namespace MonoEditorEndless.Editor.Layouts
                     Forms.MessageBox.Show("Please choose a name for the project");
                 else if (_fileHandler.SaveXml<Project>(Application._project, projectName + ".xml", Routes.SAVED_PROJECTS))
                 {
-                    Forms.MessageBox.Show("Project Saved");
+                    if (isNotify)
+                        Forms.MessageBox.Show("Project Saved");
                     // Update recent project
                     _fileHandler.SaveXml<string>(projectName + ".xml", "recent_project.xml", Routes.SAVED_PROJECTS);
                 }
