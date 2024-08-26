@@ -73,16 +73,43 @@ namespace MonoEditorEndless.Editor.Layouts
                 }
                 if (ImGui.CollapsingHeader("Gameplay", ImGuiTreeNodeFlags.DefaultOpen))
                 {
+                    // Character
                     ImGui.SeparatorText("Character");
+                    // Min speed
                     ImGui.Text("Character starting speed:");
+                    ImGui.SameLine();
+                    Tooltip.Instance.Draw("Speed that character start with in the game.");
+                    ImGui.InputFloat("##character_min_speed", ref Application._project._gameConfigs.characterMinSpeed, 5f);
+                    // Max speed
                     ImGui.Text("Character maximum speed:");
+                    ImGui.SameLine();
+                    Tooltip.Instance.Draw("Maximum speed that character can reach in the game.");
+                    ImGui.Checkbox("Character has max speed", ref Application._project._gameConfigs.characterHasMaxSpeed);
+                    if (Application._project._gameConfigs.characterHasMaxSpeed)
+                    {
+                        ImGui.InputFloat("##character_max_speed", ref Application._project._gameConfigs.characterMaxSpeed, 5f);
+                    }
+                    // Character health
                     ImGui.Text("Character health:");
+                    ImGui.SameLine();
+                    Tooltip.Instance.Draw("How many hits or falling the character can take before game over.");
+                    ImGui.InputInt("##maximum_health", ref Application._project._gameConfigs.characterHealth);
+                    // Character movement sensitivity
                     ImGui.Text("Character movements mouse sensitivity:");
+                    ImGui.SameLine();
+                    Tooltip.Instance.Draw("Determines how sensitive is the character movements to the sides to mouse movements.");
+                    ImGui.InputFloat("##mouse_sensitivity", ref Application._project._gameConfigs.characterMoveSensitivity, .1f);
+                    // Items
                     ImGui.SeparatorText("Items");
                     ImGui.Text("Items value:");
-                    ImGui.Text("How often items will appear:");
-                    ImGui.Text("How often obstacles will appear:");
+                    ImGui.SameLine();
+                    Tooltip.Instance.Draw("Defines how many points players will get collecting the items.");
+                    ImGui.InputInt("##item_value", ref Application._project._gameConfigs.itemValue);
+                    
+                    ImGui.Text("How often collectable items will appear:");
+                    ImGui.Text("How often obstacle items will appear:");
                     ImGui.Text("Obstacle behavioy");
+                    // Game speed
                     ImGui.SeparatorText("Game Speed");
                     ImGui.Text("Game progress pace:");
                 }

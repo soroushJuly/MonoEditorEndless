@@ -147,8 +147,6 @@ namespace MonoEditorEndless.Game
 
             obstacle = new Actor();
 
-            //actor.CollisionHandler += this.CollisionHandler;
-            collectable.CollisionHandler += this.CollisionHandler;
             actor.CollisionHandler += this.CharacterCollisionHandler;
             actor.NoCollisionHandler += this.CharacterNoCollisionHandler;
             _camera = new Camera();
@@ -201,7 +199,7 @@ namespace MonoEditorEndless.Game
             {
                 _bgMusic = Content.Load<Song>("Content/Audio/Titan");
                 MediaPlayer.Play(_bgMusic);
-               
+
             }
             catch
             {
@@ -232,8 +230,8 @@ namespace MonoEditorEndless.Game
 
             // third person camera
             // Here we update position of camera
-            _camera.LookAtTarget(actor.GetPosition(), 
-                actor.GetForward(), 
+            _camera.LookAtTarget(actor.GetPosition(),
+                actor.GetForward(),
                 Application._project._gameConfigs.distanceFromCharacter,
                 Application._project._gameConfigs.cameraHeight,
                 Application._project._gameConfigs.cameraLookDistance);
@@ -253,7 +251,7 @@ namespace MonoEditorEndless.Game
             if (_gameSession.GetState() == GameSession.State.START)
                 actor.SetVelocity(actor.GetVelocity() + 0.0002f * _gameSession.GetGameSpeed());
             curMouse = Mouse.GetState();
-            float x = (curMouse.X - prevMouse.X) / 5f;
+            float x = (curMouse.X - prevMouse.X) / 5f * Application._project._gameConfigs.characterMoveSensitivity;
             prevMouse = curMouse;
             // slide right and left
             if (_mouseActiveTimer > 2)
@@ -352,7 +350,7 @@ namespace MonoEditorEndless.Game
             Actor character = sender as Actor;
             if (e._actor?.GetName() == "collectable")
             {
-                _gameSession.AddPoint(10f);
+                _gameSession.AddPoint(Application._project._gameConfigs.itemValue);
                 _world.RemoveActor(e._actor);
             }
             if (e._actor?.GetName() == "obstacle" && e._actor._isActive == true)
@@ -372,17 +370,6 @@ namespace MonoEditorEndless.Game
             if (character._lastCollisionSeen == "road-corner")
             {
                 SessionFinished(this, new SessionArgs(_gameSession.GetPoints(), _gameSession.GetTime()));
-            }
-        }
-        void CollisionHandler(object sender, CollisionEventArgs e)
-        {
-            Actor collectableItem = sender as Actor;
-            if (e._actor.GetName() == "character")
-            {
-                _gameSession.AddPoint(10f);
-                collectableItem.GetCollidable().SetRemoveFlag(true);
-                //_soundEffectInstance.Play();
-
             }
         }
     }

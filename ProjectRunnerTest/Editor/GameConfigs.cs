@@ -1,6 +1,4 @@
-﻿using Microsoft.Xna.Framework.Audio;
-using Microsoft.Xna.Framework.Media;
-
+﻿
 namespace MonoEditorEndless.Editor
 {
     public class GameConfigs
@@ -24,9 +22,14 @@ namespace MonoEditorEndless.Editor
         public float cameraLookDistance;
         public float cameraHeight;
         // Gameplay
-
+        public float characterMinSpeed;
+        public bool characterHasMaxSpeed;
+        public float characterMaxSpeed;
+        public int characterHealth;
+        public float characterMoveSensitivity;
+        public int itemValue;
         // 
-        
+
 
 
         public GameConfigs()
@@ -38,6 +41,13 @@ namespace MonoEditorEndless.Editor
             distanceFromCharacter = 250f;
             cameraLookDistance = 100f;
             cameraHeight = 100f;
+            characterMinSpeed = 160f;
+            characterHasMaxSpeed = true;
+            characterMaxSpeed = 400f;
+            characterHealth = 4;
+            characterMoveSensitivity = 1f;
+            itemValue = 100;
+
         }
     }
 }
