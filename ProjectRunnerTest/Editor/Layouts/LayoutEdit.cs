@@ -61,11 +61,15 @@ namespace MonoEditorEndless.Editor.Layouts
                     ImGui.Text("Distance from character:");
                     ImGui.SameLine();
                     Tooltip.Instance.Draw("Enter the distance from camera to Type the title of your game.");
-                    ImGui.InputFloat("##camera distance input", ref Application._project._gameConfigs.distanceFromCharacter, 5f);
+                    ImGui.InputFloat("##camera_distance_input", ref Application._project._gameConfigs.distanceFromCharacter, 5f);
                     ImGui.Text("Height of camera:");
                     ImGui.SameLine();
                     Tooltip.Instance.Draw("Change how high is the camera relative to the character.");
-                    ImGui.InputFloat("##camera height input", ref Application._project._gameConfigs.cameraHeight, 5f);
+                    ImGui.InputFloat("##camera_height_input", ref Application._project._gameConfigs.cameraHeight, 5f);
+                    ImGui.Text("Camera target:");
+                    ImGui.SameLine();
+                    Tooltip.Instance.Draw("Change how far from the character the camera should look at.");
+                    ImGui.InputFloat("##camera_look_distance_input", ref Application._project._gameConfigs.cameraLookDistance, 5f);
                 }
                 if (ImGui.CollapsingHeader("Gameplay"))
                 {

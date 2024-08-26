@@ -6,7 +6,7 @@ namespace MonoEditorEndless.Editor
     public class GameConfigs
     {
         // Game title
-        public string _title = "Asghar game";
+        public string _title;
         // Audio
         public string menuMusic;
         public string gameplayMusic;
@@ -21,6 +21,7 @@ namespace MonoEditorEndless.Editor
 
         // Camera setting
         public float distanceFromCharacter;
+        public float cameraLookDistance;
         public float cameraHeight;
         // Gameplay
 
@@ -30,11 +31,12 @@ namespace MonoEditorEndless.Editor
 
         public GameConfigs()
         {
-            _title = "";
+            _title = "Untitled";
             menuMusic = null;
             gameplayMusic = null;
             itemCollectionSound = null;
             distanceFromCharacter = 250f;
+            cameraLookDistance = 100f;
             cameraHeight = 100f;
         }
     }

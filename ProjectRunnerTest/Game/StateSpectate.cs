@@ -48,6 +48,8 @@ namespace MonoEditorEndless.Game
         private Actor collectable2;
         private Actor obstacle;
 
+        private Actor cameraModel;
+
         private float _mouseActiveTimer = 0f;
 
         KeyboardState _prevKeyState;
@@ -131,6 +133,9 @@ namespace MonoEditorEndless.Game
             corner = new Actor();
             collectable = new Actor();
 
+            // Editor
+            cameraModel = new Actor();
+
             obstacle = new Actor();
 
             _camera = new Camera();
@@ -154,7 +159,7 @@ namespace MonoEditorEndless.Game
             collectable.LoadModel(Content.Load<Model>("Content/Model/Coin"));
             collectable.SetScale(.1f);
             collectable.SetName("collectable");
-            collectable2 = new Actor(collectable);
+            cameraModel.LoadModel(Content.Load<Model>("Content/Editor/Model/camera"));
 
             obstacle.LoadModel(Content.Load<Model>("Content/Model/rocks-small"));
             obstacle.SetScale(0.15f);
@@ -189,8 +194,8 @@ namespace MonoEditorEndless.Game
         }
         public override void Execute(object owner, GameTime gameTime)
         {
-            collectable2.SetPosition(actor.GetPosition() 
-                + Application._project._gameConfigs.cameraHeight * Vector3.UnitY 
+            cameraModel.SetPosition(actor.GetPosition()
+                + Application._project._gameConfigs.cameraHeight * Vector3.UnitY
                 - Application._project._gameConfigs.distanceFromCharacter * actor.GetForward());
             _mouseActiveTimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
             // Camera switched to 2D
@@ -294,7 +299,11 @@ namespace MonoEditorEndless.Game
             _pathManager.Draw(world, _camera.GetView(), projection);
             _world.Draw(_camera.GetView(), projection);
 
-            collectable2.Draw(Matrix.CreateTranslation(collectable2.GetPosition()), _camera.GetView(), projection);
+            // Draw debug camera
+            cameraModel.Draw(Matrix.CreateTranslation(cameraModel.GetPosition()), _camera.GetView(), projection);
+            // Draw the line that connects the camera to the point it look at
+            DrawCameraRay(GraphicsDevice);
+            
 
             _skybox.Draw(_graphicsDevice, Matrix.CreateTranslation(_camera.GetPosition()), _camera.GetView(), projection);
             _plane.Draw(_graphicsDevice, Matrix.CreateTranslation(-100 * Vector3.UnitY), _camera.GetView(), projection);
@@ -321,6 +330,32 @@ namespace MonoEditorEndless.Game
                 _spriteBatch.DrawString(_font, "Mouse scroll wheel to zoom in/out", new Vector2(355, ImGui.GetFrameHeight() + 55), Color.White,
                 0, Vector2.Zero, 0.5f, SpriteEffects.None, 0);
             _spriteBatch.End();
+        }
+        private void DrawCameraRay(GraphicsDevice GraphicsDevice)
+        {
+            BasicEffect _basicEffect = new BasicEffect(GraphicsDevice)
+            {
+                VertexColorEnabled = true,
+                Projection = projection,
+                View = _camera.GetView(),
+                World = world
+            };
+            // The position of the camera
+            Vector3 point1 = cameraModel.GetPosition();
+            // To where camera look at
+            Vector3 point2 = actor.GetPosition() + Application._project._gameConfigs.cameraLookDistance * actor.GetForward();
+
+            // Define vertices for the line
+            VertexPositionColor[] vertices = new VertexPositionColor[2];
+            vertices[0] = new VertexPositionColor(point1, Color.Red);
+            vertices[1] = new VertexPositionColor(point2, Color.Red);
+
+            // Draw the line
+            foreach (var pass in _basicEffect.CurrentTechnique.Passes)
+            {
+                pass.Apply();
+                GraphicsDevice.DrawUserPrimitives(PrimitiveType.LineList, vertices, 0, 1);
+            }
         }
     }
 }

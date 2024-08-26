@@ -80,6 +80,8 @@ namespace MonoEditorEndless.Editor
             _assets.Add(new AssetTexture("replay.png", false, true));
             _assets.Add(new AssetTexture("info.png", false, true));
             _assets.Add(new AssetTexture("pause.png", false, true));
+            // TODO: this might cause problems later
+            _assets.Add(new AssetModel("camera.fbx", true, true));
         }
 
         public void LoadContent(ContentManager content)

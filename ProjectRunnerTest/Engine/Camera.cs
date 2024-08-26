@@ -71,9 +71,12 @@ namespace MonoEditorEndless.Engine
             _upVector = Vector3.Normalize(Vector3.Cross(_rightVector, _frontVector));
             _view = Matrix.CreateLookAt(_cameraPosition, _cameraPosition + _frontVector, _upVector);
         }
-        public void LookAtTarget(Vector3 targetPosition, Vector3 targetForward, float offset = 2f, float height = 0f)
+        public void LookAtTarget(Vector3 targetPosition, Vector3 targetForward, float offset = 2f, float height = 0f, float distance = 1f)
         {
-            _view = Matrix.CreateLookAt(targetPosition + height * Vector3.UnitY - targetForward * offset, targetPosition + targetForward, _upVector);
+            _view = Matrix.CreateLookAt(
+                targetPosition + height * Vector3.UnitY - targetForward * offset,
+                targetPosition + targetForward * distance,
+                _upVector);
         }
 
         public void Update()

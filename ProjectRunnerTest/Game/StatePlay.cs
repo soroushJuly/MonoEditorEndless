@@ -232,8 +232,11 @@ namespace MonoEditorEndless.Game
 
             // third person camera
             // Here we update position of camera
-            _camera.LookAtTarget(actor.GetPosition() + 100 * actor.GetForward(), 
-                actor.GetForward(), Application._project._gameConfigs.distanceFromCharacter, Application._project._gameConfigs.cameraHeight);
+            _camera.LookAtTarget(actor.GetPosition(), 
+                actor.GetForward(), 
+                Application._project._gameConfigs.distanceFromCharacter,
+                Application._project._gameConfigs.cameraHeight,
+                Application._project._gameConfigs.cameraLookDistance);
             // We need to update camera position again too, because skybox is dependent on it
             _camera.SetPosition(actor.GetPosition() - 50 * actor.GetForward());
 
