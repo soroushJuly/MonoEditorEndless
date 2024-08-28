@@ -90,7 +90,10 @@ namespace MonoEditorEndless.Game
             else
                 _isPlaying = true;
 
-
+        }
+        public void Refresh()
+        {
+            _fsm.GetCurrentState().Enter(this);
         }
         public void Stop()
         {

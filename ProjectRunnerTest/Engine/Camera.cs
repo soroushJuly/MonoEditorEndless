@@ -6,7 +6,7 @@ namespace MonoEditorEndless.Engine
     internal class Camera
     {
         // Camera inital values
-        private float _yaw = -90.0f;
+        private float _yaw = 0.0f;
         private float _pitch = 0.0f;
         public float _speed = 1.0f;
         public float _sensitivity = 0.1f;
@@ -24,11 +24,11 @@ namespace MonoEditorEndless.Engine
 
         public Camera()
         {
-            _frontVector = -Vector3.UnitZ;
-            _rightVector = Vector3.UnitX;
+            _frontVector = Vector3.UnitX;
+            _rightVector = Vector3.UnitZ;
             _upVector = Vector3.UnitY;
-            _cameraPosition = new Vector3(0, 0, 20);
-            _view = Matrix.CreateLookAt(_cameraPosition, _cameraPosition + _frontVector, _upVector);
+            _cameraPosition = new Vector3(-150, 50, 0);
+            _view = Matrix.CreateLookAt(_cameraPosition, Vector3.Zero, _upVector);
         }
 
         public void MoveLeft(float amount)

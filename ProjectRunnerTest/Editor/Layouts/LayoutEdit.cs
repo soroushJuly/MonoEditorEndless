@@ -20,6 +20,12 @@ namespace MonoEditorEndless.Editor.Layouts
 
         private LayoutEditRightPanel _rightPanel;
 
+        private int localObstacleChance;
+        private int localCollectableChance;
+        private float _pathChangeTimer;
+
+        private bool _isTimerActive;
+
         private FileHandler _fileHandler;
 
         private bool _showSaveModal;
@@ -32,6 +38,11 @@ namespace MonoEditorEndless.Editor.Layouts
             _rightPanel = new LayoutEditRightPanel(_graphics, _controlsAggregator);
 
             _showSaveModal = false;
+
+            localObstacleChance = Application._project._gameConfigs.obstacleChance;
+            localCollectableChance = Application._project._gameConfigs.collectableChance;
+            _pathChangeTimer = 0f;
+            _isTimerActive = false;
 
             _fileHandler = new FileHandler();
         }
@@ -105,13 +116,24 @@ namespace MonoEditorEndless.Editor.Layouts
                     ImGui.SameLine();
                     Tooltip.Instance.Draw("Defines how many points players will get collecting the items.");
                     ImGui.InputInt("##item_value", ref Application._project._gameConfigs.itemValue);
-                    
+                    // Collectable number
                     ImGui.Text("How often collectable items will appear:");
+                    ImGui.SameLine();
+                    Tooltip.Instance.Draw("Chance that an obstacle appears on the path. From 1 to 100");
+                    ImGui.SliderInt("##collectable_chance", ref Application._project._gameConfigs.collectableChance, 0, 100);
+                    // Obstacle number
                     ImGui.Text("How often obstacle items will appear:");
-                    ImGui.Text("Obstacle behavioy");
+                    ImGui.SameLine();
+                    Tooltip.Instance.Draw("Chance that an obstacle appears on the path. From 1 to 100");
+                    ImGui.SliderInt("##obstacle_chance", ref Application._project._gameConfigs.obstacleChance, 0, 100);
+                    // Obstacle behavior
+                    ImGui.Text("Obstacle behavior");
                     // Game speed
                     ImGui.SeparatorText("Game Speed");
                     ImGui.Text("Game progress pace:");
+                    ImGui.SameLine();
+                    Tooltip.Instance.Draw("How fast the game speed increases over time.");
+                    ImGui.SliderFloat("##game_speed", ref Application._project._gameConfigs.gameAcceleration, 0, 2);
                 }
                 if (ImGui.CollapsingHeader("Environemnt"))
                 {
@@ -169,13 +191,6 @@ namespace MonoEditorEndless.Editor.Layouts
 
                     ImGui.Text("Hello from camera setting!");
                 }
-
-
-                //ImGui.InputFloat("Scale:", ref _actorScale);
-                if (ImGui.Button("Set Scale"))
-                {
-                    //actor.SetScale(_actorScale);
-                };
 
 
                 if (ImGui.Button("Test Window")) show_test_window = !show_test_window;
@@ -286,6 +301,27 @@ namespace MonoEditorEndless.Editor.Layouts
                     Forms.MessageBox.Show(other.Message);
                 }
             }
+        }
+        public void Update(GameTime gameTime)
+        {
+            // Refresh the path if the obstacle or collectable chances changed
+            if (localObstacleChance != Application._project._gameConfigs.obstacleChance ||
+                localCollectableChance != Application._project._gameConfigs.collectableChance)
+            {
+                // A delay before applying the new changes
+                _isTimerActive = true;
+                _pathChangeTimer = 1f;
+            }
+            if (_isTimerActive)
+                _pathChangeTimer -= (float)gameTime.ElapsedGameTime.TotalSeconds;
+            if (_pathChangeTimer < 0f)
+            {
+                _isTimerActive = false;
+                _pathChangeTimer = 0;
+                _controlsAggregator.RaiseRefreshSpectate();
+            }
+            localObstacleChance = Application._project._gameConfigs.obstacleChance;
+            localCollectableChance = Application._project._gameConfigs.collectableChance;
         }
         private void SaveReminder()
         {

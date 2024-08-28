@@ -11,6 +11,8 @@ namespace MonoEditorEndless.Engine
         private string _name;
         private Vector3 _position;
         private float _velocity;
+        // TODO: change to private later
+        public float _maxVelocity;
         private Vector3 _forwardVector;
         private Vector3 _rightVector;
         private Model _model;

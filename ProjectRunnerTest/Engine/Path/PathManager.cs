@@ -13,8 +13,10 @@ namespace MonoEditorEndless.Engine.Path
         List<Actor> _wallBlocks;
         // Different collectable that might appear in the path
         List<Actor> _collectableTypes;
+        private int _collectableChance;
         // Different obstacles that might appear in the path
         List<Actor> _obstacleTypes;
+        private int _obstacleChance;
         // Starting position of drawing active blocks
         Vector3 _startingPosition;
         // The chance that a wall appears. Between 0 to 100
@@ -34,7 +36,7 @@ namespace MonoEditorEndless.Engine.Path
         public event EventHandler<BlockEventArgs> BlockAdded;
         public event EventHandler<BlockEventArgs> BlockRemoved;
 
-        public PathManager()
+        public PathManager(int obstacleChance, int collectableChance)
         {
             _activeBlocks = new Queue<Block>();
             _roadBlocks = new List<Actor>();
@@ -46,9 +48,13 @@ namespace MonoEditorEndless.Engine.Path
             // Turn chance starts with zero and get max in Initialize
             _turnChance = 0;
             _wallChance = 0;
+            // Chances that an obstavle appears on the 
+            _obstacleChance = obstacleChance;
+            _collectableChance = collectableChance;
             // Initial path direction is North
             _pathDirection = Directions.NORTH;
             _random = new Random();
+            _collectableChance = collectableChance;
         }
         // Add a sample road block to block list to generate path from them
         public void AddRoadBlock(Actor actor)
@@ -155,9 +161,8 @@ namespace MonoEditorEndless.Engine.Path
             int randomNumber3 = _random.Next(100);
             int randomNumber4 = _random.Next(100);
             int randomNumber5 = _random.Next(100);
-            int obstacleChance = 10;
             int collectableChance = 20;
-            if (randomNumber3 < obstacleChance)
+            if (randomNumber3 < _obstacleChance)
             {
                 newBlock.InitializeObstacles(randomNumber5 / 100f, randomNumber4 / 100f, _obstacleTypes);
             }

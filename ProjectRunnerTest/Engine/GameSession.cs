@@ -28,8 +28,9 @@ namespace MonoEditorEndless.Engine
             START,
             PAUSE
         };
-        public GameSession()
+        public GameSession(float gameAcceleration)
         {
+            _gameAccelerationRate = gameAcceleration;
             ResetSession();
         }
 
@@ -57,7 +58,6 @@ namespace MonoEditorEndless.Engine
         }
         private void ResetSession()
         {
-            _gameAccelerationRate = 0.0001f;
             _sessionTimePassed = 0f;
             _gameSpeed = 1f;
             _points = 0f;

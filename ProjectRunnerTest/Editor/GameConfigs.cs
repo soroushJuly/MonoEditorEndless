@@ -28,6 +28,9 @@ namespace MonoEditorEndless.Editor
         public int characterHealth;
         public float characterMoveSensitivity;
         public int itemValue;
+        public int obstacleChance;
+        public int collectableChance;
+        public float gameAcceleration;
         // 
 
 
@@ -43,10 +46,13 @@ namespace MonoEditorEndless.Editor
             cameraHeight = 100f;
             characterMinSpeed = 160f;
             characterHasMaxSpeed = true;
-            characterMaxSpeed = 400f;
+            characterMaxSpeed = 250f;
             characterHealth = 4;
             characterMoveSensitivity = 1f;
             itemValue = 100;
+            obstacleChance = 10;
+            collectableChance = 20;
+            gameAcceleration = 0.001f;
 
         }
     }

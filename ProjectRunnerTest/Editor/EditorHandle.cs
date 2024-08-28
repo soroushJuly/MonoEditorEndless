@@ -6,11 +6,7 @@ using MonoEditorEndless.Editor.ImGuiTools;
 using MonoEditorEndless.Editor.Layouts;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Reflection.Metadata;
-using System.Threading;
-using Num = System.Numerics;
 
 
 namespace MonoEditorEndless.Editor
@@ -99,6 +95,7 @@ namespace MonoEditorEndless.Editor
         }
         public void Update(GameTime gameTime)
         {
+            _layoutEdit.Update(gameTime);
             if (_isPlaying && (_lastState != _isPlaying))
             {
                 // It was editor switched to playing

@@ -89,8 +89,8 @@ namespace MonoEditorEndless.Game
         {
 
             _world = new World();
-            _gameSession = new GameSession();
-            _pathManager = new PathManager();
+            _gameSession = new GameSession(Application._project._gameConfigs.gameAcceleration);
+            _pathManager = new PathManager(Application._project._gameConfigs.obstacleChance, Application._project._gameConfigs.collectableChance);
             _inputManager = new InputManager();
 
             _spriteBatch = new SpriteBatch(_graphicsDevice);
@@ -100,11 +100,6 @@ namespace MonoEditorEndless.Game
             //_inputManager.AddMouseBinding(eMouseInputs.X_MOVE, MoveX);
             _inputManager.AddKeyboardBinding(Keys.D, TurnRight);
             _inputManager.AddKeyboardBinding(Keys.A, TurnLeft);
-            _inputManager.AddKeyboardBinding(Keys.Space, (eButtonState buttonState, Vector2 amount) =>
-            {
-                if (buttonState == eButtonState.PRESSED)
-                    _gameSession.StartSession();
-            });
 
             _pathManager.BlockAdded += (object sender, BlockEventArgs e) =>
             {
@@ -133,11 +128,13 @@ namespace MonoEditorEndless.Game
             };
 
             actor = new Actor();
-            actor.SetVelocity(160f);
+            actor.SetVelocity(Application._project._gameConfigs.characterMinSpeed);
             actor.SetForward(Vector3.UnitX);
             actor.SetRightVector(-Vector3.UnitZ);
             actor.SetPosition(0 * Vector3.UnitY);
             actor.SetName("character");
+            actor._health = Application._project._gameConfigs.characterHealth;
+            actor._maxVelocity = Application._project._gameConfigs.characterMaxSpeed;
 
             road = new Actor();
             wall = new Actor();
@@ -157,6 +154,8 @@ namespace MonoEditorEndless.Game
             _lastMouse = new Vector2(Mouse.GetState().X, Mouse.GetState().Y);
 
             LoadContent();
+
+            _gameSession.StartSession();
         }
         private void LoadContent()
         {
@@ -249,7 +248,12 @@ namespace MonoEditorEndless.Game
             _lastMouse.Y = Mouse.GetState().Y;
             _inputManager.Update();
             if (_gameSession.GetState() == GameSession.State.START)
-                actor.SetVelocity(actor.GetVelocity() + 0.0002f * _gameSession.GetGameSpeed());
+            {
+                float newSpeed = actor.GetVelocity() + 0.0002f * _gameSession.GetGameSpeed();
+                if (Application._project._gameConfigs.characterHasMaxSpeed && newSpeed >= actor._maxVelocity) { actor.SetVelocity(actor._maxVelocity); }
+                else if (newSpeed < actor._maxVelocity) { actor.SetVelocity(newSpeed); }
+            }
+            actor.SetVelocity(actor.GetVelocity() + 0.0002f * _gameSession.GetGameSpeed());
             curMouse = Mouse.GetState();
             float x = (curMouse.X - prevMouse.X) / 5f * Application._project._gameConfigs.characterMoveSensitivity;
             prevMouse = curMouse;

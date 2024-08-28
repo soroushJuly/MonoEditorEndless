@@ -88,8 +88,8 @@ namespace MonoEditorEndless.Game
         public override void Enter(object owner)
         {
             _world = new World();
-            _gameSession = new GameSession();
-            _pathManager = new PathManager();
+            _gameSession = new GameSession(Application._project._gameConfigs.gameAcceleration);
+            _pathManager = new PathManager(Application._project._gameConfigs.obstacleChance, Application._project._gameConfigs.collectableChance);
             _inputManager = new InputManager();
 
             _spriteBatch = new SpriteBatch(_graphicsDevice);
@@ -303,7 +303,7 @@ namespace MonoEditorEndless.Game
             cameraModel.Draw(Matrix.CreateTranslation(cameraModel.GetPosition()), _camera.GetView(), projection);
             // Draw the line that connects the camera to the point it look at
             DrawCameraRay(GraphicsDevice);
-            
+
 
             _skybox.Draw(_graphicsDevice, Matrix.CreateTranslation(_camera.GetPosition()), _camera.GetView(), projection);
             _plane.Draw(_graphicsDevice, Matrix.CreateTranslation(-100 * Vector3.UnitY), _camera.GetView(), projection);

@@ -18,6 +18,7 @@ namespace MonoEditorEndless.Editor
         public event EventHandler PlayFromStartPressed;
         public event EventHandler<ReplayEventArgs> RestartPressed;
         public event EventHandler MenuMakerPressed;
+        public event EventHandler RefreshSpectate;
         // Is the last event fire from start or not
         public bool _isFromStart;
 
@@ -52,6 +53,10 @@ namespace MonoEditorEndless.Editor
         public void RaiseMenuMaker()
         {
             MenuMakerPressed?.Invoke(this, EventArgs.Empty);
+        }
+        public void RaiseRefreshSpectate()
+        {
+            RefreshSpectate?.Invoke(this, EventArgs.Empty);
         }
     }
 }
