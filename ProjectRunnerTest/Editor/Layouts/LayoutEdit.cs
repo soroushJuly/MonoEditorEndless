@@ -24,6 +24,9 @@ namespace MonoEditorEndless.Editor.Layouts
         private int localCollectableChance;
         private float _pathChangeTimer;
 
+        // Obstacle behavior combo
+        private string[] _obstacleBehaviors = { "Character loss health", "Character dies instantly" };
+
         private bool _isTimerActive;
 
         private FileHandler _fileHandler;
@@ -82,7 +85,7 @@ namespace MonoEditorEndless.Editor.Layouts
                     Tooltip.Instance.Draw("Change how far from the character the camera should look at.");
                     ImGui.InputFloat("##camera_look_distance_input", ref Application._project._gameConfigs.cameraLookDistance, 5f);
                 }
-                if (ImGui.CollapsingHeader("Gameplay", ImGuiTreeNodeFlags.DefaultOpen))
+                if (ImGui.CollapsingHeader("Gameplay", ImGuiTreeNodeFlags.None))
                 {
                     // Character
                     ImGui.SeparatorText("Character");
@@ -128,6 +131,10 @@ namespace MonoEditorEndless.Editor.Layouts
                     ImGui.SliderInt("##obstacle_chance", ref Application._project._gameConfigs.obstacleChance, 0, 100);
                     // Obstacle behavior
                     ImGui.Text("Obstacle behavior");
+                    ImGui.SameLine();
+                    Tooltip.Instance.Draw("Select what do you want to happen when character hits an obstacle.");
+                    // Create a combo box
+                    ImGui.Combo("Select Option", ref Application._project._gameConfigs.obstacleBehavior, _obstacleBehaviors, _obstacleBehaviors.Length);
                     // Game speed
                     ImGui.SeparatorText("Game Speed");
                     ImGui.Text("Game progress pace:");
@@ -149,9 +156,25 @@ namespace MonoEditorEndless.Editor.Layouts
                     ImGui.Text("items");
                     ImGui.Text("obstacles");
                 }
-                if (ImGui.CollapsingHeader("Lights"))
+                if (ImGui.CollapsingHeader("Lights", ImGuiTreeNodeFlags.DefaultOpen))
                 {
-                    ImGui.Text("Hello from camera setting!");
+                    ImGui.SeparatorText("Scene light");
+                    ImGui.Text("Scene light diffuse color:");
+                    ImGui.SameLine();
+                    Tooltip.Instance.Draw("General illumination of a scene and gives objects their basic color under the light.");
+                    ImGui.ColorEdit3("##Scene_Diffuse_color", ref Application._project._gameConfigs.sunDiffuseColor);
+
+                    ImGui.Text("Scene light specular color:");
+                    ImGui.SameLine();
+                    Tooltip.Instance.Draw("The bright highlight seen on shiny surfaces, where light is reflected directly towards the viewer. Usually the color of the light source itself");
+                    ImGui.ColorEdit3("##Scene_Diffuse_color", ref Application._project._gameConfigs.sunSpecularColor);
+
+                    ImGui.Text("Scene light source direction:");
+                    ImGui.SameLine();
+                    Tooltip.Instance.Draw("The direction in which light source emits light");
+                    ImGui.SliderFloat("Down-Up", ref Application._project._gameConfigs.sunDirection.Y, -1, 1);
+                    ImGui.SliderFloat("backward-forward", ref Application._project._gameConfigs.sunDirection.X, -1, 1);
+                    ImGui.SliderFloat("Left-Right", ref Application._project._gameConfigs.sunDirection.Z, -1, 1);
                 }
                 if (ImGui.CollapsingHeader("Fog"))
                 {

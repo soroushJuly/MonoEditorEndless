@@ -359,9 +359,22 @@ namespace MonoEditorEndless.Game
             }
             if (e._actor?.GetName() == "obstacle" && e._actor._isActive == true)
             {
-                actor._health--;
-                e._actor._isActive = false;
-                // Do the dying thing
+                // TODO: define an enum for this
+                // 0 means health loss
+                if (Application._project._gameConfigs.obstacleBehavior == 0)
+                {
+                    actor._health--;
+                    e._actor._isActive = false;
+                    if (actor._health == 0)
+                    {
+                        // Game over
+                        SessionFinished(this, new SessionArgs(_gameSession.GetPoints(), _gameSession.GetTime()));
+                    }
+                }
+                else if (Application._project._gameConfigs.obstacleBehavior == 1)
+                {
+                    SessionFinished(this, new SessionArgs(_gameSession.GetPoints(), _gameSession.GetTime()));
+                }
             }
             if (e._actor?.GetName() == "road-corner")
             {

@@ -90,6 +90,10 @@ namespace MonoEditorEndless.Engine
             _basicEffect.Projection = projection;
             _basicEffect.View = view;
             _basicEffect.World = world;
+            _basicEffect.FogEnabled = true;
+            _basicEffect.FogColor = Color.CornflowerBlue.ToVector3(); // For best results, make this color whatever your background is.
+            _basicEffect.FogStart = 900.75f;
+            _basicEffect.FogEnd = 1000.25f;
 
             for (int i = 0; i < 6; i++)
             {

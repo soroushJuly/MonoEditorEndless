@@ -1,4 +1,6 @@
 ﻿
+using System.Numerics;
+
 namespace MonoEditorEndless.Editor
 {
     public class GameConfigs
@@ -31,7 +33,11 @@ namespace MonoEditorEndless.Editor
         public int obstacleChance;
         public int collectableChance;
         public float gameAcceleration;
-        // 
+        public int obstacleBehavior;
+        // Light
+        public Vector3 sunDiffuseColor;
+        public Vector3 sunSpecularColor;
+        public Vector3 sunDirection;
 
 
 
@@ -53,7 +59,11 @@ namespace MonoEditorEndless.Editor
             obstacleChance = 10;
             collectableChance = 20;
             gameAcceleration = 0.001f;
-
+            obstacleBehavior = 0;
+            sunDiffuseColor = new Vector3(1, .8f, .6f); // Warm Orange
+            sunSpecularColor = new Vector3(1, 1, 1); // White
+            // Approximation of 3 p.m.
+            sunDirection = new Vector3(0.5f, -0.75f, -0.25f);
         }
     }
 }

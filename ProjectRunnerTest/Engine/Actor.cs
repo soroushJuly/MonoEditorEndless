@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
+using ProjectRunnerTest;
+
 using MonoEditorEndless.Engine.Collision;
 using System;
 
@@ -272,7 +274,17 @@ namespace MonoEditorEndless.Engine
                     effect.FogStart = 900.75f;
                     effect.FogEnd = 1000.25f;
 
-                    effect.EnableDefaultLighting();
+                    //effect.EnableDefaultLighting();
+                    effect.LightingEnabled = true;
+                    effect.DirectionalLight0.Enabled = true;
+                    // TODO: it should not be like this (Application in the actor class)
+                    effect.DirectionalLight0.DiffuseColor = Application._project._gameConfigs.sunDiffuseColor;
+                    effect.DirectionalLight0.SpecularColor = Application._project._gameConfigs.sunSpecularColor;
+                    effect.DirectionalLight0.Direction = Application._project._gameConfigs.sunDirection;
+                    // Default ambient color of monogame lights
+                    effect.AmbientLightColor = new Vector3(0.05333332f, 0.09882354f, 0.1819608f);
+
+
                 }
                 mesh.Draw();
             }

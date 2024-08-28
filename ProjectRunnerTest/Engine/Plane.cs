@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ProjectRunnerTest;
 using System;
 
 namespace MonoEditorEndless.Engine
@@ -59,6 +60,19 @@ namespace MonoEditorEndless.Engine
             _basicEffect.View = view;
             _basicEffect.World = world;
             _basicEffect.Texture = _texture;
+            _basicEffect.FogEnabled = true;
+            _basicEffect.FogColor = Color.CornflowerBlue.ToVector3(); // For best results, make this color whatever your background is.
+            _basicEffect.FogStart = 900.75f;
+            _basicEffect.FogEnd = 1000.25f;
+
+            _basicEffect.LightingEnabled = true;
+            _basicEffect.DirectionalLight0.Enabled = true;
+            // TODO: it should not be like this (Application in the actor class)
+            _basicEffect.DirectionalLight0.DiffuseColor = Application._project._gameConfigs.sunDiffuseColor;
+            _basicEffect.DirectionalLight0.SpecularColor = Application._project._gameConfigs.sunSpecularColor;
+            _basicEffect.DirectionalLight0.Direction = Application._project._gameConfigs.sunDirection;
+            // Default ambient color of monogame lights
+            _basicEffect.AmbientLightColor = new Vector3(0.05333332f, 0.09882354f, 0.1819608f);
 
             for (int i = 0; i < 6; i++)
             {
