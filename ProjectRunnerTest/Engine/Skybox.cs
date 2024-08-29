@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
+using ProjectRunnerTest;
 using System.Collections.Generic;
 
 namespace MonoEditorEndless.Engine
@@ -90,10 +91,10 @@ namespace MonoEditorEndless.Engine
             _basicEffect.Projection = projection;
             _basicEffect.View = view;
             _basicEffect.World = world;
-            _basicEffect.FogEnabled = true;
-            _basicEffect.FogColor = Color.CornflowerBlue.ToVector3(); // For best results, make this color whatever your background is.
-            _basicEffect.FogStart = 900.75f;
-            _basicEffect.FogEnd = 1000.25f;
+            _basicEffect.FogEnabled = Application._project._gameConfigs.fogEnable;
+            _basicEffect.FogColor = Application._project._gameConfigs.fogColor; // For best results, make this color whatever your background is.
+            _basicEffect.FogStart = Application._project._gameConfigs.fogStartDistance;
+            _basicEffect.FogEnd = Application._project._gameConfigs.fogEndDistance;
 
             for (int i = 0; i < 6; i++)
             {

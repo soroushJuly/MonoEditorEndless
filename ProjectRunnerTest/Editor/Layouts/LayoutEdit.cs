@@ -70,7 +70,7 @@ namespace MonoEditorEndless.Editor.Layouts
                     Tooltip.Instance.Draw("Type the title of your game.");
                     ImGui.InputText("##Text input", ref Application._project._gameConfigs._title, 100);
                 }
-                if (ImGui.CollapsingHeader("Camera", ImGuiTreeNodeFlags.DefaultOpen))
+                if (ImGui.CollapsingHeader("Camera", ImGuiTreeNodeFlags.None))
                 {
                     ImGui.Text("Distance from character:");
                     ImGui.SameLine();
@@ -176,9 +176,23 @@ namespace MonoEditorEndless.Editor.Layouts
                     ImGui.SliderFloat("backward-forward", ref Application._project._gameConfigs.sunDirection.X, -1, 1);
                     ImGui.SliderFloat("Left-Right", ref Application._project._gameConfigs.sunDirection.Z, -1, 1);
                 }
-                if (ImGui.CollapsingHeader("Fog"))
+                if (ImGui.CollapsingHeader("Fog", ImGuiTreeNodeFlags.None))
                 {
-                    ImGui.Text("fog");
+                    ImGui.SeparatorText("Fog Effect");
+                    ImGui.Checkbox("Enable Fog", ref Application._project._gameConfigs.fogEnable);
+
+                    ImGui.Text("Fog color");
+                    ImGui.ColorEdit3("##distance", ref Application._project._gameConfigs.fogColor);
+
+                    ImGui.Text("Fog starting distance");
+                    ImGui.SameLine();
+                    Tooltip.Instance.Draw("The distance from camera at which fog start appearing");
+                    ImGui.InputFloat("##fog_start_distance", ref Application._project._gameConfigs.fogStartDistance, 10f);
+
+                    ImGui.Text("Fog ending distance");
+                    ImGui.SameLine();
+                    Tooltip.Instance.Draw("The distance from camera at which fog disappears");
+                    ImGui.InputFloat("##fog_end_distance", ref Application._project._gameConfigs.fogEndDistance, 10f);
                 }
                 if (ImGui.CollapsingHeader("HUD"))
                 {

@@ -1,4 +1,5 @@
 ﻿
+using Microsoft.Xna.Framework.Graphics;
 using System.Numerics;
 
 namespace MonoEditorEndless.Editor
@@ -38,6 +39,11 @@ namespace MonoEditorEndless.Editor
         public Vector3 sunDiffuseColor;
         public Vector3 sunSpecularColor;
         public Vector3 sunDirection;
+        // Fog
+        public bool fogEnable;
+        public Vector3 fogColor;
+        public float fogStartDistance;
+        public float fogEndDistance;
 
 
 
@@ -64,6 +70,11 @@ namespace MonoEditorEndless.Editor
             sunSpecularColor = new Vector3(1, 1, 1); // White
             // Approximation of 3 p.m.
             sunDirection = new Vector3(0.5f, -0.75f, -0.25f);
+            // Fog
+            fogEnable = true;
+            fogColor = new Vector3(.6f);
+            fogStartDistance = 900.75f;
+            fogEndDistance = 1000.25f;
         }
     }
 }

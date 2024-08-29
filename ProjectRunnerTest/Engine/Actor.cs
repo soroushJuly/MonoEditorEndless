@@ -269,10 +269,10 @@ namespace MonoEditorEndless.Engine
                     effect.Projection = projection;
 
                     effect.TextureEnabled = true;
-                    effect.FogEnabled = true;
-                    effect.FogColor = Color.CornflowerBlue.ToVector3(); // For best results, make this color whatever your background is.
-                    effect.FogStart = 900.75f;
-                    effect.FogEnd = 1000.25f;
+                    effect.FogEnabled = Application._project._gameConfigs.fogEnable;
+                    effect.FogColor = Application._project._gameConfigs.fogColor; // For best results, make this color whatever your background is.
+                    effect.FogStart = Application._project._gameConfigs.fogStartDistance;
+                    effect.FogEnd = Application._project._gameConfigs.fogEndDistance;
 
                     //effect.EnableDefaultLighting();
                     effect.LightingEnabled = true;
