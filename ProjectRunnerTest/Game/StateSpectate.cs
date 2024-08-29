@@ -17,6 +17,7 @@ using System;
 using System.Collections.Generic;
 // TODO: importing this might cause problems later
 using System.IO;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrackBar;
 
 namespace MonoEditorEndless.Game
 {
@@ -47,7 +48,6 @@ namespace MonoEditorEndless.Game
         private Actor corner;
         private Actor roadR;
         private Actor collectable;
-        private Actor collectable2;
         private Actor obstacle;
 
         private Actor cameraModel;
@@ -159,12 +159,13 @@ namespace MonoEditorEndless.Game
             roadR.LoadModel(Content.Load<Model>("Content/Model/wall"));
             wall.RotateY((180f / 180f) * (float)Math.PI);
             collectable.LoadModel(Content.Load<Model>("Content/Model/" + Path.GetFileNameWithoutExtension(Application._project._gameConfigs.collectableModel)));
-            collectable.SetScale(.1f);
+            collectable.SetScale(Application._project._gameConfigs.collectableScale);
+            collectable.SetPosition(collectable.GetPosition() + Vector3.UnitY * Application._project._gameConfigs.collectableOffset);
             collectable.SetName("collectable");
             cameraModel.LoadModel(Content.Load<Model>("Content/Editor/Model/camera"));
 
-            obstacle.LoadModel(Content.Load<Model>("Content/Model/rocks-small"));
-            obstacle.SetScale(0.15f);
+            obstacle.LoadModel(Content.Load<Model>("Content/Model/" + Path.GetFileNameWithoutExtension(Application._project._gameConfigs.obstacleModel)));
+            obstacle.SetScale(Application._project._gameConfigs.obstacleScale);
             obstacle.SetName("obstacle");
 
             _world.AddActor(actor, true);

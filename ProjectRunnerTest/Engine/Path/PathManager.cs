@@ -12,7 +12,7 @@ namespace MonoEditorEndless.Engine.Path
         List<Actor> _turnRightBlocks;
         List<Actor> _wallBlocks;
         // Different collectable that might appear in the path
-        List<Actor> _collectableTypes;
+        public List<Actor> _collectableTypes;
         private int _collectableChance;
         // Different obstacles that might appear in the path
         List<Actor> _obstacleTypes;

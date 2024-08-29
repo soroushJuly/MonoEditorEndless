@@ -20,8 +20,11 @@ namespace MonoEditorEndless.Editor.Layouts
 
         private LayoutEditRightPanel _rightPanel;
 
+        // Tracking changes in the editor
         private int localObstacleChance;
         private int localCollectableChance;
+        private float localCollectableScale;
+        private float localCollectableOffset;
         private float _pathChangeTimer;
 
         // Obstacle behavior combo
@@ -44,6 +47,8 @@ namespace MonoEditorEndless.Editor.Layouts
 
             localObstacleChance = Application._project._gameConfigs.obstacleChance;
             localCollectableChance = Application._project._gameConfigs.collectableChance;
+            localCollectableScale = Application._project._gameConfigs.collectableScale;
+            localCollectableOffset = Application._project._gameConfigs.collectableOffset;
             _pathChangeTimer = 0f;
             _isTimerActive = false;
 
@@ -172,6 +177,7 @@ namespace MonoEditorEndless.Editor.Layouts
                     ImGui.NewLine();
                     ImGui.SeparatorText("Road Models");
                     ImGui.SeparatorText("Character Model");
+                    // Collectable
                     ImGui.SeparatorText("Collectable Model");
                     ImGui.Text("Upload new model for collectable:");
                     if (ImGui.Button("Browse Computer"))
@@ -180,13 +186,39 @@ namespace MonoEditorEndless.Editor.Layouts
                         filePath = _fileHandler.LoadFileFromComputer(AssetType.MODEL);
                         if (filePath != "")
                         {
-                            //ModalLoading.Instance.Start();
+                            ModalLoading.Instance.Start();
                             Application._project._gameConfigs.collectableModel = Path.GetFileName(filePath);
                             Application._project.AddAssetModel(new AssetModel(Path.GetFileName(filePath), true));
                         }
                     }
-                    ImGui.Text(Application._project._gameConfigs.collectableModel);
+                    ImGui.Text("Current model: " + Application._project._gameConfigs.collectableModel);
+                    ImGui.Text("Collectable scale:");
+                    ImGui.SameLine();
+                    Tooltip.Instance.Draw("Change the size of the collectable.");
+                    ImGui.InputFloat("##collectable_scale", ref Application._project._gameConfigs.collectableScale, .1f);
+                    // Obstacle
                     ImGui.SeparatorText("Obstacle Model");
+                    ImGui.Text("Upload new model for obstacle:");
+                    if (ImGui.Button("Browse Computer"))
+                    {
+                        string filePath = "";
+                        filePath = _fileHandler.LoadFileFromComputer(AssetType.MODEL);
+                        if (filePath != "")
+                        {
+                            ModalLoading.Instance.Start();
+                            Application._project._gameConfigs.obstacleModel = Path.GetFileName(filePath);
+                            Application._project.AddAssetModel(new AssetModel(Path.GetFileName(filePath), true));
+                        }
+                    }
+                    ImGui.Text("Current model: " + Application._project._gameConfigs.obstacleModel);
+                    ImGui.Text("Obstacle scale:");
+                    ImGui.SameLine();
+                    Tooltip.Instance.Draw("Change the size of the obstacle model.");
+                    if(ImGui.InputFloat("##obstacle_scale", ref Application._project._gameConfigs.obstacleScale, .1f))
+                    {
+                        _isTimerActive = true;
+                        _pathChangeTimer = 1f;
+                    }
                 }
                 if (ImGui.CollapsingHeader("Lights", ImGuiTreeNodeFlags.None))
                 {
@@ -253,8 +285,6 @@ namespace MonoEditorEndless.Editor.Layouts
                     //    si.Play();
 
                     //}
-                    //ImGui.Text(_bgMusicName);
-                    // Menu Music
 
                     // Ending Music
 
@@ -375,7 +405,10 @@ namespace MonoEditorEndless.Editor.Layouts
         {
             // Refresh the path if the obstacle or collectable chances changed
             if (localObstacleChance != Application._project._gameConfigs.obstacleChance ||
-                localCollectableChance != Application._project._gameConfigs.collectableChance)
+                localCollectableChance != Application._project._gameConfigs.collectableChance ||
+                localCollectableScale != Application._project._gameConfigs.collectableScale ||
+                localCollectableOffset != Application._project._gameConfigs.collectableOffset
+                )
             {
                 // A delay before applying the new changes
                 _isTimerActive = true;
@@ -391,6 +424,8 @@ namespace MonoEditorEndless.Editor.Layouts
             }
             localObstacleChance = Application._project._gameConfigs.obstacleChance;
             localCollectableChance = Application._project._gameConfigs.collectableChance;
+            localCollectableScale = Application._project._gameConfigs.collectableScale;
+            localCollectableOffset = Application._project._gameConfigs.collectableOffset;
         }
         private void SaveReminder()
         {

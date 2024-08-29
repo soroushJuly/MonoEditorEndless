@@ -16,6 +16,10 @@ namespace MonoEditorEndless.Editor
         // Models in the game
         public string _characterModel;
         public string collectableModel;
+        public float collectableScale;
+        public float collectableOffset;
+        public string obstacleModel;
+        public float obstacleScale;
 
         // Font
 
@@ -78,6 +82,10 @@ namespace MonoEditorEndless.Editor
             fogEndDistance = 1000.25f;
             // Models
             collectableModel = "coin.fbx";
+            collectableScale = .1f;
+            collectableOffset = 0f;
+            obstacleModel = "rocks-small.fbx";
+            obstacleScale = 0.15f;
         }
     }
 }

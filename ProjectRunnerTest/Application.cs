@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using MonoEditorEndless;
 using MonoEditorEndless.Editor;
+using MonoEditorEndless.Editor.Components;
 using MonoEditorEndless.Game;
 using System;
 using System.Collections.Generic;
@@ -160,6 +161,7 @@ namespace ProjectRunnerTest
             thread.SetApartmentState(ApartmentState.STA); //Set the thread to STA
             thread.Start();
             thread.Join(); //Wait for the thread to end
+            ModalLoading.Instance.Stop();
         }
         /// <summary>
         /// Updates the content.mgbc file based on the 
