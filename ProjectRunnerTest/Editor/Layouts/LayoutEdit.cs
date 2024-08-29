@@ -21,10 +21,6 @@ namespace MonoEditorEndless.Editor.Layouts
         private LayoutEditRightPanel _rightPanel;
 
         // Tracking changes in the editor
-        private int localObstacleChance;
-        private int localCollectableChance;
-        private float localCollectableScale;
-        private float localCollectableOffset;
         private float _pathChangeTimer;
 
         // Obstacle behavior combo
@@ -45,10 +41,6 @@ namespace MonoEditorEndless.Editor.Layouts
 
             _showSaveModal = false;
 
-            localObstacleChance = Application._project._gameConfigs.obstacleChance;
-            localCollectableChance = Application._project._gameConfigs.collectableChance;
-            localCollectableScale = Application._project._gameConfigs.collectableScale;
-            localCollectableOffset = Application._project._gameConfigs.collectableOffset;
             _pathChangeTimer = 0f;
             _isTimerActive = false;
 
@@ -128,12 +120,20 @@ namespace MonoEditorEndless.Editor.Layouts
                     ImGui.Text("How often collectable items will appear:");
                     ImGui.SameLine();
                     Tooltip.Instance.Draw("Chance that an obstacle appears on the path. From 1 to 100");
-                    ImGui.SliderInt("##collectable_chance", ref Application._project._gameConfigs.collectableChance, 0, 100);
+                    if (ImGui.SliderInt("##collectable_chance", ref Application._project._gameConfigs.collectableChance, 0, 100))
+                    {
+                        _isTimerActive = true;
+                        _pathChangeTimer = 1f;
+                    }
                     // Obstacle number
                     ImGui.Text("How often obstacle items will appear:");
                     ImGui.SameLine();
                     Tooltip.Instance.Draw("Chance that an obstacle appears on the path. From 1 to 100");
-                    ImGui.SliderInt("##obstacle_chance", ref Application._project._gameConfigs.obstacleChance, 0, 100);
+                    if (ImGui.SliderInt("##obstacle_chance", ref Application._project._gameConfigs.obstacleChance, 0, 100))
+                    {
+                        _isTimerActive = true;
+                        _pathChangeTimer = 1f;
+                    }
                     // Obstacle behavior
                     ImGui.Text("Obstacle behavior");
                     ImGui.SameLine();
@@ -175,8 +175,90 @@ namespace MonoEditorEndless.Editor.Layouts
                         }
                     }
                     ImGui.NewLine();
+                    // Road blocks
                     ImGui.SeparatorText("Road Models");
+                    // Road blocks - straight
+                    ImGui.Text("Straight Blocks");
+                    ImGui.SameLine();
+                    Tooltip.Instance.Draw("The parts of the road on which the player moves straight.");
+                    ImGui.Text("Upload new model:");
+                    if (ImGui.Button("Browse Computer"))
+                    {
+                        string filePath = "";
+                        filePath = _fileHandler.LoadFileFromComputer(AssetType.MODEL);
+                        if (filePath != "")
+                        {
+                            ModalLoading.Instance.Start();
+                            Application._project._gameConfigs.blockStraightModel = Path.GetFileName(filePath);
+                            Application._project.AddAssetModel(new AssetModel(Path.GetFileName(filePath), true));
+                        }
+                    }
+                    ImGui.Text("Current model: " + Application._project._gameConfigs.blockStraightModel);
+                    ImGui.Text("Scale:");
+                    ImGui.SameLine();
+                    Tooltip.Instance.Draw("Change the size of the block.");
+                    if (ImGui.InputFloat("##block_straight_scale", ref Application._project._gameConfigs.blockStraightScale, .1f))
+                    {
+                        _isTimerActive = true;
+                        _pathChangeTimer = 1f;
+                    }
+                    // Road blocks - Turn
+                    ImGui.Separator();
+                    ImGui.Text("Turn Blocks");
+                    ImGui.SameLine();
+                    Tooltip.Instance.Draw("The parts of the road on which the player turns to a new direction.");
+                    ImGui.Text("Upload new model:");
+                    if (ImGui.Button("Browse Computer"))
+                    {
+                        string filePath = "";
+                        filePath = _fileHandler.LoadFileFromComputer(AssetType.MODEL);
+                        if (filePath != "")
+                        {
+                            ModalLoading.Instance.Start();
+                            Application._project._gameConfigs.blockTurnModel = Path.GetFileName(filePath);
+                            Application._project.AddAssetModel(new AssetModel(Path.GetFileName(filePath), true));
+                        }
+                    }
+                    ImGui.Text("Current model: " + Application._project._gameConfigs.blockTurnModel);
+                    ImGui.Text("Scale:");
+                    ImGui.SameLine();
+                    Tooltip.Instance.Draw("Change the size of the block.");
+                    if (ImGui.InputFloat("##block_turn_scale", ref Application._project._gameConfigs.blockTurnScale, .1f))
+                    {
+                        _isTimerActive = true;
+                        _pathChangeTimer = 1f;
+                    }
+                    // Character
                     ImGui.SeparatorText("Character Model");
+                    ImGui.Text("Upload new model:");
+                    if (ImGui.Button("Browse Computer"))
+                    {
+                        string filePath = "";
+                        filePath = _fileHandler.LoadFileFromComputer(AssetType.MODEL);
+                        if (filePath != "")
+                        {
+                            ModalLoading.Instance.Start();
+                            Application._project._gameConfigs.characterModel = Path.GetFileName(filePath);
+                            Application._project.AddAssetModel(new AssetModel(Path.GetFileName(filePath), true));
+                        }
+                    }
+                    ImGui.Text("Current model: " + Application._project._gameConfigs.characterModel);
+                    ImGui.Text("Character scale:");
+                    ImGui.SameLine();
+                    Tooltip.Instance.Draw("Change the size of the character.");
+                    if (ImGui.InputFloat("##character_scale", ref Application._project._gameConfigs.characterScale, .1f))
+                    {
+                        _isTimerActive = true;
+                        _pathChangeTimer = 1f;
+                    }
+                    ImGui.Text("Rotation:");
+                    ImGui.SameLine();
+                    Tooltip.Instance.Draw("Rotate the character horizontally.");
+                    if (ImGui.SliderFloat("##character_rotate_y", ref Application._project._gameConfigs.characterRotateY, -180f, 180f))
+                    {
+                        _isTimerActive = true;
+                        _pathChangeTimer = 1f;
+                    }
                     // Collectable
                     ImGui.SeparatorText("Collectable Model");
                     ImGui.Text("Upload new model for collectable:");
@@ -195,7 +277,11 @@ namespace MonoEditorEndless.Editor.Layouts
                     ImGui.Text("Collectable scale:");
                     ImGui.SameLine();
                     Tooltip.Instance.Draw("Change the size of the collectable.");
-                    ImGui.InputFloat("##collectable_scale", ref Application._project._gameConfigs.collectableScale, .1f);
+                    if (ImGui.InputFloat("##collectable_scale", ref Application._project._gameConfigs.collectableScale, .1f))
+                    {
+                        _isTimerActive = true;
+                        _pathChangeTimer = 1f;
+                    }
                     // Obstacle
                     ImGui.SeparatorText("Obstacle Model");
                     ImGui.Text("Upload new model for obstacle:");
@@ -214,7 +300,7 @@ namespace MonoEditorEndless.Editor.Layouts
                     ImGui.Text("Obstacle scale:");
                     ImGui.SameLine();
                     Tooltip.Instance.Draw("Change the size of the obstacle model.");
-                    if(ImGui.InputFloat("##obstacle_scale", ref Application._project._gameConfigs.obstacleScale, .1f))
+                    if (ImGui.InputFloat("##obstacle_scale", ref Application._project._gameConfigs.obstacleScale, .1f))
                     {
                         _isTimerActive = true;
                         _pathChangeTimer = 1f;
@@ -404,16 +490,6 @@ namespace MonoEditorEndless.Editor.Layouts
         public void Update(GameTime gameTime)
         {
             // Refresh the path if the obstacle or collectable chances changed
-            if (localObstacleChance != Application._project._gameConfigs.obstacleChance ||
-                localCollectableChance != Application._project._gameConfigs.collectableChance ||
-                localCollectableScale != Application._project._gameConfigs.collectableScale ||
-                localCollectableOffset != Application._project._gameConfigs.collectableOffset
-                )
-            {
-                // A delay before applying the new changes
-                _isTimerActive = true;
-                _pathChangeTimer = 1f;
-            }
             if (_isTimerActive)
                 _pathChangeTimer -= (float)gameTime.ElapsedGameTime.TotalSeconds;
             if (_pathChangeTimer < 0f)
@@ -422,10 +498,6 @@ namespace MonoEditorEndless.Editor.Layouts
                 _pathChangeTimer = 0;
                 _controlsAggregator.RaiseRefreshSpectate();
             }
-            localObstacleChance = Application._project._gameConfigs.obstacleChance;
-            localCollectableChance = Application._project._gameConfigs.collectableChance;
-            localCollectableScale = Application._project._gameConfigs.collectableScale;
-            localCollectableOffset = Application._project._gameConfigs.collectableOffset;
         }
         private void SaveReminder()
         {

@@ -14,12 +14,18 @@ namespace MonoEditorEndless.Editor
         public string itemCollectionSound;
         public string itemCollectionSoundInstance;
         // Models in the game
-        public string _characterModel;
+        public string characterModel;
+        public float characterScale;
+        public float characterRotateY;
         public string collectableModel;
         public float collectableScale;
         public float collectableOffset;
         public string obstacleModel;
         public float obstacleScale;
+        public string blockStraightModel;
+        public float blockStraightScale;
+        public string blockTurnModel;
+        public float blockTurnScale;
 
         // Font
 
@@ -81,11 +87,18 @@ namespace MonoEditorEndless.Editor
             fogStartDistance = 900.75f;
             fogEndDistance = 1000.25f;
             // Models
-            collectableModel = "coin.fbx";
+            collectableModel = "Coin.fbx";
             collectableScale = .1f;
-            collectableOffset = 0f;
+            collectableOffset = 1f;
             obstacleModel = "rocks-small.fbx";
             obstacleScale = 0.15f;
+            characterModel = "Ship.fbx";
+            characterScale = .012f;
+            characterRotateY = -90f;
+            blockStraightModel = "wall.fbx";
+            blockStraightScale = 1f;
+            blockTurnModel = "wall-corner.fbx";
+            blockTurnScale = 1f;
         }
     }
 }

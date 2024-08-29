@@ -17,7 +17,6 @@ using System;
 using System.Collections.Generic;
 // TODO: importing this might cause problems later
 using System.IO;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrackBar;
 
 namespace MonoEditorEndless.Game
 {
@@ -44,12 +43,10 @@ namespace MonoEditorEndless.Game
         // Example Model
         private Actor actor;
         private Actor road;
-        private Actor wall;
         private Actor corner;
-        private Actor roadR;
         private Actor collectable;
         private Actor obstacle;
-
+        // Camera Model to demonstrate camera position in game
         private Actor cameraModel;
 
         private float _mouseActiveTimer = 0f;
@@ -123,15 +120,11 @@ namespace MonoEditorEndless.Game
             };
 
             actor = new Actor();
-            actor.SetVelocity(160f);
             actor.SetForward(Vector3.UnitX);
             actor.SetRightVector(-Vector3.UnitZ);
             actor.SetPosition(0 * Vector3.UnitY);
-            actor.SetName("character");
 
             road = new Actor();
-            wall = new Actor();
-            roadR = new Actor();
             corner = new Actor();
             collectable = new Actor();
 
@@ -149,36 +142,36 @@ namespace MonoEditorEndless.Game
         }
         private void LoadContent()
         {
-            actor.LoadModel(Content.Load<Model>("Content/Model/Ship"));
-            actor.SetScale(0.012f);
-            actor.RotateY((-90f / 180f) * (float)Math.PI);
-            road.LoadModel(Content.Load<Model>("Content/Model/wall"));
+            // Character
+            actor.LoadModel(Content.Load<Model>("Content/Model/" + Path.GetFileNameWithoutExtension(Application._project._gameConfigs.characterModel)));
+            actor.SetScale(Application._project._gameConfigs.characterScale);
+            actor.RotateY((Application._project._gameConfigs.characterRotateY / 180f) * (float)Math.PI);
+            // Block straight
+            road.LoadModel(Content.Load<Model>("Content/Model/" + Path.GetFileNameWithoutExtension(Application._project._gameConfigs.blockStraightModel)));
+            road.SetScale(Application._project._gameConfigs.blockStraightScale);
             road.RotateY((90f / 180f) * (float)Math.PI);
-            road.SetName("road-straight");
-            wall.LoadModel(Content.Load<Model>("Content/Model/wall-half"));
-            roadR.LoadModel(Content.Load<Model>("Content/Model/wall"));
-            wall.RotateY((180f / 180f) * (float)Math.PI);
+            // Collectable
             collectable.LoadModel(Content.Load<Model>("Content/Model/" + Path.GetFileNameWithoutExtension(Application._project._gameConfigs.collectableModel)));
             collectable.SetScale(Application._project._gameConfigs.collectableScale);
             collectable.SetPosition(collectable.GetPosition() + Vector3.UnitY * Application._project._gameConfigs.collectableOffset);
             collectable.SetName("collectable");
-            cameraModel.LoadModel(Content.Load<Model>("Content/Editor/Model/camera"));
 
+            // Obstacle
             obstacle.LoadModel(Content.Load<Model>("Content/Model/" + Path.GetFileNameWithoutExtension(Application._project._gameConfigs.obstacleModel)));
             obstacle.SetScale(Application._project._gameConfigs.obstacleScale);
-            obstacle.SetName("obstacle");
+            // Load Camera model
+            cameraModel.LoadModel(Content.Load<Model>("Content/Editor/Model/camera"));
+            // Block turn
+            corner.LoadModel(Content.Load<Model>("Content/Model/" + Path.GetFileNameWithoutExtension(Application._project._gameConfigs.blockTurnModel)));
+            corner.SetScale(Application._project._gameConfigs.blockTurnScale);
 
             _world.AddActor(actor, true);
-
-            corner.LoadModel(Content.Load<Model>("Content/Model/wall-corner"));
-            corner.SetName("road-corner");
 
             _pathManager.AddObstacle(obstacle);
             _pathManager.AddCollectable(collectable);
             _pathManager.AddRoadBlock(road);
-            _pathManager.AddWallBlock(wall);
             _pathManager.AddTurnRight(corner);
-            _pathManager.Initialize(20);
+            _pathManager.Initialize(30);
 
             _skyboxTextureList = new List<Texture2D>();
             _skyboxTextureList.Add(Content.Load<Texture2D>("Content/Texture/front"));
