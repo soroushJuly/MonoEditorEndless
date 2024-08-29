@@ -77,7 +77,7 @@ namespace ProjectRunnerTest
                     fileHandler.SaveXml<string>(new string("default_project.xml"), "recent_project.xml", Routes.SAVED_PROJECTS);
             }
 
-            _project.AssetAdded += (object sender, EventArgs e) => { UpdateContent(_project.GetAllAsset()); BuildContent(); };
+            _project.AssetAdded += (object sender, EventArgs e) => { UpdateContent(_project.GetAllAsset()); BuildContent(); _gameHandle.Refresh(); };
 
             _editorHandle = new EditorHandle(this, _graphics, aggregator);
 

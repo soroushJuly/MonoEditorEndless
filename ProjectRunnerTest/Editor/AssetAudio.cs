@@ -15,6 +15,7 @@ namespace MonoEditorEndless.Editor
         {
             _importerDetails = "/importer:Mp3Importer\r\n/processor:SoundEffectProcessor\r\n/processorParam:Quality=Best\r\n";
             GenerateContentText();
+            _assetType = AssetType.AUDIO;
         }
     }
 }

@@ -93,6 +93,7 @@ namespace MonoEditorEndless.Game
         }
         public void Refresh()
         {
+            _fsm.GetCurrentState().Exit(this);
             _fsm.GetCurrentState().Enter(this);
         }
         public void Stop()

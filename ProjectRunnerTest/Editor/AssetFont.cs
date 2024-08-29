@@ -15,6 +15,7 @@ namespace MonoEditorEndless.Editor
             _importerDetails = "/importer:FontDescriptionImporter\r\n/processor:FontDescriptionProcessor\r\n/processorParam:PremultiplyAlpha=True\r\n/processorParam:TextureFormat=Compressed\r\n";
             CreateFontSprite();
             GenerateContentText();
+            _assetType = AssetType.FONT;
         }
         private void CreateFontSprite()
         {

@@ -15,6 +15,7 @@ namespace MonoEditorEndless.Editor
         public string itemCollectionSoundInstance;
         // Models in the game
         public string _characterModel;
+        public string collectableModel;
 
         // Font
 
@@ -75,6 +76,8 @@ namespace MonoEditorEndless.Editor
             fogColor = new Vector3(.6f);
             fogStartDistance = 900.75f;
             fogEndDistance = 1000.25f;
+            // Models
+            collectableModel = "coin.fbx";
         }
     }
 }

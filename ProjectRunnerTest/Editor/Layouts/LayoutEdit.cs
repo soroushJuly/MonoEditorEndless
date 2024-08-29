@@ -173,6 +173,19 @@ namespace MonoEditorEndless.Editor.Layouts
                     ImGui.SeparatorText("Road Models");
                     ImGui.SeparatorText("Character Model");
                     ImGui.SeparatorText("Collectable Model");
+                    ImGui.Text("Upload new model for collectable:");
+                    if (ImGui.Button("Browse Computer"))
+                    {
+                        string filePath = "";
+                        filePath = _fileHandler.LoadFileFromComputer(AssetType.MODEL);
+                        if (filePath != "")
+                        {
+                            //ModalLoading.Instance.Start();
+                            Application._project._gameConfigs.collectableModel = Path.GetFileName(filePath);
+                            Application._project.AddAssetModel(new AssetModel(Path.GetFileName(filePath), true));
+                        }
+                    }
+                    ImGui.Text(Application._project._gameConfigs.collectableModel);
                     ImGui.SeparatorText("Obstacle Model");
                 }
                 if (ImGui.CollapsingHeader("Lights", ImGuiTreeNodeFlags.None))
@@ -230,9 +243,9 @@ namespace MonoEditorEndless.Editor.Layouts
                     {
                         // TODO: check the validity here when we get the file
                         // by passing an optional file desired file type
-                        string path = _fileHandler.LoadFileFromComputer();
-                        if (_fileHandler.CheckValidity(path, AssetAudio._allowedExtentions))
-                            Application._project.AddAssetAudio(new AssetAudio(Path.GetFileName(path)));
+                        //string path = _fileHandler.LoadFileFromComputer();
+                        //if (_fileHandler.CheckValidity(path, AssetAudio._allowedExtentions))
+                        //    Application._project.AddAssetAudio(new AssetAudio(Path.GetFileName(path)));
                     }
                     //if (ImGui.Button("play it!!"))
                     //{

@@ -15,6 +15,8 @@ using ProjectRunnerTest;
 
 using System;
 using System.Collections.Generic;
+// TODO: importing this might cause problems later
+using System.IO;
 
 namespace MonoEditorEndless.Game
 {
@@ -156,7 +158,7 @@ namespace MonoEditorEndless.Game
             wall.LoadModel(Content.Load<Model>("Content/Model/wall-half"));
             roadR.LoadModel(Content.Load<Model>("Content/Model/wall"));
             wall.RotateY((180f / 180f) * (float)Math.PI);
-            collectable.LoadModel(Content.Load<Model>("Content/Model/Coin"));
+            collectable.LoadModel(Content.Load<Model>("Content/Model/" + Path.GetFileNameWithoutExtension(Application._project._gameConfigs.collectableModel)));
             collectable.SetScale(.1f);
             collectable.SetName("collectable");
             cameraModel.LoadModel(Content.Load<Model>("Content/Editor/Model/camera"));
@@ -285,7 +287,7 @@ namespace MonoEditorEndless.Game
 
             _camera.Update();
         }
-        public override void Exit(object owner) { }
+        public override void Exit(object owner) { Content.Unload(); }
         public override void Draw(GraphicsDevice GraphicsDevice = null, SpriteBatch spriteBatch = null)
         {
             var lastViewport = _graphicsDevice.Viewport;

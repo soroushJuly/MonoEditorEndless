@@ -69,7 +69,7 @@ namespace MonoEditorEndless.Editor
         /// Copy the selected file in the content folder
         /// </summary>
         /// <returns>path to the file</returns>
-        public string LoadFileFromComputer()
+        public string LoadFileFromComputer(AssetType assetType)
         {
             var fileContent = string.Empty;
             var filePath = string.Empty;
@@ -89,37 +89,60 @@ namespace MonoEditorEndless.Editor
                         filePath = openFileDialog.FileName;
 
                         // Copying logic
+                        // Select the proper folder based on the type of asset
+                        string folderName = assetType.ToString();
                         // Create the new path to copy the file into
-                        string[] paths = { Routes.CONTENT_DIRECTORY, "..", "Audio", Path.GetFileName(filePath) };
-                        Path.GetExtension(filePath);
-                        newPath = Path.Combine(paths);
-
-                        try
+                        string[] paths = { Routes.CONTENT_DIRECTORY, folderName[0].ToString().ToUpper() + folderName.Substring(1).ToLower(), Path.GetFileName(filePath) };
+                        string[] allowedExtentions = new string[] { };
+                        switch (assetType)
                         {
-                            // Check if the source file exists
-                            if (File.Exists(filePath))
-                            {
-                                // Copy the source file to the destination file
-                                File.Copy(filePath, newPath, true);
-                                Debug.WriteLine("File copied successfully.");
-                            }
-                            else
-                            {
-                                Debug.WriteLine("Source file does not exist.");
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            // Handle any exceptions that may occur
-                            Console.WriteLine("An error occurred: " + ex.Message);
+                            case AssetType.MODEL:
+                                allowedExtentions = AssetModel._allowedExtentions;
+                                break;
+                            case AssetType.AUDIO:
+                                allowedExtentions = AssetAudio._allowedExtentions;
+                                break;
+                            //case AssetType.FONT:
+                            //    CheckValidity(filePath, AssetFont._allowedExtentions);
+                            //    break;
+                            case AssetType.TEXTURE:
+                                allowedExtentions = AssetTexture._allowedExtentions;
+                                break;
+                            default:
+                                break;
                         }
 
-                        // Read the contents of the file into a stream
-                        var fileStream = openFileDialog.OpenFile();
-
-                        using (StreamReader reader = new StreamReader(fileStream))
+                        // if the file type is valid continue rest of operations
+                        if (CheckValidity(filePath, allowedExtentions))
                         {
-                            fileContent = reader.ReadToEnd();
+                            newPath = Path.Combine(paths);
+                            try
+                            {
+                                // Check if the source file exists
+                                if (File.Exists(filePath))
+                                {
+                                    // Copy the source file to the destination file
+                                    File.Copy(filePath, newPath, true);
+                                    Debug.WriteLine("File copied successfully.");
+                                }
+                                else
+                                {
+                                    Debug.WriteLine("Source file does not exist.");
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                // Handle any exceptions that may occur
+                                Console.WriteLine("An error occurred: " + ex.Message);
+                            }
+
+                            // Read the contents of the file into a stream
+                            var fileStream = openFileDialog.OpenFile();
+
+                            using (StreamReader reader = new StreamReader(fileStream))
+                            {
+                                fileContent = reader.ReadToEnd();
+                            }
                         }
                     }
                 }
@@ -130,6 +153,10 @@ namespace MonoEditorEndless.Editor
 
             return newPath;
         }
+        /// <summary>
+        /// Opens up a dialog to select a folder from computer
+        /// </summary>
+        /// <returns>path to the folder</returns>
         public string FolderSelector()
         {
             var path = string.Empty;
@@ -173,13 +200,6 @@ namespace MonoEditorEndless.Editor
                         //Get the path of specified file
                         filePath = openFileDialog.FileName;
 
-                        // Copying logic
-                        // Create the new path to copy the file into
-                        string[] paths = { Routes.CONTENT_DIRECTORY, "..", "Audio", Path.GetFileName(filePath) };
-                        Path.GetExtension(filePath);
-
-
-
                         // Read the contents of the file into a stream
                         var fileStream = openFileDialog.OpenFile();
 
@@ -199,8 +219,8 @@ namespace MonoEditorEndless.Editor
         /// <summary>
         /// Checks if a file is in right format
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="_allowedExtentions"></param>
+        /// <param name="name">Path or name of a file with extension</param>
+        /// <param name="_allowedExtentions">Extenstions that the file is allowed to have</param>
         /// <returns></returns>
         public bool CheckValidity(string name, string[] _allowedExtentions)
         {
@@ -222,7 +242,14 @@ namespace MonoEditorEndless.Editor
                 {
                     allowedExt += allowedExtension + " ";
                 }
-                Forms.MessageBox.Show("Please select a proper file type\n\r" + allowedExt);
+                // Defining new thread makes the message box appears in front
+                Thread thread = new Thread(() =>
+                {
+                    Forms.MessageBox.Show("Please select a proper file type\n\r" + allowedExt);
+                });
+                thread.SetApartmentState(ApartmentState.STA);
+                thread.Start();
+                thread.Join();
             }
 
             return status;
