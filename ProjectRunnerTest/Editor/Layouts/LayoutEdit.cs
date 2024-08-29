@@ -149,14 +149,33 @@ namespace MonoEditorEndless.Editor.Layouts
                     ImGui.SeparatorText("fdf");
                     ImGui.Text("Road Generator");
                 }
-                if (ImGui.CollapsingHeader("Change 3D models"))
+                if (ImGui.CollapsingHeader("Change 3D models", ImGuiTreeNodeFlags.DefaultOpen))
                 {
-                    ImGui.Text("Road Models");
-                    ImGui.Text("Character");
-                    ImGui.Text("items");
-                    ImGui.Text("obstacles");
+                    ImGui.NewLine();
+                    if (ImGui.Button("Search 3D models", new Num.Vector2(ImGui.GetContentRegionAvail().X, 30)))
+                    {
+                        string target = "https://sketchfab.com/features/free-3d-models";
+                        try
+                        {
+                            Process.Start(new ProcessStartInfo(target) { UseShellExecute = true });
+                        }
+                        catch (System.ComponentModel.Win32Exception noBrowser)
+                        {
+                            if (noBrowser.ErrorCode == -2147467259)
+                                Forms.MessageBox.Show(noBrowser.Message);
+                        }
+                        catch (System.Exception other)
+                        {
+                            Forms.MessageBox.Show(other.Message);
+                        }
+                    }
+                    ImGui.NewLine();
+                    ImGui.SeparatorText("Road Models");
+                    ImGui.SeparatorText("Character Model");
+                    ImGui.SeparatorText("Collectable Model");
+                    ImGui.SeparatorText("Obstacle Model");
                 }
-                if (ImGui.CollapsingHeader("Lights", ImGuiTreeNodeFlags.DefaultOpen))
+                if (ImGui.CollapsingHeader("Lights", ImGuiTreeNodeFlags.None))
                 {
                     ImGui.SeparatorText("Scene light");
                     ImGui.Text("Scene light diffuse color:");
