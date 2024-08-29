@@ -129,7 +129,7 @@ namespace ProjectRunnerTest
         }
         public static void BuildContent()
         {
-            string contentProjectPath = Routes.CONTENT_DIRECTORY; // Path to content project
+            string contentProjectPath = Routes.CONTENT_FILE; // Path to content.mgbc project
             Thread thread = new Thread(() =>
             {
                 string CurrentDirectory = Environment.CurrentDirectory;
@@ -168,18 +168,18 @@ namespace ProjectRunnerTest
         /// <param name="assetList"></param>
         public static void UpdateContent(List<Asset> assetList)
         {
-            string contentFileText = File.ReadAllText(Routes.CONTENT_DIRECTORY);
+            string contentFileText = File.ReadAllText(Routes.CONTENT_FILE);
             foreach (Asset asset in assetList)
             {
                 // If asset is already in file don't add it again
                 if (!contentFileText.Contains(asset.GetPathString()))
-                    File.AppendAllText(Routes.CONTENT_DIRECTORY, asset.GetContentText());
+                    File.AppendAllText(Routes.CONTENT_FILE, asset.GetContentText());
             }
             foreach (Asset asset in _editorHandle.GetAssets())
             {
                 // If asset is already in file don't add it again
                 if (!contentFileText.Contains(asset.GetPathString()))
-                    File.AppendAllText(Routes.CONTENT_DIRECTORY, asset.GetContentText());
+                    File.AppendAllText(Routes.CONTENT_FILE, asset.GetContentText());
             }
         }
     }
