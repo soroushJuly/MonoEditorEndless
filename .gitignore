@@ -364,3 +364,4 @@ FodyWeavers.xsd
 
 # Content file will be populated automatically runtime
 #ProjectRunnerTest/Content/Content.mgcb
+/ProjectRunnerTest/Intermediate
