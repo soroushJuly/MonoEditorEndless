@@ -147,7 +147,7 @@ namespace MonoEditorEndless.Editor.Layouts
                     Tooltip.Instance.Draw("How fast the game speed increases over time.");
                     ImGui.SliderFloat("##game_speed", ref Application._project._gameConfigs.gameAcceleration, 0, 2);
                 }
-                if (ImGui.CollapsingHeader("Environment", ImGuiTreeNodeFlags.DefaultOpen))
+                if (ImGui.CollapsingHeader("Environment", ImGuiTreeNodeFlags.None))
                 {
                     // Sky
                     ImGui.Text("Sky");
@@ -453,15 +453,22 @@ namespace MonoEditorEndless.Editor.Layouts
                 if (ImGui.CollapsingHeader("Audio"))
                 {
                     // Main Background music
-                    ImGui.Text("Load background music");
-                    if (ImGui.Button("Load from computer"))
+                    ImGui.SeparatorText("Background music");
+
+                    if (ImGui.Button("Browse Computer ##block_straight_scale"))
                     {
-                        // TODO: check the validity here when we get the file
-                        // by passing an optional file desired file type
-                        //string path = _fileHandler.LoadFileFromComputer();
-                        //if (_fileHandler.CheckValidity(path, AssetAudio._allowedExtentions))
-                        //    Application._project.AddAssetAudio(new AssetAudio(Path.GetFileName(path)));
+                        string filePath = "";
+                        filePath = _fileHandler.LoadFileFromComputer(AssetType.MODEL);
+                        if (filePath != "")
+                        {
+                            ModalLoading.Instance.Start();
+                            Application._project.AddAssetModel(new AssetModel(Path.GetFileName(filePath), true), "blockStraightModel");
+                        }
                     }
+
+                    ImGui.SeparatorText("Collection sound effect");
+
+                    ImGui.SeparatorText("Obstacle hit sound effect");
                     //if (ImGui.Button("play it!!"))
                     //{
                     //    SoundEffectInstance si = _soundList[0].CreateInstance();
@@ -471,7 +478,6 @@ namespace MonoEditorEndless.Editor.Layouts
 
                     // Ending Music
 
-                    ImGui.Text("Hello from camera setting!");
                 }
 
 
