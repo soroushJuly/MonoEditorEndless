@@ -159,33 +159,32 @@ namespace MonoEditorEndless.Game
         }
         private void LoadContent()
         {
-            actor.LoadModel(Content.Load<Model>("Content/Model/Ship"));
-            actor.SetScale(0.012f);
-            actor.RotateY((-90f / 180f) * (float)Math.PI);
-            road.LoadModel(Content.Load<Model>("Content/Model/wall"));
+            // Character
+            actor.LoadModel(Content.Load<Model>("Content/Model/" + Application._project._gameConfigs.characterModel));
+            actor.SetScale(Application._project._gameConfigs.characterScale);
+            actor.RotateY((Application._project._gameConfigs.characterRotateY / 180f) * (float)Math.PI);
+            // Block straight
+            road.LoadModel(Content.Load<Model>("Content/Model/" + Application._project._gameConfigs.blockStraightModel));
+            road.SetScale(Application._project._gameConfigs.blockStraightScale);
             road.RotateY((90f / 180f) * (float)Math.PI);
             road.SetName("road-straight");
-            wall.LoadModel(Content.Load<Model>("Content/Model/wall-half"));
-            roadR.LoadModel(Content.Load<Model>("Content/Model/wall"));
-            wall.RotateY((180f / 180f) * (float)Math.PI);
-            collectable.LoadModel(Content.Load<Model>("Content/Model/Coin"));
-            collectable.SetScale(.1f);
+            // Collectable
+            collectable.LoadModel(Content.Load<Model>("Content/Model/" + Application._project._gameConfigs.collectableModel));
+            collectable.SetScale(Application._project._gameConfigs.collectableScale);
+            collectable.SetPosition(collectable.GetPosition() + Vector3.UnitY * Application._project._gameConfigs.collectableOffset);
             collectable.SetName("collectable");
-
-            // Load the sound effect
-            //_soundEffect = new SoundEffect();
-            //_soundEffect = Content.Load<SoundEffect>("Content/Audio/mario_coin_sound");
-            //_soundEffectInstance = _soundEffect.CreateInstance();
-            //_soundEffectInstance.Volume = .1f;
-
-            obstacle.LoadModel(Content.Load<Model>("Content/Model/rocks-small"));
-            obstacle.SetScale(0.15f);
+            // Obstacle
+            obstacle.LoadModel(Content.Load<Model>("Content/Model/" + Application._project._gameConfigs.obstacleModel));
+            obstacle.SetScale(Application._project._gameConfigs.obstacleScale);
             obstacle.SetName("obstacle");
+            // Block turn
+            corner.LoadModel(Content.Load<Model>("Content/Model/" + Application._project._gameConfigs.blockTurnModel));
+            corner.SetScale(Application._project._gameConfigs.blockTurnScale);
+            corner.SetName("road-corner");
 
             _world.AddActor(actor, true);
 
-            corner.LoadModel(Content.Load<Model>("Content/Model/wall-corner"));
-            corner.SetName("road-corner");
+            
 
             _pathManager.AddObstacle(obstacle);
             _pathManager.AddCollectable(collectable);
@@ -203,6 +202,13 @@ namespace MonoEditorEndless.Game
             catch
             {
             }
+
+
+            // Load the sound effect
+            //_soundEffect = new SoundEffect();
+            //_soundEffect = Content.Load<SoundEffect>("Content/Audio/mario_coin_sound");
+            //_soundEffectInstance = _soundEffect.CreateInstance();
+            //_soundEffectInstance.Volume = .1f;
 
             _skyboxTextureList = new List<Texture2D>();
             _skyboxTextureList.Add(Content.Load<Texture2D>("Content/Texture/front"));

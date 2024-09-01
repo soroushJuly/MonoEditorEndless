@@ -143,26 +143,26 @@ namespace MonoEditorEndless.Game
         private void LoadContent()
         {
             // Character
-            actor.LoadModel(Content.Load<Model>("Content/Model/" + Path.GetFileNameWithoutExtension(Application._project._gameConfigs.characterModel)));
+            actor.LoadModel(Content.Load<Model>("Content/Model/" + Application._project._gameConfigs.characterModel));
             actor.SetScale(Application._project._gameConfigs.characterScale);
             actor.RotateY((Application._project._gameConfigs.characterRotateY / 180f) * (float)Math.PI);
             // Block straight
-            road.LoadModel(Content.Load<Model>("Content/Model/" + Path.GetFileNameWithoutExtension(Application._project._gameConfigs.blockStraightModel)));
+            road.LoadModel(Content.Load<Model>("Content/Model/" + Application._project._gameConfigs.blockStraightModel));
             road.SetScale(Application._project._gameConfigs.blockStraightScale);
             road.RotateY((90f / 180f) * (float)Math.PI);
             // Collectable
-            collectable.LoadModel(Content.Load<Model>("Content/Model/" + Path.GetFileNameWithoutExtension(Application._project._gameConfigs.collectableModel)));
+            collectable.LoadModel(Content.Load<Model>("Content/Model/" + Application._project._gameConfigs.collectableModel));
             collectable.SetScale(Application._project._gameConfigs.collectableScale);
             collectable.SetPosition(collectable.GetPosition() + Vector3.UnitY * Application._project._gameConfigs.collectableOffset);
             collectable.SetName("collectable");
 
             // Obstacle
-            obstacle.LoadModel(Content.Load<Model>("Content/Model/" + Path.GetFileNameWithoutExtension(Application._project._gameConfigs.obstacleModel)));
+            obstacle.LoadModel(Content.Load<Model>("Content/Model/" + Application._project._gameConfigs.obstacleModel));
             obstacle.SetScale(Application._project._gameConfigs.obstacleScale);
             // Load Camera model
             cameraModel.LoadModel(Content.Load<Model>("Content/Editor/Model/camera"));
             // Block turn
-            corner.LoadModel(Content.Load<Model>("Content/Model/" + Path.GetFileNameWithoutExtension(Application._project._gameConfigs.blockTurnModel)));
+            corner.LoadModel(Content.Load<Model>("Content/Model/" + Application._project._gameConfigs.blockTurnModel));
             corner.SetScale(Application._project._gameConfigs.blockTurnScale);
 
             _world.AddActor(actor, true);

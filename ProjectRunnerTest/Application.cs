@@ -85,16 +85,13 @@ namespace ProjectRunnerTest
             {
                 string ContentFile = File.ReadAllText(Routes.CONTENT_FILE);
                 UpdateContent(_project.GetAllAsset());
-                // If game handle provided
                 // If build fails
-                if (!BuildContent(_gameHandle))
+                if (!BuildContent())
                 {
                     // Revert change if the build process wasn't successful
                     _project.RemoveLastAsset();
                     // Change the content file to what is was before
                     File.WriteAllText(Routes.CONTENT_FILE, ContentFile);
-                    // Revert the _project._gameConfig
-                    _project._gameConfigs = LayoutEdit.prevGameConfigs;
                 }
                 // If content build is successful we change the field in game config project
                 else
@@ -103,8 +100,12 @@ namespace ProjectRunnerTest
                     FieldInfo field = _project._gameConfigs.GetType().GetField(e.role);
                     if (field != null)
                     {
-                        field.SetValue(_project._gameConfigs, e.name);
+                        field.SetValue(Application._project._gameConfigs, e.name);
                     }
+                    // Refresh the game
+                    _gameHandle?.Refresh();
+
+                    ModalLoading.Instance.Stop();
                 }
             };
 
@@ -154,7 +155,7 @@ namespace ProjectRunnerTest
             _editorHandle.Update(gameTime);
             _gameHandle.Update(gameTime);
         }
-        public static bool BuildContent(GameHandle gameHandle = null)
+        public static bool BuildContent()
         {
             string contentProjectPath = Routes.CONTENT_FILE; // Path to content.mgbc project
 
@@ -220,9 +221,6 @@ namespace ProjectRunnerTest
                 ModalLoading.Instance.Stop();
                 return false;
             }
-            gameHandle?.Refresh();
-
-            ModalLoading.Instance.Stop();
 
             return true;
         }
