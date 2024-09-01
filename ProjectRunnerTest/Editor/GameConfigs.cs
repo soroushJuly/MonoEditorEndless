@@ -87,17 +87,17 @@ namespace MonoEditorEndless.Editor
             fogStartDistance = 900.75f;
             fogEndDistance = 1000.25f;
             // Models
-            collectableModel = "Coin.fbx";
+            collectableModel = "Coin";
             collectableScale = .1f;
             collectableOffset = 1f;
-            obstacleModel = "rocks-small.fbx";
+            obstacleModel = "rocks-small";
             obstacleScale = 0.15f;
-            characterModel = "Ship.fbx";
+            characterModel = "Ship";
             characterScale = .012f;
             characterRotateY = -90f;
-            blockStraightModel = "wall.fbx";
+            blockStraightModel = "wall";
             blockStraightScale = 1f;
-            blockTurnModel = "wall-corner.fbx";
+            blockTurnModel = "wall-corner";
             blockTurnScale = 1f;
         }
     }

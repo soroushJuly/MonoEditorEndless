@@ -182,15 +182,14 @@ namespace MonoEditorEndless.Editor.Layouts
                     ImGui.SameLine();
                     Tooltip.Instance.Draw("The parts of the road on which the player moves straight.");
                     ImGui.Text("Upload new model:");
-                    if (ImGui.Button("Browse Computer"))
+                    if (ImGui.Button("Browse Computer ##block_straight_scale"))
                     {
                         string filePath = "";
                         filePath = _fileHandler.LoadFileFromComputer(AssetType.MODEL);
                         if (filePath != "")
                         {
                             ModalLoading.Instance.Start();
-                            Application._project._gameConfigs.blockStraightModel = Path.GetFileName(filePath);
-                            Application._project.AddAssetModel(new AssetModel(Path.GetFileName(filePath), true));
+                            Application._project.AddAssetModel(new AssetModel(Path.GetFileName(filePath), true), "blockStraightModel");
                         }
                     }
                     ImGui.Text("Current model: " + Application._project._gameConfigs.blockStraightModel);
@@ -208,15 +207,14 @@ namespace MonoEditorEndless.Editor.Layouts
                     ImGui.SameLine();
                     Tooltip.Instance.Draw("The parts of the road on which the player turns to a new direction.");
                     ImGui.Text("Upload new model:");
-                    if (ImGui.Button("Browse Computer"))
+                    if (ImGui.Button("Browse Computer##block_turn_scale"))
                     {
                         string filePath = "";
                         filePath = _fileHandler.LoadFileFromComputer(AssetType.MODEL);
                         if (filePath != "")
                         {
                             ModalLoading.Instance.Start();
-                            Application._project._gameConfigs.blockTurnModel = Path.GetFileName(filePath);
-                            Application._project.AddAssetModel(new AssetModel(Path.GetFileName(filePath), true));
+                            Application._project.AddAssetModel(new AssetModel(Path.GetFileName(filePath), true), "blockTurnModel");
                         }
                     }
                     ImGui.Text("Current model: " + Application._project._gameConfigs.blockTurnModel);
@@ -231,15 +229,14 @@ namespace MonoEditorEndless.Editor.Layouts
                     // Character
                     ImGui.SeparatorText("Character Model");
                     ImGui.Text("Upload new model:");
-                    if (ImGui.Button("Browse Computer"))
+                    if (ImGui.Button("Browse Computer##character_scale"))
                     {
                         string filePath = "";
                         filePath = _fileHandler.LoadFileFromComputer(AssetType.MODEL);
                         if (filePath != "")
                         {
                             ModalLoading.Instance.Start();
-                            Application._project._gameConfigs.characterModel = Path.GetFileName(filePath);
-                            Application._project.AddAssetModel(new AssetModel(Path.GetFileName(filePath), true));
+                            Application._project.AddAssetModel(new AssetModel(Path.GetFileName(filePath), true), "characterModel");
                         }
                     }
                     ImGui.Text("Current model: " + Application._project._gameConfigs.characterModel);
@@ -262,15 +259,14 @@ namespace MonoEditorEndless.Editor.Layouts
                     // Collectable
                     ImGui.SeparatorText("Collectable Model");
                     ImGui.Text("Upload new model for collectable:");
-                    if (ImGui.Button("Browse Computer"))
+                    if (ImGui.Button("Browse Computer##collectable_scale"))
                     {
                         string filePath = "";
                         filePath = _fileHandler.LoadFileFromComputer(AssetType.MODEL);
                         if (filePath != "")
                         {
                             ModalLoading.Instance.Start();
-                            Application._project._gameConfigs.collectableModel = Path.GetFileName(filePath);
-                            Application._project.AddAssetModel(new AssetModel(Path.GetFileName(filePath), true));
+                            Application._project.AddAssetModel(new AssetModel(Path.GetFileName(filePath), true), "collectableModel");
                         }
                     }
                     ImGui.Text("Current model: " + Application._project._gameConfigs.collectableModel);
@@ -285,15 +281,14 @@ namespace MonoEditorEndless.Editor.Layouts
                     // Obstacle
                     ImGui.SeparatorText("Obstacle Model");
                     ImGui.Text("Upload new model for obstacle:");
-                    if (ImGui.Button("Browse Computer"))
+                    if (ImGui.Button("Browse Computer##obstacle_scale"))
                     {
                         string filePath = "";
                         filePath = _fileHandler.LoadFileFromComputer(AssetType.MODEL);
                         if (filePath != "")
                         {
                             ModalLoading.Instance.Start();
-                            Application._project._gameConfigs.obstacleModel = Path.GetFileName(filePath);
-                            Application._project.AddAssetModel(new AssetModel(Path.GetFileName(filePath), true));
+                            Application._project.AddAssetModel(new AssetModel(Path.GetFileName(filePath), true), "obstacleModel");
                         }
                     }
                     ImGui.Text("Current model: " + Application._project._gameConfigs.obstacleModel);

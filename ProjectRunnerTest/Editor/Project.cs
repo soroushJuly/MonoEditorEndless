@@ -3,9 +3,22 @@ using System.Collections.Generic;
 
 namespace MonoEditorEndless.Editor
 {
+    public class AssetAdditionArgs : EventArgs
+    {
+        // address of config in gameconfigs
+        public string role { get; }
+        // name of the file
+        public string name { get; }
+        public AssetAdditionArgs(string role, string name)
+        {
+            this.role = role;
+            this.name = name;
+        }
+    }
     public class Project
     {
 
+        public List<Asset> _assets;
         public List<AssetAudio> _audioList;
         public List<AssetModel> _modelList;
         public List<AssetTexture> _textureList;
@@ -15,9 +28,10 @@ namespace MonoEditorEndless.Editor
         public EditorConfigs _editorConfigs;
         public DateTime _lastSaved;
 
-        public event EventHandler AssetAdded;
+        public event EventHandler<AssetAdditionArgs> AssetAdded;
         public Project()
         {
+            _assets = new List<Asset>();
             _audioList = new List<AssetAudio>();
             _modelList = new List<AssetModel>();
             _textureList = new List<AssetTexture>();
@@ -29,59 +43,62 @@ namespace MonoEditorEndless.Editor
         public void CreateDefault()
         {
             // Preoccupy the asset list with the current assets
-            _audioList.Add(new AssetAudio("mario_coin_sound.mp3"));
-            _audioList.Add(new AssetAudio("Titan.mp3"));
-            _modelList.Add(new AssetModel("bridge-straight.fbx"));
-            _modelList.Add(new AssetModel("Coin.fbx"));
-            _modelList.Add(new AssetModel("Ship.fbx"));
-            _modelList.Add(new AssetModel("rocks-small.fbx"));
-            _modelList.Add(new AssetModel("wall-corner.fbx"));
-            _modelList.Add(new AssetModel("wall-half.fbx"));
-            _modelList.Add(new AssetModel("wall.fbx"));
-            _textureList.Add(new AssetTexture("bg.jpg"));
-            _textureList.Add(new AssetTexture("top.bmp"));
-            _textureList.Add(new AssetTexture("right.bmp"));
-            _textureList.Add(new AssetTexture("left.bmp"));
-            _textureList.Add(new AssetTexture("front.bmp"));
-            _textureList.Add(new AssetTexture("bottom.bmp"));
-            _textureList.Add(new AssetTexture("back.bmp"));
-            _textureList.Add(new AssetTexture("colormap.png"));
-            _textureList.Add(new AssetTexture("Coin2_BaseColor.jpg"));
-            _textureList.Add(new AssetTexture("ShipDiffuse.tga"));
-            _textureList.Add(new AssetTexture("ShipDiffuse_0.tga"));
-            _textureList.Add(new AssetTexture("heart.png"));
-            _textureList.Add(new AssetTexture("grass.jpg"));
-            _fontList.Add(new AssetFont("File.spritefont"));
+            _assets.Add(new AssetAudio("mario_coin_sound.mp3"));
+            _assets.Add(new AssetAudio("Titan.mp3"));
+            _assets.Add(new AssetModel("bridge-straight.fbx"));
+            _assets.Add(new AssetModel("Coin.fbx"));
+            _assets.Add(new AssetModel("Ship.fbx"));
+            _assets.Add(new AssetModel("rocks-small.fbx"));
+            _assets.Add(new AssetModel("wall-corner.fbx"));
+            _assets.Add(new AssetModel("wall-half.fbx"));
+            _assets.Add(new AssetModel("wall.fbx"));
+            _assets.Add(new AssetTexture("bg.jpg"));
+            _assets.Add(new AssetTexture("top.bmp"));
+            _assets.Add(new AssetTexture("right.bmp"));
+            _assets.Add(new AssetTexture("left.bmp"));
+            _assets.Add(new AssetTexture("front.bmp"));
+            _assets.Add(new AssetTexture("bottom.bmp"));
+            _assets.Add(new AssetTexture("back.bmp"));
+            _assets.Add(new AssetTexture("colormap.png"));
+            _assets.Add(new AssetTexture("Coin2_BaseColor.jpg"));
+            _assets.Add(new AssetTexture("ShipDiffuse.tga"));
+            _assets.Add(new AssetTexture("ShipDiffuse_0.tga"));
+            _assets.Add(new AssetTexture("heart.png"));
+            _assets.Add(new AssetTexture("grass.jpg"));
+            _assets.Add(new AssetFont("File.spritefont"));
         }
         public List<Asset> GetAllAsset()
         {
-            List<Asset> assets = new List<Asset>();
-            assets.AddRange(_audioList);
-            assets.AddRange(_textureList);
-            assets.AddRange(_modelList);
-            assets.AddRange(_fontList);
-            return assets;
+            return _assets;
         }
         // TODO: better structure for these methods
-        public void AddAssetAudio(AssetAudio asset)
+        public void AddAssetAudio(AssetAudio asset, string role)
         {
-            _audioList.Add(asset);
-            AssetAdded(this, EventArgs.Empty);
+            _assets.Add(asset);
+            RaiseAssetAdded(role, asset._nameWithoutExtenstion);
         }
-        public void AddAssetTexture(AssetTexture asset)
+        public void AddAssetTexture(AssetTexture asset, string role)
         {
-            _textureList.Add(asset);
-            AssetAdded(this, EventArgs.Empty);
+            _assets.Add(asset);
+            RaiseAssetAdded(role, asset._nameWithoutExtenstion);
         }
-        public void AddAssetModel(AssetModel asset)
+        public void AddAssetModel(AssetModel asset, string role)
         {
-            _modelList.Add(asset);
-            AssetAdded(this, EventArgs.Empty);
+            _assets.Add(asset);
+            RaiseAssetAdded(role, asset._nameWithoutExtenstion);
         }
-        public void AddAssetFont(AssetFont asset)
+        public void AddAssetFont(AssetFont asset, string role)
         {
-            _fontList.Add(asset);
-            AssetAdded(this, EventArgs.Empty);
+            _assets.Add(asset);
+            RaiseAssetAdded(role, asset._nameWithoutExtenstion);
+        }
+        public void RemoveLastAsset()
+        {
+            _assets.RemoveAt(_assets.Count - 1);
+        }
+        public void RaiseAssetAdded(string role, string name)
+        {
+            AssetAdded?.Invoke(this, new AssetAdditionArgs(role, name));
         }
     }
 }

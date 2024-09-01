@@ -4,7 +4,7 @@ using System;
 namespace MonoEditorEndless.Engine
 {
     // Args sent related to a game session
-    internal class SessionArgs : EventArgs
+    public class SessionArgs : EventArgs
     {
         public float _points;
         public float _time;
@@ -14,7 +14,7 @@ namespace MonoEditorEndless.Engine
             _time = time;
         }
     }
-    internal class GameSession
+    public class GameSession
     {
         private float _sessionTimePassed;
         private float _points;

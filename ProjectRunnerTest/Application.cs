@@ -3,13 +3,16 @@ using Microsoft.Xna.Framework.Graphics;
 using MonoEditorEndless;
 using MonoEditorEndless.Editor;
 using MonoEditorEndless.Editor.Components;
+using MonoEditorEndless.Editor.Layouts;
 using MonoEditorEndless.Game;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 
 using System.Threading;
+using Forms = System.Windows.Forms;
 using Num = System.Numerics;
 
 namespace ProjectRunnerTest
@@ -78,11 +81,34 @@ namespace ProjectRunnerTest
                     fileHandler.SaveXml<string>(new string("default_project.xml"), "recent_project.xml", Routes.SAVED_PROJECTS);
             }
 
-            _project.AssetAdded += (object sender, EventArgs e) => { UpdateContent(_project.GetAllAsset()); BuildContent(); _gameHandle.Refresh(); };
+            _project.AssetAdded += (object sender, AssetAdditionArgs e) =>
+            {
+                string ContentFile = File.ReadAllText(Routes.CONTENT_FILE);
+                UpdateContent(_project.GetAllAsset());
+                // If game handle provided
+                // If build fails
+                if (!BuildContent(_gameHandle))
+                {
+                    // Revert change if the build process wasn't successful
+                    _project.RemoveLastAsset();
+                    // Change the content file to what is was before
+                    File.WriteAllText(Routes.CONTENT_FILE, ContentFile);
+                    // Revert the _project._gameConfig
+                    _project._gameConfigs = LayoutEdit.prevGameConfigs;
+                }
+                // If content build is successful we change the field in game config project
+                else
+                {
+                    // Using system reflection to dynamically change a member value
+                    FieldInfo field = _project._gameConfigs.GetType().GetField(e.role);
+                    if (field != null)
+                    {
+                        field.SetValue(_project._gameConfigs, e.name);
+                    }
+                }
+            };
 
             _editorHandle = new EditorHandle(this, _graphics, aggregator);
-
-
 
 
             // Update the content file
@@ -128,40 +154,77 @@ namespace ProjectRunnerTest
             _editorHandle.Update(gameTime);
             _gameHandle.Update(gameTime);
         }
-        public static void BuildContent()
+        public static bool BuildContent(GameHandle gameHandle = null)
         {
             string contentProjectPath = Routes.CONTENT_FILE; // Path to content.mgbc project
+
+            string result = "";
+            string error = null;
+            int exitCode = 0;
+
             Thread thread = new Thread(() =>
             {
                 string CurrentDirectory = Environment.CurrentDirectory;
-                string buildMode = _isDebug ? "Debug" : "Release";
-                string platform = _isDebug ? "" : "/win-x64";
+                string buildMode = (_isDebug ? "Debug" : "Release");
+                string platform = (_isDebug ? "" : "/win-x64");
                 //System.Runtime.
-                CurrentDirectory = Path.Combine(CurrentDirectory, "..", "..", "..");
+                // Going back to root
+                CurrentDirectory = Path.GetFullPath(Path.Combine(CurrentDirectory, "..", "..", ".."));
+                string Intermediate = Path.GetFullPath(Path.Combine(CurrentDirectory, "Intermediate"));
+                // Ensure the intermediate directory exists
+                if (!Directory.Exists(Intermediate))
+                {
+                    Directory.CreateDirectory(Intermediate);
+                }
+
                 var processInfo = new ProcessStartInfo("dotnet")
                 {
                     //Arguments = "",
-                    Arguments = $"mgcb /build /@:{contentProjectPath} /platform:DesktopGL /outputDir:bin/{buildMode}/{Routes.FRAMEWORK_TARGET} /intermediateDir:obj /quiet",
+                    Arguments = $"mgcb /@:{contentProjectPath} /platform:DesktopGL /outputDir:bin/{buildMode}/{Routes.FRAMEWORK_TARGET} /intermediateDir:\"{Intermediate}\" /quiet",
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
                     UseShellExecute = false,
-                    //CreateNoWindow = true
+                    CreateNoWindow = true
                     //WorkingDirectory = CurrentDirectory,
                     //CreateNoWindow = true
                 };
                 using (var process = Process.Start(processInfo))
                 {
+                    // Capture the output and error streams
                     using (var reader = process.StandardOutput)
                     {
-                        string result = reader.ReadToEnd();
-                        Console.WriteLine(result);
+                        result = reader.ReadToEnd();
+                        int lastLineIndex = result.LastIndexOf("\r\n");
+                        result = result.Substring(lastLineIndex);
+                        Console.WriteLine("Build Content: " + result);
                     }
+                    using (var reader = process.StandardError)
+                    {
+                        error = reader.ReadToEnd();
+                    }
+                    exitCode = process.ExitCode;
                 }
             });
             thread.SetApartmentState(ApartmentState.STA); //Set the thread to STA
             thread.Start();
             thread.Join(); //Wait for the thread to end
+
+            if (!string.IsNullOrEmpty(error))
+            {
+                Console.WriteLine("Error content build:");
+                Console.WriteLine(error);
+            }
+            if (exitCode != 0)
+            {
+                Forms.MessageBox.Show("Building new content failed, File is not compatible.\r\n" + result);
+                ModalLoading.Instance.Stop();
+                return false;
+            }
+            gameHandle?.Refresh();
+
             ModalLoading.Instance.Stop();
+
+            return true;
         }
         /// <summary>
         /// Updates the content.mgbc file based on the 

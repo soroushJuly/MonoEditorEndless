@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MonoEditorEndless.Game
 {
-    internal class GameHandle
+    public class GameHandle
     {
         private FSM _fsm;
         private bool _isPlaying;
