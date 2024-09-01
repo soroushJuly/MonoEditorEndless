@@ -55,7 +55,15 @@ namespace MonoEditorEndless.Editor
         public Vector3 fogColor;
         public float fogStartDistance;
         public float fogEndDistance;
-
+        // Sky
+        public string skyTop;
+        public string skyBottom;
+        public string skyRight;
+        public string skyLeft;
+        public string skyFront;
+        public string skyBack;
+        // Plane
+        public string planeTexture;
 
 
         public GameConfigs()
@@ -99,6 +107,15 @@ namespace MonoEditorEndless.Editor
             blockStraightScale = 1f;
             blockTurnModel = "wall-corner";
             blockTurnScale = 1f;
+            // Sky
+            skyTop = "top";
+            skyBottom = "bottom";
+            skyRight = "right";
+            skyLeft = "left";
+            skyFront = "front";
+            skyBack = "back";
+            // Plane
+            planeTexture = "grass";
         }
     }
 }

@@ -88,7 +88,10 @@ namespace MonoEditorEndless.Game
         {
             _world = new World();
             _gameSession = new GameSession(Application._project._gameConfigs.gameAcceleration);
-            _pathManager = new PathManager(Application._project._gameConfigs.obstacleChance, Application._project._gameConfigs.collectableChance);
+            _pathManager = new PathManager(
+                Application._project._gameConfigs.obstacleChance,
+                Application._project._gameConfigs.collectableChance
+                );
             _inputManager = new InputManager();
 
             _spriteBatch = new SpriteBatch(_graphicsDevice);
@@ -173,20 +176,22 @@ namespace MonoEditorEndless.Game
             _pathManager.AddTurnRight(corner);
             _pathManager.Initialize(30);
 
-            _skyboxTextureList = new List<Texture2D>();
-            _skyboxTextureList.Add(Content.Load<Texture2D>("Content/Texture/front"));
-            _skyboxTextureList.Add(Content.Load<Texture2D>("Content/Texture/back"));
-            _skyboxTextureList.Add(Content.Load<Texture2D>("Content/Texture/left"));
-            _skyboxTextureList.Add(Content.Load<Texture2D>("Content/Texture/right"));
-            _skyboxTextureList.Add(Content.Load<Texture2D>("Content/Texture/top"));
-            _skyboxTextureList.Add(Content.Load<Texture2D>("Content/Texture/bottom"));
+            _skyboxTextureList = new List<Texture2D>()
+            {
+                Content.Load<Texture2D>("Content/Texture/" + Application._project._gameConfigs.skyFront),
+                Content.Load<Texture2D>("Content/Texture/" + Application._project._gameConfigs.skyBack),
+                Content.Load<Texture2D>("Content/Texture/" + Application._project._gameConfigs.skyLeft),
+                Content.Load<Texture2D>("Content/Texture/" + Application._project._gameConfigs.skyRight),
+                Content.Load<Texture2D>("Content/Texture/" + Application._project._gameConfigs.skyTop),
+                Content.Load<Texture2D>("Content/Texture/" + Application._project._gameConfigs.skyBottom)
+            };
             _skybox = new Skybox(_graphicsDevice, _skyboxTextureList);
 
-            Texture2D grass = Content.Load<Texture2D>("Content/Texture/grass");
+            Texture2D planeTexture = Content.Load<Texture2D>("Content/Texture/" + Application._project._gameConfigs.planeTexture);
 
             _font = Content.Load<SpriteFont>("Content/Font/File");
 
-            _plane = new MonoEditorEndless.Engine.Plane(_graphicsDevice, grass, 3000, 20);
+            _plane = new Engine.Plane(_graphicsDevice, planeTexture, 3000, 20);
         }
         public override void Execute(object owner, GameTime gameTime)
         {

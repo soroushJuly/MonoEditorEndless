@@ -210,17 +210,19 @@ namespace MonoEditorEndless.Game
             //_soundEffectInstance = _soundEffect.CreateInstance();
             //_soundEffectInstance.Volume = .1f;
 
-            _skyboxTextureList = new List<Texture2D>();
-            _skyboxTextureList.Add(Content.Load<Texture2D>("Content/Texture/front"));
-            _skyboxTextureList.Add(Content.Load<Texture2D>("Content/Texture/back"));
-            _skyboxTextureList.Add(Content.Load<Texture2D>("Content/Texture/left"));
-            _skyboxTextureList.Add(Content.Load<Texture2D>("Content/Texture/right"));
-            _skyboxTextureList.Add(Content.Load<Texture2D>("Content/Texture/top"));
-            _skyboxTextureList.Add(Content.Load<Texture2D>("Content/Texture/bottom"));
+            _skyboxTextureList = new List<Texture2D>()
+            {
+                Content.Load<Texture2D>("Content/Texture/" + Application._project._gameConfigs.skyFront),
+                Content.Load<Texture2D>("Content/Texture/" + Application._project._gameConfigs.skyBack),
+                Content.Load<Texture2D>("Content/Texture/" + Application._project._gameConfigs.skyLeft),
+                Content.Load<Texture2D>("Content/Texture/" + Application._project._gameConfigs.skyRight),
+                Content.Load<Texture2D>("Content/Texture/" + Application._project._gameConfigs.skyTop),
+                Content.Load<Texture2D>("Content/Texture/" + Application._project._gameConfigs.skyBottom)
+            };
             _skybox = new Skybox(_graphicsDevice, _skyboxTextureList);
 
-            Texture2D grass = Content.Load<Texture2D>("Content/Texture/grass");
-            _plane = new MonoEditorEndless.Engine.Plane(_graphicsDevice, grass, 3000, 20);
+            Texture2D planeTexture = Content.Load<Texture2D>("Content/Texture/" + Application._project._gameConfigs.planeTexture);
+            _plane = new Engine.Plane(_graphicsDevice, planeTexture, 3000, 20);
 
             _font = Content.Load<SpriteFont>("Content/Font/File");
 

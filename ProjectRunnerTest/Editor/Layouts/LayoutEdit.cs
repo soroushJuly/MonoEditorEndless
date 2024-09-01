@@ -147,14 +147,116 @@ namespace MonoEditorEndless.Editor.Layouts
                     Tooltip.Instance.Draw("How fast the game speed increases over time.");
                     ImGui.SliderFloat("##game_speed", ref Application._project._gameConfigs.gameAcceleration, 0, 2);
                 }
-                if (ImGui.CollapsingHeader("Environemnt"))
+                if (ImGui.CollapsingHeader("Environment", ImGuiTreeNodeFlags.DefaultOpen))
                 {
+                    // Sky
                     ImGui.Text("Sky");
+                    ImGui.SameLine();
+                    Tooltip.Instance.Draw("The images in far distance surrounding the game world.");
+                    // Sky Front
+                    ImGui.Text("Change the front image: ");
+                    ImGui.SameLine();
+                    ImGui.Text(Application._project._gameConfigs.skyFront);
+                    if (ImGui.Button("Browse Computer ##sky_front"))
+                    {
+                        string filePath = "";
+                        filePath = _fileHandler.LoadFileFromComputer(AssetType.TEXTURE);
+                        if (filePath != "")
+                        {
+                            ModalLoading.Instance.Start();
+                            Application._project.AddAssetTexture(new AssetTexture(Path.GetFileName(filePath), true), "skyFront");
+                        }
+                    }
+                    // Sky Back
+                    ImGui.Text("Change the back image: ");
+                    ImGui.SameLine();
+                    ImGui.Text(Application._project._gameConfigs.skyBack);
+                    if (ImGui.Button("Browse Computer ##sky_back"))
+                    {
+                        string filePath = "";
+                        filePath = _fileHandler.LoadFileFromComputer(AssetType.TEXTURE);
+                        if (filePath != "")
+                        {
+                            ModalLoading.Instance.Start();
+                            Application._project.AddAssetTexture(new AssetTexture(Path.GetFileName(filePath), true), "skyBack");
+                        }
+                    }
+                    // Sky Left
+                    ImGui.Text("Change the left image: ");
+                    ImGui.SameLine();
+                    ImGui.Text(Application._project._gameConfigs.skyLeft);
+                    if (ImGui.Button("Browse Computer ##sky_left"))
+                    {
+                        string filePath = "";
+                        filePath = _fileHandler.LoadFileFromComputer(AssetType.TEXTURE);
+                        if (filePath != "")
+                        {
+                            ModalLoading.Instance.Start();
+                            Application._project.AddAssetTexture(new AssetTexture(Path.GetFileName(filePath), true), "skyLeft");
+                        }
+                    }
+                    // Sky right
+                    ImGui.Text("Change the right image: ");
+                    ImGui.SameLine();
+                    ImGui.Text(Application._project._gameConfigs.skyRight);
+                    if (ImGui.Button("Browse Computer ##sky_right"))
+                    {
+                        string filePath = "";
+                        filePath = _fileHandler.LoadFileFromComputer(AssetType.TEXTURE);
+                        if (filePath != "")
+                        {
+                            ModalLoading.Instance.Start();
+                            Application._project.AddAssetTexture(new AssetTexture(Path.GetFileName(filePath), true), "skyRight");
+                        }
+                    }
+                    // Sky top
+                    ImGui.Text("Change the top image: ");
+                    ImGui.SameLine();
+                    ImGui.Text(Application._project._gameConfigs.skyTop);
+                    if (ImGui.Button("Browse Computer ##sky_top"))
+                    {
+                        string filePath = "";
+                        filePath = _fileHandler.LoadFileFromComputer(AssetType.TEXTURE);
+                        if (filePath != "")
+                        {
+                            ModalLoading.Instance.Start();
+                            Application._project.AddAssetTexture(new AssetTexture(Path.GetFileName(filePath), true), "skyTop");
+                        }
+                    }
+                    // Sky bottom
+                    ImGui.Text("Change the bottom image: ");
+                    ImGui.SameLine();
+                    ImGui.Text(Application._project._gameConfigs.skyBottom);
+                    if (ImGui.Button("Browse Computer ##sky_bottom"))
+                    {
+                        string filePath = "";
+                        filePath = _fileHandler.LoadFileFromComputer(AssetType.TEXTURE);
+                        if (filePath != "")
+                        {
+                            ModalLoading.Instance.Start();
+                            Application._project.AddAssetTexture(new AssetTexture(Path.GetFileName(filePath), true), "skyBottom");
+                        }
+                    }
+                    ImGui.Separator();
+                    // Plane texture
                     ImGui.Text("Plane");
-                    ImGui.SeparatorText("fdf");
-                    ImGui.Text("Road Generator");
+                    ImGui.SameLine();
+                    Tooltip.Instance.Draw("The plane surrounding the character, path, and etc. usually a big rectangle with a repetitve image.");
+                    ImGui.Text("Change the plane texture: ");
+                    ImGui.SameLine();
+                    ImGui.Text(Application._project._gameConfigs.planeTexture);
+                    if (ImGui.Button("Browse Computer ##plane_texture"))
+                    {
+                        string filePath = "";
+                        filePath = _fileHandler.LoadFileFromComputer(AssetType.TEXTURE);
+                        if (filePath != "")
+                        {
+                            ModalLoading.Instance.Start();
+                            Application._project.AddAssetTexture(new AssetTexture(Path.GetFileName(filePath), true), "planeTexture");
+                        }
+                    }
                 }
-                if (ImGui.CollapsingHeader("Change 3D models", ImGuiTreeNodeFlags.DefaultOpen))
+                if (ImGui.CollapsingHeader("Change 3D models", ImGuiTreeNodeFlags.None))
                 {
                     ImGui.NewLine();
                     if (ImGui.Button("Search 3D models", new Num.Vector2(ImGui.GetContentRegionAvail().X, 30)))

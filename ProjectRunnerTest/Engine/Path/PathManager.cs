@@ -48,13 +48,12 @@ namespace MonoEditorEndless.Engine.Path
             // Turn chance starts with zero and get max in Initialize
             _turnChance = 0;
             _wallChance = 0;
-            // Chances that an obstavle appears on the 
+            // Chances that an obstavle appears on the path
             _obstacleChance = obstacleChance;
             _collectableChance = collectableChance;
             // Initial path direction is North
             _pathDirection = Directions.NORTH;
             _random = new Random();
-            _collectableChance = collectableChance;
         }
         // Add a sample road block to block list to generate path from them
         public void AddRoadBlock(Actor actor)
