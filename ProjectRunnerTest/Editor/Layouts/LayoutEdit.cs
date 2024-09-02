@@ -443,7 +443,8 @@ namespace MonoEditorEndless.Editor.Layouts
                 }
                 if (ImGui.CollapsingHeader("HUD"))
                 {
-                    ImGui.Text("Hello from camera setting!");
+                    ImGui.Text("For HUD i can just let them chnage positino and texture of the heart or adding effect");
+                    ImGui.Text("Hello fr");
                 }
                 if (ImGui.CollapsingHeader("MenuMaker"))
                 {
