@@ -64,10 +64,9 @@ namespace MonoEditorEndless.Game
         List<Texture2D> _skyboxTextureList;
 
         // Audio
-        SoundEffect _soundEffect;
-        List<SoundEffect> _soundEffectList;
-        SoundEffectInstance _soundEffectInstance;
-        Song _bgMusic;
+        SoundEffect _bgMusicEffect;
+        SoundEffect _collectedSound;
+        SoundEffect _collidedSound;
         List<Song> _songList;
 
         private Engine.Plane _plane;
@@ -184,7 +183,7 @@ namespace MonoEditorEndless.Game
 
             _world.AddActor(actor, true);
 
-            
+
 
             _pathManager.AddObstacle(obstacle);
             _pathManager.AddCollectable(collectable);
@@ -193,22 +192,20 @@ namespace MonoEditorEndless.Game
             _pathManager.AddTurnRight(corner);
             _pathManager.Initialize(20);
 
+            //_bgMusic = Content.Load<Song>("Content/Audio/Titan");
+            _bgMusicEffect = Content.Load<SoundEffect>("Content/Audio/" + Application._project._gameConfigs.audioBackground);
+            _bgMusicEffect.Play();
+
+            _collectedSound = Content.Load<SoundEffect>("Content/Audio/" + Application._project._gameConfigs.audioCollected);
+            _collidedSound = Content.Load<SoundEffect>("Content/Audio/" + Application._project._gameConfigs.audioCollided);
+            //MediaPlayer.Play(_bgMusic);
             try
             {
-                _bgMusic = Content.Load<Song>("Content/Audio/Titan");
-                MediaPlayer.Play(_bgMusic);
 
             }
             catch
             {
             }
-
-
-            // Load the sound effect
-            //_soundEffect = new SoundEffect();
-            //_soundEffect = Content.Load<SoundEffect>("Content/Audio/mario_coin_sound");
-            //_soundEffectInstance = _soundEffect.CreateInstance();
-            //_soundEffectInstance.Volume = .1f;
 
             _skyboxTextureList = new List<Texture2D>()
             {
@@ -360,18 +357,26 @@ namespace MonoEditorEndless.Game
         void CharacterCollisionHandler(object sender, CollisionEventArgs e)
         {
             Actor character = sender as Actor;
+            // Character collides with collectable item
             if (e._actor?.GetName() == "collectable")
             {
                 _gameSession.AddPoint(Application._project._gameConfigs.itemValue);
+                SoundEffectInstance collectionSound = _collectedSound.CreateInstance();
+                collectionSound.Volume = Application._project._gameConfigs.audioCollectedVolume;
+                collectionSound.Play();
+                //_collectedSound.Play();
                 _world.RemoveActor(e._actor);
             }
             if (e._actor?.GetName() == "obstacle" && e._actor._isActive == true)
             {
                 // TODO: define an enum for this
-                // 0 means health loss
+                // 0 means health loss on collision
                 if (Application._project._gameConfigs.obstacleBehavior == 0)
                 {
                     actor._health--;
+                    SoundEffectInstance collisionSound = _collidedSound.CreateInstance();
+                    collisionSound.Volume = Application._project._gameConfigs.audioCollidedVolume;
+                    collisionSound.Play();
                     e._actor._isActive = false;
                     if (actor._health == 0)
                     {
@@ -379,6 +384,7 @@ namespace MonoEditorEndless.Game
                         SessionFinished(this, new SessionArgs(_gameSession.GetPoints(), _gameSession.GetTime()));
                     }
                 }
+                // 1 means game over on collision
                 else if (Application._project._gameConfigs.obstacleBehavior == 1)
                 {
                     SessionFinished(this, new SessionArgs(_gameSession.GetPoints(), _gameSession.GetTime()));

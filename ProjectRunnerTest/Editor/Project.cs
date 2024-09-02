@@ -45,6 +45,7 @@ namespace MonoEditorEndless.Editor
             // Preoccupy the asset list with the current assets
             _assets.Add(new AssetAudio("mario_coin_sound.mp3"));
             _assets.Add(new AssetAudio("Titan.mp3"));
+            _assets.Add(new AssetAudio("wall_hit.mp3"));
             _assets.Add(new AssetModel("bridge-straight.fbx"));
             _assets.Add(new AssetModel("Coin.fbx"));
             _assets.Add(new AssetModel("Ship.fbx"));

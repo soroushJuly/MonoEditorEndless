@@ -64,6 +64,13 @@ namespace MonoEditorEndless.Editor
         public string skyBack;
         // Plane
         public string planeTexture;
+        // Audio
+        public string audioBackground;
+        public float audioBackgroundVolume;
+        public string audioCollected;
+        public float audioCollectedVolume;
+        public string audioCollided;
+        public float audioCollidedVolume;
 
 
         public GameConfigs()
@@ -116,6 +123,13 @@ namespace MonoEditorEndless.Editor
             skyBack = "back";
             // Plane
             planeTexture = "grass";
+            // Audio
+            audioBackground = "Titan";
+            audioBackgroundVolume = 1f;
+            audioCollected = "mario_coin_sound";
+            audioCollectedVolume = .3f;
+            audioCollided = "wall_hit";
+            audioCollidedVolume = 1f;
         }
     }
 }

@@ -69,7 +69,7 @@ namespace MonoEditorEndless.Game
         Song _bgMusic;
         List<Song> _songList;
 
-        private MonoEditorEndless.Engine.Plane _plane;
+        private Engine.Plane _plane;
         private SpriteFont _font;
 
 

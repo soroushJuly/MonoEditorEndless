@@ -455,27 +455,54 @@ namespace MonoEditorEndless.Editor.Layouts
                 {
                     // Main Background music
                     ImGui.SeparatorText("Background music");
-
-                    if (ImGui.Button("Browse Computer ##block_straight_scale"))
+                    ImGui.Text("Change: " + Application._project._gameConfigs.audioBackground);
+                    ImGui.SameLine();
+                    Tooltip.Instance.Draw("The music that will be played on loop when players play the game.");
+                    if (ImGui.Button("Browse Computer ##audio_bg"))
                     {
                         string filePath = "";
-                        filePath = _fileHandler.LoadFileFromComputer(AssetType.MODEL);
+                        filePath = _fileHandler.LoadFileFromComputer(AssetType.AUDIO);
                         if (filePath != "")
                         {
                             ModalLoading.Instance.Start();
-                            Application._project.AddAssetModel(new AssetModel(Path.GetFileName(filePath), true), "blockStraightModel");
+                            Application._project.AddAssetAudio(new AssetAudio(Path.GetFileName(filePath), true), "audioBackground");
                         }
                     }
-
+                    ImGui.SliderFloat("Volume: ##bg", ref Application._project._gameConfigs.audioBackgroundVolume, 0f, 1f);
+                    // Collection sound
                     ImGui.SeparatorText("Collection sound effect");
+                    ImGui.Text("Change: " + Application._project._gameConfigs.audioCollected);
+                    ImGui.SameLine();
+                    Tooltip.Instance.Draw("The sound that will be played when character collides with a collectable.");
 
+                    if (ImGui.Button("Browse Computer ##audio_collect"))
+                    {
+                        string filePath = "";
+                        filePath = _fileHandler.LoadFileFromComputer(AssetType.AUDIO);
+                        if (filePath != "")
+                        {
+                            ModalLoading.Instance.Start();
+                            Application._project.AddAssetAudio(new AssetAudio(Path.GetFileName(filePath), true), "audioCollected");
+                        }
+                    }
+                    ImGui.SliderFloat("Volume: ##collected", ref Application._project._gameConfigs.audioCollectedVolume, 0f, 1f);
+
+                    // Obstacle Collision sound
                     ImGui.SeparatorText("Obstacle hit sound effect");
-                    //if (ImGui.Button("play it!!"))
-                    //{
-                    //    SoundEffectInstance si = _soundList[0].CreateInstance();
-                    //    si.Play();
-
-                    //}
+                    ImGui.Text("Change: " + Application._project._gameConfigs.audioCollided);
+                    ImGui.SameLine();
+                    Tooltip.Instance.Draw("The sound that will be played when character hits an obstacle.");
+                    if (ImGui.Button("Browse Computer ##audio_collided"))
+                    {
+                        string filePath = "";
+                        filePath = _fileHandler.LoadFileFromComputer(AssetType.AUDIO);
+                        if (filePath != "")
+                        {
+                            ModalLoading.Instance.Start();
+                            Application._project.AddAssetAudio(new AssetAudio(Path.GetFileName(filePath), true), "audioCollided");
+                        }
+                    }
+                    ImGui.SliderFloat("Volume: ##collision", ref Application._project._gameConfigs.audioCollidedVolume, 0f, 1f);
 
                     // Ending Music
 
