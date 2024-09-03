@@ -661,8 +661,8 @@ namespace MonoEditorEndless.Editor.Layouts
             // Open dialog and replace current project with new Project class
             if (ImGui.MenuItem("Open"))
             {
-                string file = _fileHandler.LoadFileFromComputerNoCopy(Routes.SAVED_PROJECTS);
-                if (Path.GetExtension(file) != ".xml")
+                string file = _fileHandler.LoadFileFromComputerNoCopy(Path.GetFullPath(Routes.SAVED_PROJECTS));
+                if (file != "" && Path.GetExtension(file) != ".xml")
                 {
                     Forms.MessageBox.Show("Please select proper file type: .xml");
                 }
