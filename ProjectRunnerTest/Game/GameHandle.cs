@@ -62,17 +62,20 @@ namespace MonoEditorEndless.Game
             hudMaker.AddTransition(new Transition(spectate, () => { return _isSpectate; }));
             hudMaker.AddTransition(new Transition(menuMaker, () => { return _isMenuMaking; }));
             hudMaker.AddTransition(new Transition(play, () => { return _isPlaying; }));
+            hudMaker.AddTransition(new Transition(play, () => { return _isFromStartPlaying; }));
             menuMaker.AddTransition(new Transition(spectate, () => { return _isSpectate; }));
             menuMaker.AddTransition(new Transition(hudMaker, () => { return _isHUDMaking; }));
             menuMaker.AddTransition(new Transition(play, () => { return _isPlaying; }));
+            menuMaker.AddTransition(new Transition(menu, () => { return _isFromStartPlaying; }));
             play.AddTransition(new Transition(finish, () => { return _isFinish; }));
             play.AddTransition(new Transition(spectate, () => { return !_isPlaying && _isSpectate; }));
-            //play.AddTransition(new Transition(spectate, () => { return !_isPlaying && !_isHUDMaking && !_isMenuMaking; }));
             play.AddTransition(new Transition(hudMaker, () => { return !_isPlaying && _isHUDMaking; }));
-            play.AddTransition(new Transition(hudMaker, () => { return !_isPlaying && _isMenuMaking; }));
+            play.AddTransition(new Transition(menuMaker, () => { return !_isPlaying && _isMenuMaking; }));
             finish.AddTransition(new Transition(spectate, () => { return !_isPlaying; }));
             menu.AddTransition(new Transition(play, () => { return _isPlaying; }));
-            menu.AddTransition(new Transition(spectate, () => { return !_isFromStartPlaying; }));
+            menu.AddTransition(new Transition(spectate, () => { return !_isFromStartPlaying && _isSpectate; }));
+            menu.AddTransition(new Transition(hudMaker, () => { return !_isFromStartPlaying && _isHUDMaking; }));
+            menu.AddTransition(new Transition(menuMaker, () => { return !_isFromStartPlaying && _isMenuMaking; }));
 
             _fsm.AddState(play);
             _fsm.AddState(spectate);

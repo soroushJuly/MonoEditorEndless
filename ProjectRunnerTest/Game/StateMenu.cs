@@ -3,8 +3,8 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using MonoEditorEndless.Engine.StateManager;
 using MonoEditorEndless.Engine.UI;
+using ProjectRunnerTest;
 using System;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrayNotify;
 
 namespace MonoEditorEndless.Game
 {
@@ -34,9 +34,18 @@ namespace MonoEditorEndless.Game
         public override void Enter(object owner)
         {
             _font = Content.Load<SpriteFont>("Content/Font/File");
-            _background = Content.Load<Texture2D>("Content/Texture/bg");
+            _background = Content.Load<Texture2D>("Content/Texture/" + Application._project._gameConfigs.mainMenuBackground);
             // Initialize the button list with button indicator and padding between buttons
-            _buttonList = new ButtonList(null, 10, 10, _font, 50);
+            _buttonList = new ButtonList(null,
+                (int)Application._project._gameConfigs.listPosition.X,
+                (int)Application._project._gameConfigs.listPosition.Y,
+                _font,
+                (int)Application._project._gameConfigs.listPadding);
+            _title = new Text(Application._project._gameConfigs._title,
+                Application._project._gameConfigs.titlePosition,
+                _font,
+                new Color(Application._project._gameConfigs.titleColor),
+                Application._project._gameConfigs.titleSize);
             LoadMainButtons();
         }
         public override void Execute(object owner, GameTime gameTime)
@@ -58,16 +67,11 @@ namespace MonoEditorEndless.Game
             var lastBlendState = _graphicsDevice.BlendState;
             var lastSamplerStates = _graphicsDevice.SamplerStates;
 
-            float scale = .5f;
-            Matrix transform = Matrix.CreateScale(scale);
-            transform *= Matrix.CreateTranslation(
-                graphicsDevice.Viewport.Width / 2 - graphicsDevice.Viewport.Width * scale / 2,
-                graphicsDevice.Viewport.Height / 2 - graphicsDevice.Viewport.Height * scale / 2,
-                0);
-            spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, transform);
+            spriteBatch.Begin();
             spriteBatch.Draw(_background,
                 new Rectangle(0, 0, graphicsDevice.Viewport.Width, graphicsDevice.Viewport.Height),
                 Color.White);
+            _title.Draw(spriteBatch);
             _buttonList.Draw(spriteBatch);
             spriteBatch.End();
 
@@ -78,18 +82,19 @@ namespace MonoEditorEndless.Game
             _graphicsDevice.BlendState = lastBlendState;
             _graphicsDevice.BlendFactor = lastBlendFactor;
             _graphicsDevice.SamplerStates[0] = SamplerState.LinearWrap;
-            //base.Draw(owner, GraphicsDevice, spriteBatch);
         }
         private void LoadMainButtons()
         {
             Texture2D btnTexture = new Texture2D(_graphicsDevice, 1, 1);
-            btnTexture.SetData(new[] { Color.White });
+            btnTexture.SetData(new[] { new Color(
+                Application._project._gameConfigs.buttonColor.X,
+                Application._project._gameConfigs.buttonColor.Y,
+                Application._project._gameConfigs.buttonColor.Z
+                ) });
 
-            _buttonList.AddButton("Start", btnTexture, new Vector2(100, 10));
-            // Todo: add highscore later if there was time
-            //_buttonList.AddButton("High Scores", btnTexture, new Vector2(100, 10));
-            _buttonList.AddButton("Controls", btnTexture, new Vector2(100, 10));
-            _buttonList.AddButton("Exit", btnTexture, new Vector2(100, 10));
+            _buttonList.AddButton("Start", btnTexture, Application._project._gameConfigs.buttonSize);
+            _buttonList.AddButton("Controls", btnTexture, Application._project._gameConfigs.buttonSize);
+            _buttonList.AddButton("Exit", btnTexture, Application._project._gameConfigs.buttonSize);
             // Handle button selection
             _buttonList.ButtonClicked += this.HandleButtonSelection;
             // Play sound on button switch

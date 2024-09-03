@@ -54,9 +54,8 @@ namespace MonoEditorEndless.Engine.UI
         public void Draw(SpriteBatch spriteBatch)
         {
             // Draw the background
-            Color bgColor = Color.Red;
             spriteBatch.Draw(buttonTexture, new Rectangle((int)position.X, (int)position.Y,
-                    width, height), bgColor);
+                    width, height), Color.White);
 
             // Draw the text
             Color color = Color.White;

@@ -12,6 +12,11 @@
         public bool _isFromTop;
         public bool _isScoreFromLeft;
         public bool _isScoreFromTop;
+        // Menu Maker
+        public bool _isTitleFromTop;
+        public bool _isTitleFromLeft;
+        public bool _isListFromLeft;
+        public bool _isListFromTop;
 
         public EditorConfigs()
         {
@@ -25,6 +30,10 @@
             _isFromLeft = true;
             _isScoreFromLeft = true;
             _isScoreFromTop = true;
+            _isTitleFromTop = true;
+            _isTitleFromLeft = true;
+            _isListFromLeft = true;
+            _isListFromTop = true;
         }
     }
 }

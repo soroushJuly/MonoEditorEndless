@@ -28,6 +28,12 @@ namespace MonoEditorEndless.Editor.Layouts
         private float _xScoreDistance;
         private float _yDistance;
         private float _yScoreDistance;
+        // In Menu Maker the values of slider
+        private float _xDistanceTitle;
+        private float _xDistanceList;
+        private float _yDistanceTitle;
+        private float _yDistanceList;
+
 
         // Obstacle behavior combo
         private string[] _obstacleBehaviors = { "Character loss health", "Character dies instantly" };
@@ -52,8 +58,12 @@ namespace MonoEditorEndless.Editor.Layouts
 
             _xDistance = Application._project._gameConfigs.healthPosition.X;
             _yDistance = Application._project._gameConfigs.healthPosition.Y;
+            _xDistanceTitle = Application._project._gameConfigs.titlePosition.Y;
+            _yDistanceTitle = Application._project._gameConfigs.titlePosition.Y;
             _xScoreDistance = Application._project._gameConfigs.scorePosition.X;
             _yScoreDistance = Application._project._gameConfigs.scorePosition.Y;
+            _xDistanceList = Application._project._gameConfigs.listPosition.Y;
+            _yDistanceList = Application._project._gameConfigs.listPosition.Y;
 
             _fileHandler = new FileHandler();
         }
@@ -596,10 +606,140 @@ namespace MonoEditorEndless.Editor.Layouts
                 }
                 else if (Application._project._editorConfigs._selectedView == 3)
                 {
-                    if (ImGui.CollapsingHeader("MenuMaker"))
+                    ImGui.SeparatorText("Menu Maker Tool");
+                    // Title
+                    ImGui.SeparatorText("Game Title");
+                    ImGui.Text("Text Position");
+                    ImGui.Text("X: ");
+                    ImGui.SameLine();
+                    if (ImGui.SliderFloat("##x_title", ref _xDistanceTitle, 0, _graphics.PreferredBackBufferWidth))
                     {
-                        ImGui.Text("Hello from camera setting!");
+                        Application._project._gameConfigs.titlePosition.X =
+                            Application._project._editorConfigs._isTitleFromLeft ? _xDistanceTitle : _graphics.PreferredBackBufferWidth - _xDistanceTitle;
+                        _isTimerActive = true;
+                        _pathChangeTimer = .2f;
                     }
+                    if (ImGui.Checkbox("From Left ##x_title", ref Application._project._editorConfigs._isTitleFromLeft))
+                    {
+                        Application._project._gameConfigs.titlePosition.X =
+                            Application._project._editorConfigs._isTitleFromLeft ? _xDistanceTitle : _graphics.PreferredBackBufferWidth - _xDistanceTitle;
+                        _isTimerActive = true;
+                        _pathChangeTimer = .2f;
+                    }
+                    ImGui.Text("Y: ");
+                    ImGui.SameLine();
+                    if (ImGui.SliderFloat("##y_title", ref _yDistanceTitle, 0, _graphics.PreferredBackBufferHeight))
+                    {
+                        Application._project._gameConfigs.titlePosition.Y =
+                            Application._project._editorConfigs._isScoreFromTop ? _yDistanceTitle : _graphics.PreferredBackBufferHeight - _yDistanceTitle;
+                        _isTimerActive = true;
+                        _pathChangeTimer = .2f;
+                    }
+                    if (ImGui.Checkbox("From Top ##y_title", ref Application._project._editorConfigs._isScoreFromTop))
+                    {
+                        Application._project._gameConfigs.titlePosition.Y =
+                            Application._project._editorConfigs._isTitleFromTop ? _yDistanceTitle : _graphics.PreferredBackBufferHeight - _yDistanceTitle;
+                        _isTimerActive = true;
+                        _pathChangeTimer = .2f;
+                    }
+                    ImGui.Text("Text Color");
+                    if (ImGui.ColorEdit3("##title_text_color", ref Application._project._gameConfigs.titleColor))
+                    {
+                        _isTimerActive = true;
+                        _pathChangeTimer = .5f;
+                    }
+                    ImGui.Text("Text Size");
+                    if (ImGui.SliderFloat("##title_font_size", ref Application._project._gameConfigs.titleSize, 0.1f, 20f))
+                    {
+                        _isTimerActive = true;
+                        _pathChangeTimer = .5f;
+                    }
+                    // Background
+                    ImGui.SeparatorText("Background");
+                    ImGui.Text("Change the background image: ");
+                    ImGui.SameLine();
+                    ImGui.Text(Application._project._gameConfigs.mainMenuBackground);
+                    if (ImGui.Button("Browse Computer ##menu_back"))
+                    {
+                        string filePath = "";
+                        filePath = _fileHandler.LoadFileFromComputer(AssetType.TEXTURE);
+                        if (filePath != "")
+                        {
+                            ModalLoading.Instance.Start();
+                            Application._project.AddAssetTexture(new AssetTexture(Path.GetFileName(filePath), true), "mainMenuBackground");
+                        }
+                    }
+                    // Button list
+                    ImGui.SeparatorText("Button List");
+                    ImGui.Text("List Position");
+                    ImGui.Text("X: ");
+                    ImGui.SameLine();
+                    if (ImGui.SliderFloat("##x_menu_list", ref _xDistanceList, 0, _graphics.PreferredBackBufferWidth))
+                    {
+                        Application._project._gameConfigs.listPosition.X =
+                            Application._project._editorConfigs._isListFromLeft ? _xDistanceList : _graphics.PreferredBackBufferWidth - _xDistanceList;
+                        _isTimerActive = true;
+                        _pathChangeTimer = .2f;
+                    }
+                    if (ImGui.Checkbox("From Left ##x_menu_list", ref Application._project._editorConfigs._isListFromLeft))
+                    {
+                        Application._project._gameConfigs.listPosition.X =
+                            Application._project._editorConfigs._isListFromLeft ? _xDistanceList : _graphics.PreferredBackBufferWidth - _xDistanceList;
+                        _isTimerActive = true;
+                        _pathChangeTimer = .2f;
+                    }
+                    ImGui.Text("Y: ");
+                    ImGui.SameLine();
+                    if (ImGui.SliderFloat("##y_menu_list", ref _yDistanceList, 0, _graphics.PreferredBackBufferHeight))
+                    {
+                        Application._project._gameConfigs.listPosition.Y =
+                            Application._project._editorConfigs._isListFromTop ? _yDistanceList : _graphics.PreferredBackBufferHeight - _yDistanceList;
+                        _isTimerActive = true;
+                        _pathChangeTimer = .2f;
+                    }
+                    if (ImGui.Checkbox("From Top ##y_menu_list", ref Application._project._editorConfigs._isListFromTop))
+                    {
+                        Application._project._gameConfigs.listPosition.Y =
+                            Application._project._editorConfigs._isListFromTop ? _yDistanceList : _graphics.PreferredBackBufferHeight - _yDistanceList;
+                        _isTimerActive = true;
+                        _pathChangeTimer = .2f;
+                    }
+                    ImGui.Text("Buttons padding");
+                    ImGui.SameLine();
+                    Tooltip.Instance.Draw("The distance between each button in the menu.");
+                    if (ImGui.InputFloat("##list_padding", ref Application._project._gameConfigs.listPadding, 5f))
+                    {
+                        _isTimerActive = true;
+                        _pathChangeTimer = .4f;
+                    }
+
+                    // Buttons
+                    ImGui.SeparatorText("Buttons");
+                    ImGui.Text("- You can change style od the buttons in the menus");
+                    ImGui.Text("Button Size");
+                    ImGui.Text("Button Width: ");
+                    ImGui.SameLine();
+                    if (ImGui.InputFloat("##button_width", ref Application._project._gameConfigs.buttonSize.X, 5f))
+                    {
+                        _isTimerActive = true;
+                        _pathChangeTimer = .5f;
+                    }
+
+                    ImGui.Text("Button Height: ");
+                    ImGui.SameLine();
+                    if (ImGui.InputFloat("##button_height", ref Application._project._gameConfigs.buttonSize.Y, 2f))
+                    {
+                        _isTimerActive = true;
+                        _pathChangeTimer = .5f;
+                    }
+
+                    ImGui.Text("Button Background Color");
+                    if (ImGui.ColorEdit3("##button_bg_color", ref Application._project._gameConfigs.buttonColor))
+                    {
+                        _isTimerActive = true;
+                        _pathChangeTimer = .4f;
+                    }
+
                 }
 
                 if (ImGui.Button("Test Window")) show_test_window = !show_test_window;

@@ -64,6 +64,7 @@ namespace MonoEditorEndless.Editor
         {
             HUDMakerPressed?.Invoke(this, EventArgs.Empty);
         }
+        // TODO: change the name of this method since we are not only refreshing the spectate
         public void RaiseRefreshSpectate()
         {
             RefreshSpectate?.Invoke(this, EventArgs.Empty);

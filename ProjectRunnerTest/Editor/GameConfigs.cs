@@ -26,11 +26,8 @@ namespace MonoEditorEndless.Editor
         public float blockStraightScale;
         public string blockTurnModel;
         public float blockTurnScale;
-
         // Font
-
-        // Textures
-
+        // TODO: Should be dynamic later
         // Camera setting
         public float distanceFromCharacter;
         public float cameraLookDistance;
@@ -77,6 +74,15 @@ namespace MonoEditorEndless.Editor
         public float healthScale;
         public Vector2 healthPosition;
         public Vector2 scorePosition;
+        // Menus
+        public string mainMenuBackground;
+        public Vector2 buttonSize;
+        public Vector3 buttonColor;
+        public Vector3 titleColor;
+        public float titleSize;
+        public Vector2 titlePosition;
+        public Vector2 listPosition;
+        public float listPadding;
 
 
         public GameConfigs()
@@ -142,6 +148,15 @@ namespace MonoEditorEndless.Editor
             healthScale = 1f;
             healthPosition = new Vector2(200, 100);
             scorePosition = new Vector2(200, 50);
+            // Menu
+            mainMenuBackground = "bg";
+            buttonSize = new Vector2(150, 30);
+            buttonColor = new Vector3(.3f, .3f, .3f);
+            titleColor = new Vector3(.3f);
+            titleSize = 1f;
+            titlePosition = new Vector2(10f);
+            listPosition = new Vector2(10f,50f);
+            listPadding = 50f;
         }
     }
 }

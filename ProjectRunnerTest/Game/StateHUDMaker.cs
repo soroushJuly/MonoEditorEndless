@@ -53,7 +53,7 @@ namespace MonoEditorEndless.Game
         {
             // Zoom In/Out
             float step = 0.0005f;
-            float minScroll = 1 / (4 * step);
+            float minScroll = 1 / (3 * step);
             int mouseWheelValue = Mouse.GetState().ScrollWheelValue;
             if (mouseWheelValue >= minScroll)
             {

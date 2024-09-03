@@ -12,13 +12,16 @@ namespace MonoEditorEndless.Engine.UI
         SpriteFont font;
         // Text Color
         Color color;
+        // Text size
+        float size;
 
-        public Text(string text, Vector2 position, SpriteFont font, Color color)
+        public Text(string text, Vector2 position, SpriteFont font, Color color, float size = 1f)
         {
             this.position = position;
             this.text = text;
             this.font = font;
             this.color = color;
+            this.size = size;
         }
 
         public void SetText(string text)
@@ -29,7 +32,7 @@ namespace MonoEditorEndless.Engine.UI
         public void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.DrawString(font, text, new Vector2(position.X, position.Y), color,
-                0.0f, Vector2.Zero, 0.7f, SpriteEffects.None, 1.0f);
+                0.0f, Vector2.Zero, size, SpriteEffects.None, 1.0f);
         }
 
     }
