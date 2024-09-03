@@ -261,6 +261,7 @@ namespace MonoEditorEndless.Engine.Path
             int seenBlocks = 0;
             foreach (Block block in _activeBlocks)
             {
+                block.Update(gameTime);
                 if (!block._isSeenByCharacter)
                 {
                     break;

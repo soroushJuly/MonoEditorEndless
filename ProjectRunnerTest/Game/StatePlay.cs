@@ -172,6 +172,7 @@ namespace MonoEditorEndless.Game
             collectable.SetScale(Application._project._gameConfigs.collectableScale);
             collectable.SetPosition(collectable.GetPosition() + Vector3.UnitY * Application._project._gameConfigs.collectableOffset);
             collectable.SetName("collectable");
+            collectable._isRotating = Application._project._gameConfigs.isCollectableRotating;
             // Obstacle
             obstacle.LoadModel(Content.Load<Model>("Content/Model/" + Application._project._gameConfigs.obstacleModel));
             obstacle.SetScale(Application._project._gameConfigs.obstacleScale);

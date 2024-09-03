@@ -128,6 +128,9 @@ namespace MonoEditorEndless.Editor.Layouts
                         ImGui.Text("Items value:");
                         ImGui.SameLine();
                         Tooltip.Instance.Draw("Defines how many points players will get collecting the items.");
+                        ImGui.Checkbox("Rotating Items", ref Application._project._gameConfigs.isCollectableRotating);
+                        ImGui.SameLine();
+                        Tooltip.Instance.Draw("Whether collectable items should rotate non-stop during game or not.");
                         ImGui.InputInt("##item_value", ref Application._project._gameConfigs.itemValue);
                         // Collectable number
                         ImGui.Text("How often collectable items will appear:");

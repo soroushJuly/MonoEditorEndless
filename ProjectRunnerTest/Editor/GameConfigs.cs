@@ -44,6 +44,7 @@ namespace MonoEditorEndless.Editor
         public int itemValue;
         public int obstacleChance;
         public int collectableChance;
+        public bool isCollectableRotating;
         public float gameAcceleration;
         public int obstacleBehavior;
         // Light
@@ -95,6 +96,7 @@ namespace MonoEditorEndless.Editor
             itemValue = 100;
             obstacleChance = 10;
             collectableChance = 20;
+            isCollectableRotating = false;
             gameAcceleration = 0.001f;
             obstacleBehavior = 0;
             sunDiffuseColor = new Vector3(1, .8f, .6f); // Warm Orange

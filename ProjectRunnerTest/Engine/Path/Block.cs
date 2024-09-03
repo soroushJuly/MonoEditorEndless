@@ -32,7 +32,13 @@ namespace MonoEditorEndless.Engine.Path
                 otherActor._lastCollisionSeen = "road-corner";
             }
         }
-
+        public override void Update(GameTime gameTime)
+        {
+            foreach (var collectable in _collectables)
+            {
+                collectable.Update(gameTime);
+            }
+        }
         public Directions GetDirection() { return _direction; }
         public void InitializeObstacles(float randomNumber, float randomNumber2, List<Actor> obstacleTypes)
         {

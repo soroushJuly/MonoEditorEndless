@@ -28,6 +28,7 @@ namespace MonoEditorEndless.Engine
         // TODO: move this to another class
         public int _health = 3;
         public bool _isActive = true;
+        public bool _isRotating = false;
         public string _lastCollisionSeen = String.Empty;
 
         float _rotationYAnimation = 0f;
@@ -66,6 +67,8 @@ namespace MonoEditorEndless.Engine
             _boundingScale= actor._boundingScale;
             _colliadable = new Collidable();
             _colliadable.Initialize(_position, _dimentions, _boundingScale);
+
+            _isRotating = actor._isRotating;
         }
         public Actor(Vector3 position)
         {
@@ -183,11 +186,15 @@ namespace MonoEditorEndless.Engine
             // TODO: Colliadable initializes here - change this 
             _colliadable.Initialize(_position, _dimentions, _boundingScale);
         }
-        public void Update(GameTime gameTime)
+        public virtual void Update(GameTime gameTime)
         {
             if (_rotationYAnimationMax == 0)
             {
                 _position += _forwardVector * _velocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            }
+            if (_isRotating)
+            {
+                _rotationMatrix *= Matrix.CreateRotationY((float)gameTime.ElapsedGameTime.TotalSeconds);
             }
             // Update the collidable info if it was there
             _colliadable?.Update(_position);
