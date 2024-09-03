@@ -71,13 +71,16 @@ namespace MonoEditorEndless.Editor
             _isPlaying = false;
             _lastState = _isPlaying;
 
-            _assets = new List<Asset>();
-            _assets.Add(new AssetTexture("play.png", false, true));
-            _assets.Add(new AssetTexture("replay.png", false, true));
-            _assets.Add(new AssetTexture("info.png", false, true));
-            _assets.Add(new AssetTexture("pause.png", false, true));
-            // TODO: this might cause problems later
-            _assets.Add(new AssetModel("camera.fbx", true, true));
+            _assets = new List<Asset>()
+            {
+                new AssetTexture("play.png", false, true),
+                new AssetTexture("replay.png", false, true),
+                new AssetTexture("info.png", false, true),
+                new AssetTexture("pause.png", false, true),
+                new AssetTexture("frame.png", false, true),
+                // TODO: this might cause problems later
+                new AssetModel("camera.fbx", true, true)
+            };
         }
 
         public void LoadContent(ContentManager content)

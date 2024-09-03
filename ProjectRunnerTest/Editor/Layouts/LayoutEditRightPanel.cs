@@ -18,7 +18,6 @@ namespace MonoEditorEndless.Editor.Layouts
         private bool _is2DView;
 
         static int selectedView = 0;
-        static int selected2DView = 0;
         public LayoutEditRightPanel(GraphicsDeviceManager graphics, ControlsAggregator controlsAggregator)
         {
             _controlsAggregator = controlsAggregator;
@@ -66,13 +65,27 @@ namespace MonoEditorEndless.Editor.Layouts
             ImGui.Spacing();
             if (ImGui.RadioButton("Free 3D", selectedView == 0))
             {
+                _controlsAggregator.RaiseSpectate();
                 selectedView = 0;
                 Application._project._editorConfigs._selectedView = 0;
             }
             if (ImGui.RadioButton("2D View", selectedView == 1))
             {
+                _controlsAggregator.RaiseSpectate();
                 selectedView = 1;
                 Application._project._editorConfigs._selectedView = 1;
+            }
+            if (ImGui.RadioButton("Heads-up Display Creating Tool", selectedView == 2))
+            {
+                selectedView = 2;
+                _controlsAggregator.RaiseHUDMaker();
+                Application._project._editorConfigs._selectedView = 2;
+            }
+            if (ImGui.RadioButton("Menu Creating Tool", selectedView == 3))
+            {
+                selectedView = 3;
+                Application._project._editorConfigs._selectedView = 3;
+                _controlsAggregator.RaiseMenuMaker();
             }
             ImGui.Separator();
             ImGui.Text("Settings:");

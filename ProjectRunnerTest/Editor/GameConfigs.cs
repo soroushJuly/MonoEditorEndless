@@ -71,6 +71,11 @@ namespace MonoEditorEndless.Editor
         public float audioCollectedVolume;
         public string audioCollided;
         public float audioCollidedVolume;
+        // HUD
+        public string healthIcon;
+        public float healthScale;
+        public Vector2 healthPosition;
+        public Vector2 scorePosition;
 
 
         public GameConfigs()
@@ -130,6 +135,11 @@ namespace MonoEditorEndless.Editor
             audioCollectedVolume = .3f;
             audioCollided = "wall_hit";
             audioCollidedVolume = 1f;
+            // HUD
+            healthIcon = "heart";
+            healthScale = 1f;
+            healthPosition = new Vector2(200, 100);
+            scorePosition = new Vector2(200, 50);
         }
     }
 }

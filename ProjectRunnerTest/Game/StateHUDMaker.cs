@@ -2,17 +2,18 @@
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MonoEditorEndless.Engine;
+using ProjectRunnerTest;
 using MonoEditorEndless.Engine.StateManager;
 using MonoEditorEndless.Engine.UI;
 using System;
-using System.Diagnostics;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrayNotify;
 
 namespace MonoEditorEndless.Game
 {
-    internal class StateMenuMaker : State
+    internal class StateHUDMaker : State
     {
         private Texture2D _background;
+        private Texture2D _heartTexture;
         // TODO: no panel for now
         private Texture2D _panel;
         private Text _title;
@@ -30,9 +31,9 @@ namespace MonoEditorEndless.Game
         public event EventHandler HighScores;
         public event EventHandler Controls;
         public event EventHandler ExitGame;
-        public StateMenuMaker(ContentManager content, GraphicsDevice graphicsDevice)
+        public StateHUDMaker(ContentManager content, GraphicsDevice graphicsDevice)
         {
-            Name = "menu-maker";
+            Name = "hud-maker";
             Content = content;
             _graphicsDevice = graphicsDevice;
 
@@ -40,10 +41,12 @@ namespace MonoEditorEndless.Game
         public override void Enter(object owner)
         {
             _font = Content.Load<SpriteFont>("Content/Font/File");
-            _background = Content.Load<Texture2D>("Content/Texture/bg");
+            _background = Content.Load<Texture2D>("Content/Editor/Texture/frame");
             // Initialize the button list with button indicator and padding between buttons
             _buttonList = new ButtonList(null, 10, 50, _font, 50);
             _title = new Text("Game Title", new Vector2(10, 10), _font, Color.Gainsboro);
+
+            _heartTexture = Content.Load<Texture2D>("Content/Texture/" + Application._project._gameConfigs.healthIcon);
             LoadMainButtons();
         }
         public override void Execute(object owner, GameTime gameTime)
@@ -79,12 +82,22 @@ namespace MonoEditorEndless.Game
                 graphicsDevice.Viewport.Width / 2 - graphicsDevice.Viewport.Width * scale / 2,
                 graphicsDevice.Viewport.Height / 2 - graphicsDevice.Viewport.Height * scale / 2,
                 0);
+
             spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, transform);
-            spriteBatch.Draw(_background,
-                new Rectangle(0, 0, graphicsDevice.Viewport.Width, graphicsDevice.Viewport.Height),
-                Color.White);
-            _title.Draw(spriteBatch);
-            _buttonList.Draw(spriteBatch);
+            if (Application._project._editorConfigs._isShowFrame)
+                spriteBatch.Draw(_background, new Rectangle(0, 0, graphicsDevice.Viewport.Width, graphicsDevice.Viewport.Height),
+                    Color.White);
+            for (int i = 0; i < Application._project._gameConfigs.characterHealth; i++)
+            {
+                spriteBatch.Draw(_heartTexture, new Rectangle(
+                    (int)Application._project._gameConfigs.healthPosition.X + (int)(i * _heartTexture.Width * Application._project._gameConfigs.healthScale),
+                    (int)Application._project._gameConfigs.healthPosition.Y,
+                    (int)(_heartTexture.Width * Application._project._gameConfigs.healthScale),
+                    (int)(_heartTexture.Height * Application._project._gameConfigs.healthScale)),
+                    Color.Gray); // Background
+            }
+            spriteBatch.DrawString(_font, "Score:" + "1000", Application._project._gameConfigs.scorePosition, Color.Black);
+            //_spriteBatch.Draw(_heartTexture, new Rectangle((int)barPosition.X, (int)barPosition.Y, healthWidth, barHeight), Color.Red); // Health
             spriteBatch.End();
 
             _graphicsDevice.Viewport = lastViewport;

@@ -183,8 +183,6 @@ namespace MonoEditorEndless.Game
 
             _world.AddActor(actor, true);
 
-
-
             _pathManager.AddObstacle(obstacle);
             _pathManager.AddCollectable(collectable);
             _pathManager.AddRoadBlock(road);
@@ -192,20 +190,11 @@ namespace MonoEditorEndless.Game
             _pathManager.AddTurnRight(corner);
             _pathManager.Initialize(20);
 
-            //_bgMusic = Content.Load<Song>("Content/Audio/Titan");
+            // Audio loading
             _bgMusicEffect = Content.Load<SoundEffect>("Content/Audio/" + Application._project._gameConfigs.audioBackground);
             _bgMusicEffect.Play();
-
             _collectedSound = Content.Load<SoundEffect>("Content/Audio/" + Application._project._gameConfigs.audioCollected);
             _collidedSound = Content.Load<SoundEffect>("Content/Audio/" + Application._project._gameConfigs.audioCollided);
-            //MediaPlayer.Play(_bgMusic);
-            try
-            {
-
-            }
-            catch
-            {
-            }
 
             _skyboxTextureList = new List<Texture2D>()
             {
@@ -223,8 +212,8 @@ namespace MonoEditorEndless.Game
 
             _font = Content.Load<SpriteFont>("Content/Font/File");
 
+            _heartTexture = Content.Load<Texture2D>("Content/Texture/" + Application._project._gameConfigs.healthIcon);
             // Create a 1x1 white texture
-            _heartTexture = Content.Load<Texture2D>("Content/Texture/heart");
             //_whiteTexture = new Texture2D(_graphicsDevice, 1, 1);
             //_whiteTexture.SetData(new[] { Color.White });
         }
@@ -298,7 +287,7 @@ namespace MonoEditorEndless.Game
             _plane.Draw(_graphicsDevice, Matrix.CreateTranslation(-100 * Vector3.UnitY), _camera.GetView(), projection);
 
 
-            DrawHealthBar(new Vector2(400, 100), 0.75f, 1.0f);
+            DrawHUD();
 
             _graphicsDevice.Viewport = lastViewport;
             _graphicsDevice.ScissorRectangle = lastScissorBox;
@@ -308,20 +297,22 @@ namespace MonoEditorEndless.Game
             _graphicsDevice.BlendFactor = lastBlendFactor;
             _graphicsDevice.SamplerStates[0] = SamplerState.LinearWrap;
         }
-        private void DrawHealthBar(Vector2 barPosition, float healthPercent, float maxHealth)
+        private void DrawHUD()
         {
 
-            // Draw the health bar
             _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, null, DepthStencilState.DepthRead);
-            //_spriteBatch.Begin();
+            // Draw the health bar
             for (int i = 0; i < actor._health; i++)
             {
-                _spriteBatch.Draw(_heartTexture, new Rectangle((int)barPosition.X + i * _heartTexture.Width, (int)barPosition.Y, _heartTexture.Width, _heartTexture.Height), Color.Gray); // Background
+                _spriteBatch.Draw(_heartTexture, new Rectangle(
+                    (int)Application._project._gameConfigs.healthPosition.X + (int)(i * _heartTexture.Width * Application._project._gameConfigs.healthScale),
+                    (int)Application._project._gameConfigs.healthPosition.Y,
+                    (int)(_heartTexture.Width * Application._project._gameConfigs.healthScale),
+                    (int)(_heartTexture.Height * Application._project._gameConfigs.healthScale)),
+                    Color.Gray); // Background
             }
-            _spriteBatch.DrawString(_font, "Score:" + _gameSession.GetPoints(), new Vector2(400, 50), Color.Black);
-            //_spriteBatch.Draw(_heartTexture, new Rectangle((int)barPosition.X, (int)barPosition.Y, healthWidth, barHeight), Color.Red); // Health
+            _spriteBatch.DrawString(_font, "Score:" + _gameSession.GetPoints(), Application._project._gameConfigs.scorePosition, Color.Black);
             _spriteBatch.End();
-            // Implementation of health bar drawing will be done here
         }
         // TODO: These can go inside the pawn class
         public void MoveX(eButtonState buttonState, Vector2 amount)

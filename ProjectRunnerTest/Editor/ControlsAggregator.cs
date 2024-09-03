@@ -15,6 +15,8 @@ namespace MonoEditorEndless.Editor
     {
         public event EventHandler PausePressed;
         public event EventHandler PlayPressed;
+        public event EventHandler SpectatePressed;
+        public event EventHandler HUDMakerPressed;
         public event EventHandler PlayFromStartPressed;
         public event EventHandler<ReplayEventArgs> RestartPressed;
         public event EventHandler MenuMakerPressed;
@@ -50,9 +52,17 @@ namespace MonoEditorEndless.Editor
         {
             PausePressed?.Invoke(this, EventArgs.Empty);
         }
+        public void RaiseSpectate()
+        {
+            SpectatePressed?.Invoke(this, EventArgs.Empty);
+        }
         public void RaiseMenuMaker()
         {
             MenuMakerPressed?.Invoke(this, EventArgs.Empty);
+        }
+        public void RaiseHUDMaker()
+        {
+            HUDMakerPressed?.Invoke(this, EventArgs.Empty);
         }
         public void RaiseRefreshSpectate()
         {

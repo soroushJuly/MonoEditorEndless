@@ -286,7 +286,7 @@ namespace MonoEditorEndless.Game
 
             _camera.Update();
         }
-        public override void Exit(object owner) { Content.Unload(); }
+        public override void Exit(object owner) { }
         public override void Draw(GraphicsDevice GraphicsDevice = null, SpriteBatch spriteBatch = null)
         {
             var lastViewport = _graphicsDevice.Viewport;

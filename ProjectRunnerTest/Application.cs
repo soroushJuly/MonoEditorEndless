@@ -130,7 +130,9 @@ namespace ProjectRunnerTest
             aggregator.PlayFromStartPressed += (object sender, EventArgs e) => { _gameHandle.Start(true); };
             aggregator.RestartPressed += (object sender, ReplayEventArgs e) => { _gameHandle.Restart(e.IsFromStart()); };
             aggregator.MenuMakerPressed += (object sender, EventArgs e) => { _gameHandle.MenuMaker(); };
+            aggregator.HUDMakerPressed += (object sender, EventArgs e) => { _gameHandle.HUDMaker(); };
             aggregator.RefreshSpectate += (object sender, EventArgs e) => { _gameHandle.Refresh(); };
+            aggregator.SpectatePressed += (object sender, EventArgs e) => { _gameHandle.Spectate(); };
 
 
 
