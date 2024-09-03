@@ -31,8 +31,10 @@ namespace MonoEditorEndless.Editor.Layouts
         // In Menu Maker the values of slider
         private float _xDistanceTitle;
         private float _xDistanceList;
+        private float _xDistanceControls;
         private float _yDistanceTitle;
         private float _yDistanceList;
+        private float _yDistanceControls;
 
 
         // Obstacle behavior combo
@@ -64,6 +66,8 @@ namespace MonoEditorEndless.Editor.Layouts
             _yScoreDistance = Application._project._gameConfigs.scorePosition.Y;
             _xDistanceList = Application._project._gameConfigs.listPosition.Y;
             _yDistanceList = Application._project._gameConfigs.listPosition.Y;
+            _xDistanceControls = Application._project._gameConfigs.controlsPosition.Y;
+            _yDistanceControls = Application._project._gameConfigs.controlsPosition.Y;
 
             _fileHandler = new FileHandler();
         }
@@ -739,7 +743,42 @@ namespace MonoEditorEndless.Editor.Layouts
                         _isTimerActive = true;
                         _pathChangeTimer = .4f;
                     }
-
+                    // Controls
+                    ImGui.SeparatorText("Controls");
+                    ImGui.Text("Change where and how in the main menu to show the controls");
+                    ImGui.Text("Controls Position");
+                    ImGui.Text("X: ");
+                    ImGui.SameLine();
+                    if (ImGui.SliderFloat("##x_controls_list", ref _xDistanceControls, 0, _graphics.PreferredBackBufferWidth))
+                    {
+                        Application._project._gameConfigs.controlsPosition.X =
+                            Application._project._editorConfigs._isControlsFromLeft ? _xDistanceControls : _graphics.PreferredBackBufferWidth - _xDistanceControls;
+                        _isTimerActive = true;
+                        _pathChangeTimer = .2f;
+                    }
+                    if (ImGui.Checkbox("From Left ##x_controls_list", ref Application._project._editorConfigs._isControlsFromLeft))
+                    {
+                        Application._project._gameConfigs.controlsPosition.X =
+                            Application._project._editorConfigs._isControlsFromLeft ? _xDistanceControls : _graphics.PreferredBackBufferWidth - _xDistanceControls;
+                        _isTimerActive = true;
+                        _pathChangeTimer = .2f;
+                    }
+                    ImGui.Text("Y: ");
+                    ImGui.SameLine();
+                    if (ImGui.SliderFloat("##y_controls_list", ref _yDistanceControls, 0, _graphics.PreferredBackBufferHeight))
+                    {
+                        Application._project._gameConfigs.controlsPosition.Y =
+                            Application._project._editorConfigs._isControlsFromTop ? _yDistanceControls : _graphics.PreferredBackBufferHeight - _yDistanceControls;
+                        _isTimerActive = true;
+                        _pathChangeTimer = .2f;
+                    }
+                    if (ImGui.Checkbox("From Top ##y_controls_list", ref Application._project._editorConfigs._isControlsFromTop))
+                    {
+                        Application._project._gameConfigs.controlsPosition.Y =
+                            Application._project._editorConfigs._isControlsFromTop ? _yDistanceControls : _graphics.PreferredBackBufferHeight - _yDistanceControls;
+                        _isTimerActive = true;
+                        _pathChangeTimer = .2f;
+                    }
                 }
 
                 if (ImGui.Button("Test Window")) show_test_window = !show_test_window;

@@ -13,6 +13,7 @@ namespace MonoEditorEndless.Game
         private Texture2D _background;
         private Texture2D _panel;
         private Text _title;
+        private TextList _controls;
         private ButtonList _buttonList;
         private SpriteFont _font;
 
@@ -46,7 +47,13 @@ namespace MonoEditorEndless.Game
                 _font,
                 new Color(Application._project._gameConfigs.titleColor),
                 Application._project._gameConfigs.titleSize);
+            _controls = new TextList((int)Application._project._gameConfigs.controlsPosition.X,
+                (int)Application._project._gameConfigs.controlsPosition.Y,
+                _font,
+                new Color(Application._project._gameConfigs.controlsColor),
+                (int)Application._project._gameConfigs.controlsPadding);
             LoadMainButtons();
+            LoadControls();
         }
         public override void Execute(object owner, GameTime gameTime)
         {
@@ -73,6 +80,7 @@ namespace MonoEditorEndless.Game
                 Color.White);
             _title.Draw(spriteBatch);
             _buttonList.Draw(spriteBatch);
+            _controls.Draw(spriteBatch);
             spriteBatch.End();
 
             _graphicsDevice.Viewport = lastViewport;
@@ -93,7 +101,6 @@ namespace MonoEditorEndless.Game
                 ) });
 
             _buttonList.AddButton("Start", btnTexture, Application._project._gameConfigs.buttonSize);
-            _buttonList.AddButton("Controls", btnTexture, Application._project._gameConfigs.buttonSize);
             _buttonList.AddButton("Exit", btnTexture, Application._project._gameConfigs.buttonSize);
             // Handle button selection
             _buttonList.ButtonClicked += this.HandleButtonSelection;
@@ -108,20 +115,22 @@ namespace MonoEditorEndless.Game
                 case "Start":
                     GameStart(this, EventArgs.Empty);
                     break;
-                //case "High Scores":
-                //    HighScores(this, EventArgs.Empty);
+                //case "Controls":
+                //    Controls(this, EventArgs.Empty);
                 //    break;
-                case "Controls":
-                    Controls(this, EventArgs.Empty);
-                    break;
                 case "Exit":
-                    ExitGame(this, EventArgs.Empty);
+                    ExitGame?.Invoke(this, EventArgs.Empty);
                     break;
                 default:
                     break;
             }
             // Play the sound effect related to the select button
             //selectSound.Play();
+        }
+        private void LoadControls()
+        {
+            _controls.AddText("Use Mouse to move left and right");
+            _controls.AddText("Press A and D to turn left and right");
         }
     }
 }

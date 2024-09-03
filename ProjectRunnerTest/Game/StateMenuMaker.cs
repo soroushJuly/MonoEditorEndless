@@ -15,6 +15,7 @@ namespace MonoEditorEndless.Game
         // TODO: no panel for now
         private Texture2D _panel;
         private Text _title;
+        private TextList _controls;
         private ButtonList _buttonList;
         private SpriteFont _font;
         float scale = 1f;
@@ -38,9 +39,9 @@ namespace MonoEditorEndless.Game
             _font = Content.Load<SpriteFont>("Content/Font/File");
             _background = Content.Load<Texture2D>("Content/Texture/" + Application._project._gameConfigs.mainMenuBackground);
             // Initialize the button list with button indicator and padding between buttons
-            _buttonList = new ButtonList(null, 
+            _buttonList = new ButtonList(null,
                 (int)Application._project._gameConfigs.listPosition.X,
-                (int)Application._project._gameConfigs.listPosition.Y, 
+                (int)Application._project._gameConfigs.listPosition.Y,
                 _font,
                 (int)Application._project._gameConfigs.listPadding);
             _title = new Text(Application._project._gameConfigs._title,
@@ -48,7 +49,13 @@ namespace MonoEditorEndless.Game
                 _font,
                 new Color(Application._project._gameConfigs.titleColor),
                 Application._project._gameConfigs.titleSize);
+            _controls = new TextList((int)Application._project._gameConfigs.controlsPosition.X,
+                (int)Application._project._gameConfigs.controlsPosition.Y,
+                _font,
+                new Color(Application._project._gameConfigs.controlsColor),
+                (int)Application._project._gameConfigs.controlsPadding);
             LoadMainButtons();
+            LoadControls();
         }
         public override void Execute(object owner, GameTime gameTime)
         {
@@ -89,6 +96,7 @@ namespace MonoEditorEndless.Game
                 Color.White);
             _title.Draw(spriteBatch);
             _buttonList.Draw(spriteBatch);
+            _controls.Draw(spriteBatch);
             spriteBatch.End();
 
             _graphicsDevice.Viewport = lastViewport;
@@ -109,8 +117,13 @@ namespace MonoEditorEndless.Game
                 ) });
 
             _buttonList.AddButton("Start", btnTexture, Application._project._gameConfigs.buttonSize);
-            _buttonList.AddButton("Controls", btnTexture, Application._project._gameConfigs.buttonSize);
+            //_buttonList.AddButton("Controls", btnTexture, Application._project._gameConfigs.buttonSize);
             _buttonList.AddButton("Exit", btnTexture, Application._project._gameConfigs.buttonSize);
+        }
+        private void LoadControls()
+        {
+            _controls.AddText("Use Mouse to move left and right");
+            _controls.AddText("Press A and D to turn left and right");
         }
     }
 }

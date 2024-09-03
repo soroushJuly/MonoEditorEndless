@@ -17,6 +17,8 @@
         public bool _isTitleFromLeft;
         public bool _isListFromLeft;
         public bool _isListFromTop;
+        public bool _isControlsFromLeft;
+        public bool _isControlsFromTop;
 
         public EditorConfigs()
         {
@@ -34,6 +36,8 @@
             _isTitleFromLeft = true;
             _isListFromLeft = true;
             _isListFromTop = true;
+            _isControlsFromTop = true;
+            _isControlsFromLeft = true;
         }
     }
 }

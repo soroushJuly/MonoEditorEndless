@@ -44,6 +44,7 @@ namespace MonoEditorEndless.Game
             play.SessionFinished += (object sender, SessionArgs e) => { _isFinish = true; _sessionArgs = e; };
             StateMenu menu = new StateMenu(_contentManger, _graphicsDevice);
             menu.GameStart += (object sender, EventArgs e) => { _isPlaying = true; };
+            menu.ExitGame += (object sender, EventArgs e) => { Environment.Exit(0); };
             StateMenuMaker menuMaker = new StateMenuMaker(_contentManger, _graphicsDevice);
             StateHUDMaker hudMaker = new StateHUDMaker(_contentManger, _graphicsDevice);
             StateFinish finish = new StateFinish(_contentManger, _graphicsDevice, _sessionArgs);

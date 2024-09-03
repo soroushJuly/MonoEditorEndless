@@ -83,6 +83,9 @@ namespace MonoEditorEndless.Editor
         public Vector2 titlePosition;
         public Vector2 listPosition;
         public float listPadding;
+        public Vector2 controlsPosition;
+        public float controlsPadding;
+        public Vector3 controlsColor;
 
 
         public GameConfigs()
@@ -153,10 +156,13 @@ namespace MonoEditorEndless.Editor
             buttonSize = new Vector2(150, 30);
             buttonColor = new Vector3(.3f, .3f, .3f);
             titleColor = new Vector3(.3f);
-            titleSize = 1f;
-            titlePosition = new Vector2(10f);
-            listPosition = new Vector2(10f,50f);
+            titleSize = 2f;
+            titlePosition = new Vector2(50f);
+            listPosition = new Vector2(50f,180f);
             listPadding = 50f;
+            controlsPosition = new Vector2(50f, 290f);
+            controlsColor = new Vector3(1f);
+            controlsPadding = 40f;
         }
     }
 }
