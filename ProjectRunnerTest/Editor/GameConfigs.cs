@@ -113,7 +113,7 @@ namespace MonoEditorEndless.Editor
             // Approximation of 3 p.m.
             sunDirection = new Vector3(0.5f, -0.75f, -0.25f);
             // Fog
-            fogEnable = true;
+            fogEnable = false;
             fogColor = new Vector3(.6f);
             fogStartDistance = 900.75f;
             fogEndDistance = 1000.25f;
