@@ -780,7 +780,9 @@ namespace MonoEditorEndless.Editor.Layouts
                         _pathChangeTimer = .2f;
                     }
                 }
-
+                ImGui.NewLine();
+                ImGui.NewLine();
+                ImGui.NewLine();
                 if (ImGui.Button("Test Window")) show_test_window = !show_test_window;
                 ImGui.End();
             }

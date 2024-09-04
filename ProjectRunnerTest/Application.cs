@@ -63,22 +63,36 @@ namespace ProjectRunnerTest
 
             // Load the project on initialize
             _project = new Project();
-            string recentProjectName = null;
-            // Find and load the most recent Project
-            recentProjectName = fileHandler.LoadClassXml(recentProjectName, Path.Combine(Routes.SAVED_PROJECTS, "recent_project.xml"));
-            if (recentProjectName != null)
+            if (_isDebug)
             {
-                // Load the most recent project
-                _project = fileHandler.LoadClassXml(_project, Path.Combine(Routes.SAVED_PROJECTS, recentProjectName));
+                string recentProjectName = null;
+                // Find and load the most recent Project
+                recentProjectName = fileHandler.LoadClassXml(recentProjectName, Path.Combine(Routes.SAVED_PROJECTS, "recent_project.xml"));
+                if (recentProjectName != null)
+                {
+                    // Load the most recent project
+                    _project = fileHandler.LoadClassXml(_project, Path.Combine(Routes.SAVED_PROJECTS, recentProjectName));
+                }
+                else
+                {
+                    // If no recent project Create the default project
+                    _project.CreateDefault();
+                    // Then save the new project
+                    if (fileHandler.SaveXml<Project>(_project, "default_project.xml", Routes.SAVED_PROJECTS))
+                        // Update recent project
+                        fileHandler.SaveXml<string>(new string("default_project.xml"), "recent_project.xml", Routes.SAVED_PROJECTS);
+                }
             }
             else
             {
-                // If no recent project Create the default project
-                _project.CreateDefault();
-                // Then save the new project
-                if (fileHandler.SaveXml<Project>(_project, "default_project.xml", Routes.SAVED_PROJECTS))
-                    // Update recent project
-                    fileHandler.SaveXml<string>(new string("default_project.xml"), "recent_project.xml", Routes.SAVED_PROJECTS);
+                try
+                {
+                    _project = fileHandler.LoadClassXml(_project, "project_data.xml");
+                }
+                catch
+                {
+                    Forms.MessageBox.Show("errorrr");
+                }
             }
 
             _project.AssetAdded += (object sender, AssetAdditionArgs e) =>
@@ -146,8 +160,9 @@ namespace ProjectRunnerTest
 
             // Render the game
             _gameHandle.Draw(GraphicsDevice);
-            // Render editor on top of the game
-            _editorHandle.Draw(gameTime);
+            // Render editor on top of the game if in debug mode
+            if (_isDebug)
+                _editorHandle.Draw(gameTime);
 
             base.Draw(gameTime);
         }

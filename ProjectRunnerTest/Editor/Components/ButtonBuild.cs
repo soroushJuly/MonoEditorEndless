@@ -34,6 +34,7 @@ namespace MonoEditorEndless.Editor.Components
                 CurrentDirectory = Path.Combine(CurrentDirectory, "..", "..", "..");
                 var processInfo = new ProcessStartInfo("dotnet")
                 {
+                    //Arguments = $"publish -c Release -r win-x64 /p:PublishReadyToRun=false /p:TieredCompilation=false --self-contained",
                     Arguments = $"publish -c Release -r win-x64 /p:PublishReadyToRun=false /p:TieredCompilation=false --self-contained -o \"{_folderPath}\"",
                     WorkingDirectory = CurrentDirectory,
                     RedirectStandardOutput = true,
@@ -48,6 +49,8 @@ namespace MonoEditorEndless.Editor.Components
                         Console.WriteLine(result);
                     }
                 }
+                // create a copy of the project file in the directory
+                _fileHandler.SaveXml(Application._project, "project_data.xml", _folderPath);
                 _isBuilt = true;
                 _showModal = true;
                 ModalLoading.Instance.Stop();
