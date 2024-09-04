@@ -39,12 +39,14 @@ namespace MonoEditorEndless.Engine.UI
             inputCommandManager.AddKeyboardBinding(Keys.Up, OnKeyUp);
             inputCommandManager.AddKeyboardBinding(Keys.Down, OnKeyDown);
             inputCommandManager.AddKeyboardBinding(Keys.Enter, OnSelect);
+            inputCommandManager.AddMouseBinding(eMouseInputs.LEFT_CLICK, OnSelect);
         }
 
         public void AddButton(string text, Texture2D btnTexture, Vector2 dimensions)
         {
             Button button = new Button(text, buttonIndicator, btnTexture, new Vector2(offsetX, offsetY + buttonList.Count * paddings), font, dimensions);
             button.MouseHover += OnMouseHover;
+            button.MouseHoverExit += OnMouseHoverExit;
             buttonList.Add(button);
 
         }
@@ -89,6 +91,17 @@ namespace MonoEditorEndless.Engine.UI
                     buttonList[i].updateHovered(false);
             }
         }
+        private void OnMouseHoverExit(object sender, EventArgs e)
+        {
+            for (int i = 0; i < buttonList.Count; i++)
+            {
+                if (sender == buttonList[i])
+                {
+                    currentButtonIndex = -1;
+                    buttonList[i].updateHovered(false);
+                }
+            }
+        }
         private void UpdateCurrentButton(int index)
         {
             currentButtonIndex += index;
@@ -129,8 +142,8 @@ namespace MonoEditorEndless.Engine.UI
         }
         private void OnSelect(eButtonState buttonState, Vector2 amount)
         {
-            if (buttonState == eButtonState.PRESSED)
-                ButtonClicked(this, buttonList[currentButtonIndex]);
+            if (buttonState == eButtonState.PRESSED && currentButtonIndex > -1)
+                ButtonClicked?.Invoke(this, buttonList[currentButtonIndex]);
         }
         #endregion
     }

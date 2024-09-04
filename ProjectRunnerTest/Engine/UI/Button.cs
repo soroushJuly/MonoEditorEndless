@@ -23,6 +23,7 @@ namespace MonoEditorEndless.Engine.UI
         int height;
 
         public event EventHandler MouseHover;
+        public event EventHandler MouseHoverExit;
 
         public string GetText() { return text; }
         public Button(string text, Texture2D indicatorTexture, Texture2D buttonTexture, Vector2 position, SpriteFont font, Vector2 dimensions)
@@ -44,11 +45,21 @@ namespace MonoEditorEndless.Engine.UI
         }
         public void Update(Rectangle mouseBox)
         {
-            
+            // If already hovered
+            if (isHovered)
+            {
+                // Check when it stopped
+                if (!buttonBox.Intersects(mouseBox))
+                {
+                    MouseHoverExit(this, EventArgs.Empty);
+                }
+            }
+            // Check if hovering
             if (buttonBox.Intersects(mouseBox))
             {
                 MouseHover(this, EventArgs.Empty);
             }
+
         }
         public bool GetIsHovered() { return isHovered; }
         public void Draw(SpriteBatch spriteBatch)
