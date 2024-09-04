@@ -15,8 +15,6 @@ using ProjectRunnerTest;
 
 using System;
 using System.Collections.Generic;
-// TODO: importing this might cause problems later
-using System.IO;
 
 namespace MonoEditorEndless.Game
 {
@@ -50,8 +48,6 @@ namespace MonoEditorEndless.Game
         private Actor cameraModel;
 
         private float _mouseActiveTimer = 0f;
-
-        KeyboardState _prevKeyState;
 
         private InputManager _inputManager;
 
@@ -213,23 +209,53 @@ namespace MonoEditorEndless.Game
             // Free Camera Control
             _camera._sensitivity = Application._project._editorConfigs._spectateSensitivity;
             _camera._speed = Application._project._editorConfigs._spectateMoveSpeed;
-            // 3D camera control
-            if (Application._project._editorConfigs._selectedView == 0)
+            if (!Application._project._editorConfigs._noInput)
             {
-                if (Keyboard.GetState().IsKeyDown(Keys.D))
+                // 3D camera control
+                if (Application._project._editorConfigs._selectedView == 0)
                 {
-                    _camera.MoveLeft(.1f * (float)gameTime.ElapsedGameTime.Milliseconds);
+                    if (Keyboard.GetState().IsKeyDown(Keys.D))
+                    {
+                        _camera.MoveLeft(.1f * (float)gameTime.ElapsedGameTime.Milliseconds);
+                    }
+                    if (Keyboard.GetState().IsKeyDown(Keys.A))
+                    {
+                        _camera.MoveLeft(-.1f * (float)gameTime.ElapsedGameTime.Milliseconds);
+                    }
+                    if (Mouse.GetState().RightButton == ButtonState.Pressed)
+                    {
+                        _camera.Rotate(Mouse.GetState().X - _lastMouse.X, Mouse.GetState().Y - _lastMouse.Y);
+                    }
+                    if (Mouse.GetState().LeftButton == ButtonState.Pressed)
+                    {
+                        if (Keyboard.GetState().IsKeyDown(Keys.W))
+                        {
+                            _camera.MoveUp(.1f * (float)gameTime.ElapsedGameTime.Milliseconds);
+                        }
+                        if (Keyboard.GetState().IsKeyDown(Keys.S))
+                        {
+                            _camera.MoveUp(-.1f * (float)gameTime.ElapsedGameTime.Milliseconds);
+                        }
+                    }
+                    else
+                    {
+                        if (Keyboard.GetState().IsKeyDown(Keys.W))
+                        {
+                            _camera.MoveForward(.1f * (float)gameTime.ElapsedGameTime.Milliseconds);
+                        }
+                        if (Keyboard.GetState().IsKeyDown(Keys.S))
+                        {
+                            _camera.MoveForward(-.1f * (float)gameTime.ElapsedGameTime.Milliseconds);
+                        }
+                    }
                 }
-                if (Keyboard.GetState().IsKeyDown(Keys.A))
+                // 2D Camera Control - Top-down view
+                else if (Application._project._editorConfigs._selectedView == 1)
                 {
-                    _camera.MoveLeft(-.1f * (float)gameTime.ElapsedGameTime.Milliseconds);
-                }
-                if (Mouse.GetState().RightButton == ButtonState.Pressed)
-                {
-                    _camera.Rotate(Mouse.GetState().X - _lastMouse.X, Mouse.GetState().Y - _lastMouse.Y);
-                }
-                if (Mouse.GetState().LeftButton == ButtonState.Pressed)
-                {
+                    if (Keyboard.GetState().IsKeyDown(Keys.D))
+                    {
+                        _camera.MoveLeft(.1f * (float)gameTime.ElapsedGameTime.Milliseconds);
+                    }
                     if (Keyboard.GetState().IsKeyDown(Keys.W))
                     {
                         _camera.MoveUp(.1f * (float)gameTime.ElapsedGameTime.Milliseconds);
@@ -238,41 +264,14 @@ namespace MonoEditorEndless.Game
                     {
                         _camera.MoveUp(-.1f * (float)gameTime.ElapsedGameTime.Milliseconds);
                     }
-                }
-                else
-                {
-                    if (Keyboard.GetState().IsKeyDown(Keys.W))
+                    if (Keyboard.GetState().IsKeyDown(Keys.A))
                     {
-                        _camera.MoveForward(.1f * (float)gameTime.ElapsedGameTime.Milliseconds);
+                        _camera.MoveLeft(-.1f * (float)gameTime.ElapsedGameTime.Milliseconds);
                     }
-                    if (Keyboard.GetState().IsKeyDown(Keys.S))
-                    {
-                        _camera.MoveForward(-.1f * (float)gameTime.ElapsedGameTime.Milliseconds);
-                    }
+                    // Zoom In/Zoom Out
+                    float diff = Mouse.GetState().ScrollWheelValue - prevMouse.ScrollWheelValue;
+                    _camera.MoveForward(diff * 0.005f * (float)gameTime.ElapsedGameTime.Milliseconds);
                 }
-            }
-            // 2D Camera Control - Top-down view
-            else if (Application._project._editorConfigs._selectedView == 1)
-            {
-                if (Keyboard.GetState().IsKeyDown(Keys.D))
-                {
-                    _camera.MoveLeft(.1f * (float)gameTime.ElapsedGameTime.Milliseconds);
-                }
-                if (Keyboard.GetState().IsKeyDown(Keys.W))
-                {
-                    _camera.MoveUp(.1f * (float)gameTime.ElapsedGameTime.Milliseconds);
-                }
-                if (Keyboard.GetState().IsKeyDown(Keys.S))
-                {
-                    _camera.MoveUp(-.1f * (float)gameTime.ElapsedGameTime.Milliseconds);
-                }
-                if (Keyboard.GetState().IsKeyDown(Keys.A))
-                {
-                    _camera.MoveLeft(-.1f * (float)gameTime.ElapsedGameTime.Milliseconds);
-                }
-                // Zoom In/Zoom Out
-                float diff = Mouse.GetState().ScrollWheelValue - prevMouse.ScrollWheelValue;
-                _camera.MoveForward(diff * 0.005f * (float)gameTime.ElapsedGameTime.Milliseconds);
             }
 
             curMouse = Mouse.GetState();
@@ -281,8 +280,6 @@ namespace MonoEditorEndless.Game
             prevMouse = curMouse;
 
             world = Matrix.CreateTranslation(actor.GetPosition());
-
-            _prevKeyState = Keyboard.GetState();
 
             _camera.Update();
         }

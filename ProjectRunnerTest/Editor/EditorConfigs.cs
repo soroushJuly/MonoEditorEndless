@@ -6,6 +6,7 @@
         public float _spectateMoveSpeed;
         public bool _showInstructions;
         public int _selectedView;
+        public bool _noInput;
         // HUD maker
         public bool _isShowFrame;
         public bool _isFromLeft;
@@ -25,6 +26,7 @@
             // Set editor default values
             _spectateSensitivity = 0.1f;
             _spectateMoveSpeed = 1f ;
+            _noInput = false;
             _showInstructions = true;
             // show frame in editor
             _isShowFrame = true;

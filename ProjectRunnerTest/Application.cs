@@ -145,7 +145,6 @@ namespace ProjectRunnerTest
             aggregator.RefreshSpectate += (object sender, EventArgs e) => { _gameHandle.Refresh(); };
             aggregator.SpectatePressed += (object sender, EventArgs e) => { _gameHandle.Spectate(); };
 
-
             base.LoadContent();
         }
         private Num.Vector3 clear_color = new Num.Vector3(114f / 255f, 144f / 255f, 154f / 255f);

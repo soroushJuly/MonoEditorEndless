@@ -22,6 +22,8 @@ namespace MonoEditorEndless.Editor.Layouts
 
         // Tracking changes in the editor
         private float _pathChangeTimer;
+        // after timer runs out player can move in the scene again
+        private float _inputLockTimer;
 
         // In HUD maker the value of slider
         private float _xDistance;
@@ -41,6 +43,7 @@ namespace MonoEditorEndless.Editor.Layouts
         private string[] _obstacleBehaviors = { "Character loss health", "Character dies instantly" };
 
         private bool _isTimerActive;
+        private bool _isInputTimerActive;
 
         private FileHandler _fileHandler;
 
@@ -57,6 +60,9 @@ namespace MonoEditorEndless.Editor.Layouts
 
             _pathChangeTimer = 0f;
             _isTimerActive = false;
+
+            _inputLockTimer = 1f;
+            _isInputTimerActive = false;
 
             _xDistance = Application._project._gameConfigs.healthPosition.X;
             _yDistance = Application._project._gameConfigs.healthPosition.Y;
@@ -92,7 +98,12 @@ namespace MonoEditorEndless.Editor.Layouts
                         ImGui.Text("Title:");
                         ImGui.SameLine();
                         Tooltip.Instance.Draw("Type the title of your game.");
-                        ImGui.InputText("##Text input", ref Application._project._gameConfigs._title, 100);
+                        if (ImGui.InputText("##Text input", ref Application._project._gameConfigs._title, 100))
+                        {
+                            Application._project._editorConfigs._noInput = true;
+                            _inputLockTimer = 1f;
+                            _isInputTimerActive = true;
+                        }
                     }
                     if (ImGui.CollapsingHeader("Camera", ImGuiTreeNodeFlags.None))
                     {
@@ -893,11 +904,20 @@ namespace MonoEditorEndless.Editor.Layouts
             // Refresh the path if the obstacle or collectable chances changed
             if (_isTimerActive)
                 _pathChangeTimer -= (float)gameTime.ElapsedGameTime.TotalSeconds;
+            if (_isInputTimerActive)
+                _inputLockTimer -= (float)gameTime.ElapsedGameTime.TotalSeconds;
+
             if (_pathChangeTimer < 0f)
             {
                 _isTimerActive = false;
                 _pathChangeTimer = 0;
                 _controlsAggregator.RaiseRefreshSpectate();
+            }
+            if (_inputLockTimer < 0f)
+            {
+                _isInputTimerActive = false;
+                _inputLockTimer = 0;
+                Application._project._editorConfigs._noInput = false;
             }
         }
         private void SaveReminder()
