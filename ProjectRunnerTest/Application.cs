@@ -82,61 +82,57 @@ namespace ProjectRunnerTest
                         // Update recent project
                         fileHandler.SaveXml<string>(new string("default_project.xml"), "recent_project.xml", Routes.SAVED_PROJECTS);
                 }
+
+                _project.AssetAdded += (object sender, AssetAdditionArgs e) =>
+                {
+                    string ContentFile = File.ReadAllText(Routes.CONTENT_FILE);
+                    UpdateContent(_project.GetAllAsset());
+                    // If build fails
+                    if (!BuildContent())
+                    {
+                        // Revert change if the build process wasn't successful
+                        _project.RemoveLastAsset();
+                        // Change the content file to what is was before
+                        File.WriteAllText(Routes.CONTENT_FILE, ContentFile);
+                    }
+                    // If content build is successful we change the field in game config project
+                    else
+                    {
+                        // Using system reflection to dynamically change a member value
+                        FieldInfo field = _project._gameConfigs.GetType().GetField(e.role);
+                        if (field != null)
+                        {
+                            field.SetValue(Application._project._gameConfigs, e.name);
+                        }
+                        // Refresh the game
+                        _gameHandle?.Refresh();
+
+                        ModalLoading.Instance.Stop();
+                    }
+                };
+
+                _editorHandle = new EditorHandle(this, _graphics, aggregator);
+
+
+                // Update the content file
+                UpdateContent(_project.GetAllAsset());
+                // Build the newly updated Content file
+                BuildContent();
             }
+            // Release Mode
             else
             {
-                try
-                {
-                    _project = fileHandler.LoadClassXml(_project, "project_data.xml");
-                }
-                catch
-                {
-                    Forms.MessageBox.Show("errorrr");
-                }
+                // Content should be already created before this
+                _project = fileHandler.LoadClassXml(_project, "project_data.xml");
             }
-
-            _project.AssetAdded += (object sender, AssetAdditionArgs e) =>
-            {
-                string ContentFile = File.ReadAllText(Routes.CONTENT_FILE);
-                UpdateContent(_project.GetAllAsset());
-                // If build fails
-                if (!BuildContent())
-                {
-                    // Revert change if the build process wasn't successful
-                    _project.RemoveLastAsset();
-                    // Change the content file to what is was before
-                    File.WriteAllText(Routes.CONTENT_FILE, ContentFile);
-                }
-                // If content build is successful we change the field in game config project
-                else
-                {
-                    // Using system reflection to dynamically change a member value
-                    FieldInfo field = _project._gameConfigs.GetType().GetField(e.role);
-                    if (field != null)
-                    {
-                        field.SetValue(Application._project._gameConfigs, e.name);
-                    }
-                    // Refresh the game
-                    _gameHandle?.Refresh();
-
-                    ModalLoading.Instance.Stop();
-                }
-            };
-
-            _editorHandle = new EditorHandle(this, _graphics, aggregator);
-
-
-            // Update the content file
-            UpdateContent(_project.GetAllAsset());
-            // Build the newly updated Content file
-            BuildContent();
             base.Initialize();
         }
 
         protected override void LoadContent()
         {
-            // Load editor contents
-            _editorHandle.LoadContent(Content);
+            // Load editor contents Only on debug mode
+            if (_isDebug)
+                _editorHandle.LoadContent(Content);
             // Initialize the game handle
             _gameHandle = new GameHandle(Content, GraphicsDevice);
             _gameHandle.RaisePause += (object sender, EventArgs e) => { aggregator.RaisePausePressed(); };
@@ -169,7 +165,8 @@ namespace ProjectRunnerTest
 
         protected override void Update(GameTime gameTime)
         {
-            _editorHandle.Update(gameTime);
+            if (_isDebug)
+                _editorHandle.Update(gameTime);
             _gameHandle.Update(gameTime);
         }
         public static bool BuildContent()
@@ -255,12 +252,13 @@ namespace ProjectRunnerTest
                 if (!contentFileText.Contains(asset.GetPathString()))
                     File.AppendAllText(Routes.CONTENT_FILE, asset.GetContentText());
             }
-            foreach (Asset asset in _editorHandle.GetAssets())
-            {
-                // If asset is already in file don't add it again
-                if (!contentFileText.Contains(asset.GetPathString()))
-                    File.AppendAllText(Routes.CONTENT_FILE, asset.GetContentText());
-            }
+            if (_isDebug)
+                foreach (Asset asset in _editorHandle.GetAssets())
+                {
+                    // If asset is already in file don't add it again
+                    if (!contentFileText.Contains(asset.GetPathString()))
+                        File.AppendAllText(Routes.CONTENT_FILE, asset.GetContentText());
+                }
         }
     }
 }

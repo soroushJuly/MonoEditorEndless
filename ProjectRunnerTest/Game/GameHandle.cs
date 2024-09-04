@@ -96,7 +96,7 @@ namespace MonoEditorEndless.Game
             play.AddTransition(new Transition(spectate, () => { return !_isPlaying && _isSpectate; }));
             play.AddTransition(new Transition(hudMaker, () => { return !_isPlaying && _isHUDMaking; }));
             play.AddTransition(new Transition(menuMaker, () => { return !_isPlaying && _isMenuMaking; }));
-            finish.AddTransition(new Transition(spectate, () => { return !_isFinish && !_isPlaying; }));
+            finish.AddTransition(new Transition(spectate, () => { return !_isFinish && !_isPlaying && _isSpectate; }));
             finish.AddTransition(new Transition(play, () => { return !_isFinish && _isPlaying; }));
             finish.AddTransition(new Transition(menu, () => { return !_isPlaying && _isFromStartPlaying && !_isSpectate; }));
             menu.AddTransition(new Transition(play, () => { return _isPlaying; }));
@@ -161,6 +161,7 @@ namespace MonoEditorEndless.Game
         public void Stop()
         {
             _isPlaying = false;
+            _isFinish = false;
             _isFromStartPlaying = false;
             //_fsm.Initialise("spectate");
         }
