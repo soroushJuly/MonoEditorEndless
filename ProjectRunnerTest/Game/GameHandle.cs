@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using MonoEditorEndless.Engine;
 using MonoEditorEndless.Engine.StateManager;
+using ProjectRunnerTest;
 using System;
 using System.Threading.Tasks;
 
@@ -24,13 +25,16 @@ namespace MonoEditorEndless.Game
         public SessionArgs _sessionArgs;
 
         public event EventHandler ExitGame;
+        public event EventHandler RaisePause;
         public GameHandle(ContentManager content, GraphicsDevice graphicsDevice)
         {
             _isFinish = false;
             _isPlaying = false;
+            _isFromStartPlaying = false;
+            //_isGameRestart = false;
+
             _isSpectate = false;
             _isHUDMaking = false;
-            _isFromStartPlaying = false;
             _isMenuMaking = false;
             _contentManger = content;
             _graphicsDevice = graphicsDevice;
@@ -51,7 +55,27 @@ namespace MonoEditorEndless.Game
             // In the editor is should go to spectate mode in the actual game it should call game exit
             finish.ExitGame += (object sender, EventArgs e) =>
             {
+                if (Application._isDebug)
+                {
+                    _isPlaying = false;
+                    _isFinish = false;
+                    _isSpectate = true;
+                    RaisePause?.Invoke(this, EventArgs.Empty); 
+                }
+                else Environment.Exit(0);
+            };
+            finish.GameRestart += (object sender, EventArgs e) =>
+            {
+                _isFinish = false;
+                _isSpectate = false;
+                _isPlaying = true;
+            };
+            finish.ToMenu += (object sender, EventArgs e) =>
+            {
                 _isPlaying = false;
+                _isSpectate = false;
+                _isFinish = false;
+                _isFromStartPlaying = true;
             };
 
             StateSpectate spectate = new StateSpectate(_contentManger, _graphicsDevice);
@@ -72,7 +96,9 @@ namespace MonoEditorEndless.Game
             play.AddTransition(new Transition(spectate, () => { return !_isPlaying && _isSpectate; }));
             play.AddTransition(new Transition(hudMaker, () => { return !_isPlaying && _isHUDMaking; }));
             play.AddTransition(new Transition(menuMaker, () => { return !_isPlaying && _isMenuMaking; }));
-            finish.AddTransition(new Transition(spectate, () => { return !_isPlaying; }));
+            finish.AddTransition(new Transition(spectate, () => { return !_isFinish && !_isPlaying; }));
+            finish.AddTransition(new Transition(play, () => { return !_isFinish && _isPlaying; }));
+            finish.AddTransition(new Transition(menu, () => { return !_isPlaying && _isFromStartPlaying && !_isSpectate; }));
             menu.AddTransition(new Transition(play, () => { return _isPlaying; }));
             menu.AddTransition(new Transition(spectate, () => { return !_isFromStartPlaying && _isSpectate; }));
             menu.AddTransition(new Transition(hudMaker, () => { return !_isFromStartPlaying && _isHUDMaking; }));
@@ -85,8 +111,15 @@ namespace MonoEditorEndless.Game
             _fsm.AddState(hudMaker);
             _fsm.AddState(finish);
 
-            _isSpectate = true;
-            _fsm.Initialise("spectate");
+            if (Application._isDebug)
+            {
+                _isSpectate = true;
+                _fsm.Initialise("spectate");
+            }
+            else
+            {
+                _fsm.Initialise("menu");
+            }
 
         }
         public void Start(bool isFromStart = false)

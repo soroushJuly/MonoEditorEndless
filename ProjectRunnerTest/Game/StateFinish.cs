@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using MonoEditorEndless.Engine;
 using MonoEditorEndless.Engine.StateManager;
 using MonoEditorEndless.Engine.UI;
+using ProjectRunnerTest;
 using System;
 
 namespace MonoEditorEndless.Game
@@ -36,7 +37,7 @@ namespace MonoEditorEndless.Game
         public override void Enter(object owner)
         {
             _font = Content.Load<SpriteFont>("Content/Font/File");
-            _background = Content.Load<Texture2D>("Content/Texture/bg");
+            _background = Content.Load<Texture2D>("Content/Texture/" + Application._project._gameConfigs.mainMenuBackground);
             // Initialize the button list with button indicator and padding between buttons
             int listWidth = 200;
             int listHeight = 200;
@@ -46,7 +47,9 @@ namespace MonoEditorEndless.Game
                 new Vector2(_graphicsDevice.Viewport.Width / 2 - listWidth / 2, _graphicsDevice.Viewport.Height / 2 - listHeight / 2 - 100),
                 _font,
                 Color.Wheat);
-            _buttonList = new ButtonList(null, _graphicsDevice.Viewport.Width / 2 - listWidth / 2, _graphicsDevice.Viewport.Height / 2 - listHeight / 2, _font, 50);
+            _buttonList = new ButtonList(null,
+                _graphicsDevice.Viewport.Width / 2 - listWidth / 2, _graphicsDevice.Viewport.Height / 2 - listHeight / 2, _font,
+                (int)Application._project._gameConfigs.listPadding);
             LoadMainButtons();
         }
         public override void Execute(object owner, GameTime gameTime)
@@ -64,13 +67,7 @@ namespace MonoEditorEndless.Game
             var lastBlendState = _graphicsDevice.BlendState;
             var lastSamplerStates = _graphicsDevice.SamplerStates;
 
-            float scale = 0.6f;
-            Matrix transform = Matrix.CreateScale(scale);
-            transform *= Matrix.CreateTranslation(
-                graphicsDevice.Viewport.Width / 2 - graphicsDevice.Viewport.Width * scale / 2,
-                graphicsDevice.Viewport.Height / 2 - graphicsDevice.Viewport.Height * scale / 2,
-                0);
-            spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, transform);
+            spriteBatch.Begin();
             spriteBatch.Draw(_background,
                 new Rectangle(0, 0, graphicsDevice.Viewport.Width, graphicsDevice.Viewport.Height),
                 Color.White);
@@ -78,7 +75,6 @@ namespace MonoEditorEndless.Game
             _score.SetText("Score: " + _sessionArgs._points);
             _score.Draw(spriteBatch);
             spriteBatch.End();
-            //base.Draw(owner, GraphicsDevice, spriteBatch);
 
             // TODO: these can be transfered somewhere that they called less times
             _graphicsDevice.Viewport = lastViewport;
@@ -92,11 +88,15 @@ namespace MonoEditorEndless.Game
         private void LoadMainButtons()
         {
             Texture2D btnTexture = new Texture2D(_graphicsDevice, 1, 1);
-            btnTexture.SetData(new[] { Color.White });
+            btnTexture.SetData(new[] { new Color(
+                Application._project._gameConfigs.buttonColor.X,
+                Application._project._gameConfigs.buttonColor.Y,
+                Application._project._gameConfigs.buttonColor.Z
+                ) });
 
-            _buttonList.AddButton("Start Again", btnTexture, new Vector2(100, 10));
-            _buttonList.AddButton("Menu", btnTexture, new Vector2(100, 10));
-            _buttonList.AddButton("Exit", btnTexture, new Vector2(100, 10));
+            _buttonList.AddButton("Start Again", btnTexture, Application._project._gameConfigs.buttonSize);
+            _buttonList.AddButton("Menu", btnTexture, Application._project._gameConfigs.buttonSize);
+            _buttonList.AddButton("Exit", btnTexture, Application._project._gameConfigs.buttonSize);
             // Handle button selection
             _buttonList.ButtonClicked += this.HandleButtonSelection;
             // Play sound on button switch

@@ -34,7 +34,7 @@ namespace ProjectRunnerTest
         private string _platform = "win-x64";
 
         // Current build mode
-        private static bool _isDebug = false;
+        public static bool _isDebug = false;
 
         // encapsulate event Controls for the application
         ControlsAggregator aggregator = new ControlsAggregator();
@@ -125,6 +125,7 @@ namespace ProjectRunnerTest
             _editorHandle.LoadContent(Content);
             // Initialize the game handle
             _gameHandle = new GameHandle(Content, GraphicsDevice);
+            _gameHandle.RaisePause += (object sender, EventArgs e) => { aggregator.RaisePausePressed(); };
             aggregator.PlayPressed += (object sender, EventArgs e) => { _gameHandle.Start(); };
             aggregator.PausePressed += (object sender, EventArgs e) => { _gameHandle.Stop(); };
             aggregator.PlayFromStartPressed += (object sender, EventArgs e) => { _gameHandle.Start(true); };
@@ -133,7 +134,6 @@ namespace ProjectRunnerTest
             aggregator.HUDMakerPressed += (object sender, EventArgs e) => { _gameHandle.HUDMaker(); };
             aggregator.RefreshSpectate += (object sender, EventArgs e) => { _gameHandle.Refresh(); };
             aggregator.SpectatePressed += (object sender, EventArgs e) => { _gameHandle.Spectate(); };
-
 
 
             base.LoadContent();
