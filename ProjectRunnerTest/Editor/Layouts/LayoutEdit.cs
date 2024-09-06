@@ -120,7 +120,7 @@ namespace MonoEditorEndless.Editor.Layouts
                         Tooltip.Instance.Draw("Change how far from the character the camera should look at.");
                         ImGui.InputFloat("##camera_look_distance_input", ref Application._project._gameConfigs.cameraLookDistance, 5f);
                     }
-                    if (ImGui.CollapsingHeader("Gameplay", ImGuiTreeNodeFlags.None))
+                    if (ImGui.CollapsingHeader("Gameplay", ImGuiTreeNodeFlags.DefaultOpen))
                     {
                         // Character
                         ImGui.SeparatorText("Character");
@@ -153,10 +153,10 @@ namespace MonoEditorEndless.Editor.Layouts
                         ImGui.Text("Items value:");
                         ImGui.SameLine();
                         Tooltip.Instance.Draw("Defines how many points players will get collecting the items.");
-                        ImGui.Checkbox("Rotating Items", ref Application._project._gameConfigs.isCollectableRotating);
+                        ImGui.InputInt("##item_value", ref Application._project._gameConfigs.itemValue);
+                        ImGui.Checkbox("Rotating Collectables", ref Application._project._gameConfigs.isCollectableRotating);
                         ImGui.SameLine();
                         Tooltip.Instance.Draw("Whether collectable items should rotate non-stop during game or not.");
-                        ImGui.InputInt("##item_value", ref Application._project._gameConfigs.itemValue);
                         // Collectable number
                         ImGui.Text("How often collectable items will appear:");
                         ImGui.SameLine();
@@ -482,7 +482,7 @@ namespace MonoEditorEndless.Editor.Layouts
                         Tooltip.Instance.Draw("The distance from camera at which fog disappears");
                         ImGui.InputFloat("##fog_end_distance", ref Application._project._gameConfigs.fogEndDistance, 10f);
                     }
-                    if (ImGui.CollapsingHeader("Audio"))
+                    if (ImGui.CollapsingHeader("Audio", ImGuiTreeNodeFlags.None))
                     {
                         // Main Background music
                         ImGui.SeparatorText("Background music");
@@ -536,6 +536,14 @@ namespace MonoEditorEndless.Editor.Layouts
                         ImGui.SliderFloat("Volume: ##collision", ref Application._project._gameConfigs.audioCollidedVolume, 0f, 1f);
 
                         // Ending Music
+
+                    }
+                    if (ImGui.CollapsingHeader("Input", ImGuiTreeNodeFlags.None))
+                    {
+                        // Main Background music
+                        ImGui.TextWrapped("Players use mouse to move the character left or right." +
+                            " Players use A and D keys to turn left or right on turns.");
+                        ImGui.TextWrapped("More configurations (input binding) coming soon...");
 
                     }
                 }
