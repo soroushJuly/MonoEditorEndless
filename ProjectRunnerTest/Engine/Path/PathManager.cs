@@ -249,7 +249,7 @@ namespace MonoEditorEndless.Engine.Path
             Block removedBlock = _activeBlocks.Dequeue();
             BlockRemoved(this, new BlockEventArgs(removedBlock));
         }
-        public void Draw(Matrix world, Matrix view, Matrix projection)
+        public void Draw(Matrix view, Matrix projection)
         {
             foreach (Block block in _activeBlocks)
             {
@@ -278,7 +278,7 @@ namespace MonoEditorEndless.Engine.Path
             }
             // TODO: maybe consider cutting the _activeBlocks to half instead
             // of this for better performance
-            if (seenBlocks > 10)
+            if (seenBlocks > 50)
             {
                 RemoveLastBlock();
             }

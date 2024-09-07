@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -12,8 +13,6 @@ namespace MonoEditorEndless.Engine
         // Collidables list
         List<Actor> _collidableActors;
 
-        //List<Collision> _collisions;
-
         public World()
         {
             _actors = new List<Actor>();
@@ -23,6 +22,7 @@ namespace MonoEditorEndless.Engine
         public void AddActor(Actor actor, bool bCollidable = false)
         {
             _actors.Add(actor);
+            // If it's collidable add it to collision sensitive list
             if (bCollidable) { _collidableActors.Add(actor); }
         }
         // TODO: not sure if this is possible -> may iterate through the list instead
@@ -72,11 +72,11 @@ namespace MonoEditorEndless.Engine
             }
         }
 
-        public void Draw(Matrix view, Matrix projection)
+        public void Draw(Matrix view, Matrix projection, GraphicsDevice graphicsDevice)
         {
             foreach (var actor in _actors)
             {
-                actor.Draw(Matrix.CreateTranslation(actor.GetPosition()), view, projection);
+                actor.Draw(Matrix.CreateTranslation(actor.GetPosition()), view, projection, graphicsDevice);
             }
         }
     }

@@ -26,8 +26,6 @@ namespace MonoEditorEndless.Game
 
         private Vector2 _lastMouse;
 
-        private float _actorScale;
-
         private Camera _camera;
 
         // The most recent view that user was in. 3D or 2D
