@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace MonoEditorEndless.Engine.Collision
 {
@@ -33,8 +34,8 @@ namespace MonoEditorEndless.Engine.Collision
             Zmin = BasePosition.Z - _halfZ;
             Xmax = BasePosition.X + _halfX;
             Xmin = BasePosition.X - _halfX;
-            Ymax = BasePosition.Y + 2 * _halfY;
-            Ymin = BasePosition.Y;
+            Ymax = BasePosition.Y + _halfY;
+            Ymin = BasePosition.Y - _halfY;
         }
         public void Update(Vector3 BasePosition)
         {
@@ -42,8 +43,8 @@ namespace MonoEditorEndless.Engine.Collision
             Zmin = BasePosition.Z - _halfZ;
             Xmax = BasePosition.X + _halfX;
             Xmin = BasePosition.X - _halfX;
-            Ymax = BasePosition.Y + _halfY * 2;
-            Ymin = BasePosition.Y;
+            Ymax = BasePosition.Y + _halfY;
+            Ymin = BasePosition.Y - _halfY;
         }
         public bool CollisionTest(Collidable collidable)
         {
@@ -61,9 +62,46 @@ namespace MonoEditorEndless.Engine.Collision
             }
             return false;
         }
-        public void SetY(float halfY)
+        /// <summary>
+        /// Draws the collision box having 8 vertices
+        /// </summary>
+        /// <param name="graphicsDevice"></param>
+        /// <param name="basicEffect"></param>
+        public void DrawCollisionBox3D(GraphicsDevice graphicsDevice, BasicEffect basicEffect)
         {
-            _halfY = halfY;
+            VertexPositionColor[] vertices = new VertexPositionColor[8];
+
+            // Define the 8 corners of the 3D bounding box
+            vertices[0] = new VertexPositionColor(new Vector3(Xmin, Ymin, Zmin), Color.Red);
+            vertices[1] = new VertexPositionColor(new Vector3(Xmax, Ymin, Zmin), Color.Red);
+            vertices[2] = new VertexPositionColor(new Vector3(Xmax, Ymax, Zmin), Color.Red);
+            vertices[3] = new VertexPositionColor(new Vector3(Xmin, Ymax, Zmin), Color.Red);
+
+            vertices[4] = new VertexPositionColor(new Vector3(Xmin, Ymin, Zmax), Color.Red);
+            vertices[5] = new VertexPositionColor(new Vector3(Xmax, Ymin, Zmax), Color.Red);
+            vertices[6] = new VertexPositionColor(new Vector3(Xmax, Ymax, Zmax), Color.Red);
+            vertices[7] = new VertexPositionColor(new Vector3(Xmin, Ymax, Zmax), Color.Red);
+
+            short[] indices = new short[]
+            {
+        0, 1, 1, 2, 2, 3, 3, 0,  // Front face
+        4, 5, 5, 6, 6, 7, 7, 4,  // Back face
+        0, 4, 1, 5, 2, 6, 3, 7   // Connecting edges
+            };
+
+            foreach (EffectPass pass in basicEffect.CurrentTechnique.Passes)
+            {
+                pass.Apply();
+                graphicsDevice.DrawUserIndexedPrimitives(
+                    PrimitiveType.LineList,
+                    vertices,
+                    0,
+                    8,
+                    indices,
+                    0,
+                    12
+                );
+            }
         }
     }
 }
