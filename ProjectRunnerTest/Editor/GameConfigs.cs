@@ -97,9 +97,9 @@ namespace MonoEditorEndless.Editor
             distanceFromCharacter = 250f;
             cameraLookDistance = 100f;
             cameraHeight = 100f;
-            characterMinSpeed = 160f;
+            characterMinSpeed = 180f;
             characterHasMaxSpeed = true;
-            characterMaxSpeed = 250f;
+            characterMaxSpeed = 350f;
             characterHealth = 4;
             characterMoveSensitivity = 1f;
             itemValue = 100;

@@ -289,8 +289,8 @@ namespace MonoEditorEndless.Game
             var lastBlendState = _graphicsDevice.BlendState;
             var lastSamplerStates = _graphicsDevice.SamplerStates;
 
-            _pathManager.Draw(_camera.GetView(), projection);
-            _world.Draw(_camera.GetView(), projection, GraphicsDevice);
+            _world.Draw(_camera.GetView(), projection, GraphicsDevice, Application._project._editorConfigs._showCollisionBoxes);
+
 
             // Draw debug camera
             cameraModel.Draw(Matrix.CreateTranslation(cameraModel.GetPosition()), _camera.GetView(), projection);

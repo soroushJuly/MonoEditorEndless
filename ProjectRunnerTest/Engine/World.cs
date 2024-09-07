@@ -72,11 +72,11 @@ namespace MonoEditorEndless.Engine
             }
         }
 
-        public void Draw(Matrix view, Matrix projection, GraphicsDevice graphicsDevice)
+        public void Draw(Matrix view, Matrix projection, GraphicsDevice graphicsDevice = null, bool showCollisionBox = false)
         {
             foreach (var actor in _actors)
             {
-                actor.Draw(Matrix.CreateTranslation(actor.GetPosition()), view, projection, graphicsDevice);
+                actor.Draw(Matrix.CreateTranslation(actor.GetPosition()), view, projection, graphicsDevice, showCollisionBox);
             }
         }
     }

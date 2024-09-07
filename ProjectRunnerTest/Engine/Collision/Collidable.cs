@@ -34,8 +34,8 @@ namespace MonoEditorEndless.Engine.Collision
             Zmin = BasePosition.Z - _halfZ;
             Xmax = BasePosition.X + _halfX;
             Xmin = BasePosition.X - _halfX;
-            Ymax = BasePosition.Y + _halfY;
-            Ymin = BasePosition.Y - _halfY;
+            Ymax = BasePosition.Y + 2 * _halfY;
+            Ymin = BasePosition.Y;
         }
         public void Update(Vector3 BasePosition)
         {
@@ -43,8 +43,8 @@ namespace MonoEditorEndless.Engine.Collision
             Zmin = BasePosition.Z - _halfZ;
             Xmax = BasePosition.X + _halfX;
             Xmin = BasePosition.X - _halfX;
-            Ymax = BasePosition.Y + _halfY;
-            Ymin = BasePosition.Y - _halfY;
+            Ymax = BasePosition.Y + 2 * _halfY;
+            Ymin = BasePosition.Y;
         }
         public bool CollisionTest(Collidable collidable)
         {

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 
@@ -58,7 +59,7 @@ namespace MonoEditorEndless.Engine.Path
         // Add a sample road block to block list to generate path from them
         public void AddRoadBlock(Actor actor)
         {
-            actor.SetColliadableY(1000f);
+            actor.SetColliadableY(500f);
             _roadBlocks.Add(actor);
         }
         // Add a wall block to generate walls with two direction to go
@@ -68,7 +69,7 @@ namespace MonoEditorEndless.Engine.Path
         }
         public void AddTurnRight(Actor actor)
         {
-            actor.SetColliadableY(1000f);
+            actor.SetColliadableY(500f);
             _turnRightBlocks.Add(actor);
         }
         public void AddCollectable(Actor actor)
@@ -171,7 +172,7 @@ namespace MonoEditorEndless.Engine.Path
                 newBlock.InitializeCollectables(5, randomNumber2 / 100f, _collectableTypes);
             }
             _activeBlocks.Enqueue(newBlock);
-            BlockAdded(this, new BlockEventArgs(newBlock));
+            BlockAdded?.Invoke(this, new BlockEventArgs(newBlock));
         }
         private void CreateTurn(int randomNumber)
         {
@@ -248,13 +249,6 @@ namespace MonoEditorEndless.Engine.Path
             // TODO: removed block direction should be considerate when removing
             Block removedBlock = _activeBlocks.Dequeue();
             BlockRemoved(this, new BlockEventArgs(removedBlock));
-        }
-        public void Draw(Matrix view, Matrix projection)
-        {
-            foreach (Block block in _activeBlocks)
-            {
-                block.Draw(Matrix.CreateTranslation(block.GetPosition()), view, projection);
-            }
         }
         public void Update(GameTime gameTime, Actor character)
         {
