@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework.Graphics;
 using MonoEditorEndless;
 using MonoEditorEndless.Editor;
 using MonoEditorEndless.Editor.Components;
-using MonoEditorEndless.Editor.Layouts;
 using MonoEditorEndless.Game;
 using System;
 using System.Collections.Generic;

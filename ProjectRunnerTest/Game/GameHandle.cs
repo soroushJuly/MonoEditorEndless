@@ -48,7 +48,17 @@ namespace MonoEditorEndless.Game
             play.SessionFinished += (object sender, SessionArgs e) => { _isFinish = true; _sessionArgs = e; };
             StateMenu menu = new StateMenu(_contentManger, _graphicsDevice);
             menu.GameStart += (object sender, EventArgs e) => { _isPlaying = true; };
-            menu.ExitGame += (object sender, EventArgs e) => { Environment.Exit(0); };
+            menu.ExitGame += (object sender, EventArgs e) =>
+            {
+                if (Application._isDebug)
+                {
+                    _isPlaying = false;
+                    _isFinish = false;
+                    _isSpectate = true;
+                    RaisePause?.Invoke(this, EventArgs.Empty);
+                }
+                else Environment.Exit(0);
+            };
             StateMenuMaker menuMaker = new StateMenuMaker(_contentManger, _graphicsDevice);
             StateHUDMaker hudMaker = new StateHUDMaker(_contentManger, _graphicsDevice);
             StateFinish finish = new StateFinish(_contentManger, _graphicsDevice, _sessionArgs);
@@ -60,7 +70,7 @@ namespace MonoEditorEndless.Game
                     _isPlaying = false;
                     _isFinish = false;
                     _isSpectate = true;
-                    RaisePause?.Invoke(this, EventArgs.Empty); 
+                    RaisePause?.Invoke(this, EventArgs.Empty);
                 }
                 else Environment.Exit(0);
             };
@@ -151,7 +161,6 @@ namespace MonoEditorEndless.Game
                 _isFromStartPlaying = true;
             else
                 _isPlaying = true;
-
         }
         public void Refresh()
         {
@@ -163,7 +172,6 @@ namespace MonoEditorEndless.Game
             _isPlaying = false;
             _isFinish = false;
             _isFromStartPlaying = false;
-            //_fsm.Initialise("spectate");
         }
         public void Spectate()
         {

@@ -203,7 +203,7 @@ namespace MonoEditorEndless.Game
             _skybox = new Skybox(_graphicsDevice, _skyboxTextureList);
 
             Texture2D planeTexture = Content.Load<Texture2D>("Content/Texture/" + Application._project._gameConfigs.planeTexture);
-            _plane = new Engine.Plane(_graphicsDevice, planeTexture, 3000, 20);
+            _plane = new Engine.Plane(_graphicsDevice, planeTexture, 30000, 200);
 
             _font = Content.Load<SpriteFont>("Content/Font/File");
 
@@ -271,7 +271,7 @@ namespace MonoEditorEndless.Game
             var lastBlendState = _graphicsDevice.BlendState;
             var lastSamplerStates = _graphicsDevice.SamplerStates;
 
-            _world.Draw(_camera.GetView(), projection, GraphicsDevice, true);
+            _world.Draw(_camera.GetView(), projection, GraphicsDevice);
 
 
             _skybox.Draw(_graphicsDevice, Matrix.CreateTranslation(_camera.GetPosition()), _camera.GetView(), projection);
