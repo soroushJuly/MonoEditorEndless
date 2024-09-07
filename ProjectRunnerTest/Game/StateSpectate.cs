@@ -72,7 +72,6 @@ namespace MonoEditorEndless.Game
         private Vector3 translation = Vector3.Zero;
 
         // Transforming matrices
-        private Matrix world = Matrix.CreateTranslation(new Vector3(0, 0, 0));
         private Matrix projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45), 800f / 480f, 0.1f, 5000f);
         public StateSpectate(ContentManager content, GraphicsDevice graphicsDevice)
         {
@@ -279,8 +278,6 @@ namespace MonoEditorEndless.Game
             _lastMouse.Y = curMouse.Y;
             prevMouse = curMouse;
 
-            world = Matrix.CreateTranslation(actor.GetPosition());
-
             _camera.Update();
         }
         public override void Exit(object owner) { }
@@ -294,8 +291,8 @@ namespace MonoEditorEndless.Game
             var lastBlendState = _graphicsDevice.BlendState;
             var lastSamplerStates = _graphicsDevice.SamplerStates;
 
-            _pathManager.Draw(world, _camera.GetView(), projection);
-            _world.Draw(_camera.GetView(), projection);
+            _pathManager.Draw(_camera.GetView(), projection);
+            _world.Draw(_camera.GetView(), projection, GraphicsDevice);
 
             // Draw debug camera
             cameraModel.Draw(Matrix.CreateTranslation(cameraModel.GetPosition()), _camera.GetView(), projection);
@@ -336,7 +333,7 @@ namespace MonoEditorEndless.Game
                 VertexColorEnabled = true,
                 Projection = projection,
                 View = _camera.GetView(),
-                World = world
+                World = Matrix.Identity,
             };
             // The position of the camera
             Vector3 point1 = cameraModel.GetPosition();

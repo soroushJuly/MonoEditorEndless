@@ -45,7 +45,6 @@ namespace MonoEditorEndless.Game
         private Actor actor;
         private Actor road;
         private Actor corner;
-        private Actor roadR;
         private Actor collectable;
         private Actor obstacle;
 
@@ -73,7 +72,6 @@ namespace MonoEditorEndless.Game
         private Vector3 translation = Vector3.Zero;
 
         // Transforming matrices
-        private Matrix world = Matrix.CreateTranslation(new Vector3(0, 0, 0));
         private Matrix projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45), 800f / 480f, 0.1f, 5000f);
 
         public event EventHandler<SessionArgs> SessionFinished;
@@ -135,7 +133,6 @@ namespace MonoEditorEndless.Game
             actor._maxVelocity = Application._project._gameConfigs.characterMaxSpeed;
 
             road = new Actor();
-            roadR = new Actor();
             corner = new Actor();
             collectable = new Actor();
 
@@ -260,7 +257,6 @@ namespace MonoEditorEndless.Game
             _pathManager.Update(gameTime, actor);
             //actor.Update(gameTime);
             _world.Update(gameTime);
-            world = Matrix.CreateTranslation(actor.GetPosition());
 
             _prevKeyState = Keyboard.GetState();
         }
@@ -275,9 +271,7 @@ namespace MonoEditorEndless.Game
             var lastBlendState = _graphicsDevice.BlendState;
             var lastSamplerStates = _graphicsDevice.SamplerStates;
 
-            //actor.Draw(world, _camera.GetView(), projection);
-            _pathManager.Draw(world, _camera.GetView(), projection);
-            //obstacle.Draw(Matrix.CreateTranslation(Vector3.Zero), _camera.GetView(), projection);
+            _pathManager.Draw(_camera.GetView(), projection);
             _world.Draw(_camera.GetView(), projection, GraphicsDevice);
 
 

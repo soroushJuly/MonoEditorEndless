@@ -23,6 +23,7 @@ namespace MonoEditorEndless.Engine
         public Vector3 _boundingScale = new Vector3(1f);
         private Matrix _scaleMatrix;
         private Matrix _rotationMatrix;
+        private BoundingBox _boundingBox;
         // TODO: move this to another class
         public bool _isTurnAllowed = false;
         // TODO: move this to another class
@@ -101,8 +102,8 @@ namespace MonoEditorEndless.Engine
             _position = position;
             if (_model != null)
             {
-                BoundingBox boundingBox = GetBoundingBox(_model);
-                _dimentions = boundingBox.Max - boundingBox.Min;
+                _boundingBox = GetBoundingBox(_model);
+                _dimentions = _boundingBox.Max - _boundingBox.Min;
                 // TODO: All actors have colliadable but deactive by default - change this
                 // TODO: Colliadable initializes here - change this 
                 _collidable.Initialize(_position, _dimentions, _boundingScale);
@@ -114,8 +115,8 @@ namespace MonoEditorEndless.Engine
         public void SetScale(float scale)
         {
             _scale = scale;
-            BoundingBox boundingBox = GetBoundingBox(_model);
-            _dimentions = boundingBox.Max - boundingBox.Min;
+            _boundingBox = GetBoundingBox(_model);
+            _dimentions = _boundingBox.Max - _boundingBox.Min;
             _scaleMatrix = Matrix.CreateScale(_scale);
             // Update the collidable properties
             _collidable.Initialize(_position, _dimentions, _boundingScale);
@@ -143,7 +144,11 @@ namespace MonoEditorEndless.Engine
         {
             return _collidable.CollisionTest(otherActor.GetCollidable());
         }
-
+        /// <summary>
+        /// Returns minimum points and maximum point in a 3D shape
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         private BoundingBox GetBoundingBox(Model model)
         {
             Matrix[] boneTransforms = new Matrix[model.Bones.Count];
@@ -180,8 +185,8 @@ namespace MonoEditorEndless.Engine
         public void LoadModel(Model model)
         {
             _model = model;
-            BoundingBox boundingBox = GetBoundingBox(model);
-            _dimentions = boundingBox.Max - boundingBox.Min;
+            _boundingBox = GetBoundingBox(_model);
+            _dimentions = _boundingBox.Max - _boundingBox.Min;
             // TODO: All actors have colliadable but deactive by default - change this
             // TODO: Colliadable initializes here - change this 
             _collidable.Initialize(_position, _dimentions, _boundingScale);
@@ -296,18 +301,17 @@ namespace MonoEditorEndless.Engine
                 mesh.Draw();
             }
             // draw the collision box
-            //if (graphicsDevice != null)
-            //{
-            //    BasicEffect _collidableEffect = new BasicEffect(graphicsDevice)
-            //    {
-            //        TextureEnabled = true,
-            //        VertexColorEnabled = true,
-            //        World = world,
-            //        View = view,
-            //        Projection = projection,
-            //    };
-            //    _collidable.DrawCollisionBox3D(graphicsDevice, _collidableEffect);
-            //}
+            if (graphicsDevice != null)
+            {
+                BasicEffect _collidableEffect = new BasicEffect(graphicsDevice)
+                {
+                    VertexColorEnabled = true,
+                    World = world,
+                    View = view,
+                    Projection = projection,
+                };
+                _collidable.DrawCollisionBox3D(graphicsDevice, _collidableEffect);
+            }
         }
     }
 }
