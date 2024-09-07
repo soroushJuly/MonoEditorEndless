@@ -217,7 +217,7 @@ namespace MonoEditorEndless.Engine
                 this.NoCollisionHandler(this, EventArgs.Empty);
             }
         }
-        public void Draw(Matrix world, Matrix view, Matrix projection, GraphicsDevice graphicsDevice = null)
+        public void Draw(Matrix world, Matrix view, Matrix projection, GraphicsDevice graphicsDevice = null, bool showCollisionBox = false)
         {
             //Model model = actor.GetModel();
             Matrix[] transforms = new Matrix[_model.Bones.Count];
@@ -302,12 +302,12 @@ namespace MonoEditorEndless.Engine
                 mesh.Draw();
             }
             // draw the collision box
-            if (graphicsDevice != null)
+            if (showCollisionBox)
             {
                 BasicEffect _collidableEffect = new BasicEffect(graphicsDevice)
                 {
                     VertexColorEnabled = true,
-                    World = world,
+                    World = Matrix.Identity,
                     View = view,
                     Projection = projection,
                 };
