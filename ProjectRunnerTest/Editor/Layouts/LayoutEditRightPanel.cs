@@ -108,6 +108,10 @@ namespace MonoEditorEndless.Editor.Layouts
                 ImGui.Checkbox("Show instructions", ref Application._project._editorConfigs._showInstructions);
                 ImGui.SameLine();
                 Tooltip.Instance.Draw("Show/Hide the instruction on top left corner.");
+                // Collision box
+                ImGui.Checkbox("Show collision box", ref Application._project._editorConfigs._showCollisionBoxes);
+                ImGui.SameLine();
+                Tooltip.Instance.Draw("Show/Hide the box around the models indicating their collidable area.");
             }
 
             // Build the Release version from the Debug mode

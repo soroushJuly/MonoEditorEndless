@@ -455,7 +455,7 @@ namespace MonoEditorEndless.Editor.Layouts
                         ImGui.Text("Scene light specular color:");
                         ImGui.SameLine();
                         Tooltip.Instance.Draw("The bright highlight seen on shiny surfaces, where light is reflected directly towards the viewer. Usually the color of the light source itself");
-                        ImGui.ColorEdit3("##Scene_Diffuse_color", ref Application._project._gameConfigs.sunSpecularColor);
+                        ImGui.ColorEdit3("##Scene_Specular_color", ref Application._project._gameConfigs.sunSpecularColor);
 
                         ImGui.Text("Scene light source direction:");
                         ImGui.SameLine();
