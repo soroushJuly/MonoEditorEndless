@@ -44,7 +44,6 @@ namespace MonoEditorEndless.Game
         // Example Model
         private Actor actor;
         private Actor road;
-        private Actor wall;
         private Actor corner;
         private Actor roadR;
         private Actor collectable;
@@ -136,7 +135,6 @@ namespace MonoEditorEndless.Game
             actor._maxVelocity = Application._project._gameConfigs.characterMaxSpeed;
 
             road = new Actor();
-            wall = new Actor();
             roadR = new Actor();
             corner = new Actor();
             collectable = new Actor();
@@ -187,7 +185,6 @@ namespace MonoEditorEndless.Game
             _pathManager.AddObstacle(obstacle);
             _pathManager.AddCollectable(collectable);
             _pathManager.AddRoadBlock(road);
-            _pathManager.AddWallBlock(wall);
             _pathManager.AddTurnRight(corner);
             _pathManager.Initialize(20);
 
@@ -281,7 +278,7 @@ namespace MonoEditorEndless.Game
             //actor.Draw(world, _camera.GetView(), projection);
             _pathManager.Draw(world, _camera.GetView(), projection);
             //obstacle.Draw(Matrix.CreateTranslation(Vector3.Zero), _camera.GetView(), projection);
-            _world.Draw(_camera.GetView(), projection);
+            _world.Draw(_camera.GetView(), projection, GraphicsDevice);
 
 
             _skybox.Draw(_graphicsDevice, Matrix.CreateTranslation(_camera.GetPosition()), _camera.GetView(), projection);
