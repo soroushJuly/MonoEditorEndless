@@ -40,23 +40,26 @@ namespace ProjectRunnerTest
 
         public Application()
         {
+            // If in debug Mode Change the flag
+            // Debug mode is editor mode
+#if DEBUG
+            _isDebug = true;
+#endif
             _graphics = new GraphicsDeviceManager(this);
             _graphics.PreferredBackBufferWidth = 1600;
             _graphics.PreferredBackBufferHeight = 900;
             _graphics.PreferMultiSampling = true;
 
-            //_graphics.IsFullScreen = true;
+            if (!_isDebug)
+            {
+                _graphics.IsFullScreen = true;
+            }
 
             IsMouseVisible = true;
         }
 
         protected override void Initialize()
         {
-            // If in debug Mode Change the flag
-            // Debug mode is editor mode
-#if DEBUG
-            _isDebug = true;
-#endif
             // Initialize file handler
             FileHandler fileHandler = new FileHandler();
 

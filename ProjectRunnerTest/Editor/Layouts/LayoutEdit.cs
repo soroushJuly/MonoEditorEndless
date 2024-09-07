@@ -802,7 +802,7 @@ namespace MonoEditorEndless.Editor.Layouts
                 ImGui.NewLine();
                 ImGui.NewLine();
                 ImGui.NewLine();
-                if (ImGui.Button("Test Window")) show_test_window = !show_test_window;
+                //if (ImGui.Button("Test Window")) show_test_window = !show_test_window;
                 ImGui.End();
             }
 
@@ -816,12 +816,12 @@ namespace MonoEditorEndless.Editor.Layouts
                 ImGui.End();
             }
 
-            // 3. Show the ImGui test window. Most of the sample code is in ImGui.ShowTestWindow()
-            if (show_test_window)
-            {
-                ImGui.SetNextWindowPos(new Num.Vector2(650, 20), ImGuiCond.FirstUseEver);
-                ImGui.ShowDemoWindow(ref show_test_window);
-            }
+            // Most of the sample code is in ImGui.ShowTestWindow()
+            //if (show_test_window)
+            //{
+            //    ImGui.SetNextWindowPos(new Num.Vector2(650, 20), ImGuiCond.FirstUseEver);
+            //    ImGui.ShowDemoWindow(ref show_test_window);
+            //}
 
             // Create main Manu bar
             if (ImGui.BeginMainMenuBar())
