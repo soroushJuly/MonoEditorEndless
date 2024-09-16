@@ -1,11 +1,6 @@
 ﻿using ImGuiNET;
 using ProjectRunnerTest;
 using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Num = System.Numerics;
 
 
@@ -73,14 +68,14 @@ namespace MonoEditorEndless.Editor
                         ImGui.TextWrapped("Introduction");
                         ImGui.PopStyleColor();
                         ImGui.TextWrapped("2/4 Editor Settings");
-                        ImGui.TextWrapped("Here you can change how you want to work with this application.");
+                        ImGui.TextWrapped("Here you can change how you want to work with this application. ->");
                         break;
                     case IntroductionSteps.LEFT:
                         ImGui.PushStyleColor(ImGuiCol.Text, new Num.Vector4(1.0f, 0.64f, 0.0f, 1.0f)); // Red color
                         ImGui.TextWrapped("Introduction");
                         ImGui.PopStyleColor();
                         ImGui.TextWrapped("3/4 Game Settings");
-                        ImGui.TextWrapped("Here you can define how you want your to be.");
+                        ImGui.TextWrapped("<- Here you can define how you want your game to be.");
                         ImGui.TextWrapped("Each section has parameters and small details helping you getting the result you want.");
                         break;
                     case IntroductionSteps.BUILD:
@@ -89,7 +84,7 @@ namespace MonoEditorEndless.Editor
                         ImGui.PopStyleColor();
                         ImGui.TextWrapped("4/4 Publish!");
                         ImGui.TextWrapped("It is that easy!");
-                        ImGui.TextWrapped("After you finished your changes Click on this button to create the production ready files.");
+                        ImGui.TextWrapped("After you finished your changes, click on this button to create the production ready files. ->");
                         break;
                     default:
                         break;
