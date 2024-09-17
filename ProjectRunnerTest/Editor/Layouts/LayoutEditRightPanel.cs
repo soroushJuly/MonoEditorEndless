@@ -41,8 +41,9 @@ namespace MonoEditorEndless.Editor.Layouts
             ImGui.PopFont();
             ImGui.Text("Test the game");
             ImGui.Spacing();
+            Tooltip.Instance.Draw("This will run the game from after pressing start.");
+            ImGui.SameLine();
             ImGui.Text("Run Play:");
-
             ImGui.SameLine();
             if (EditorHandle._playTexture != IntPtr.Zero)
             {
@@ -51,6 +52,8 @@ namespace MonoEditorEndless.Editor.Layouts
                     _controlsAggregator.RaisePlayPressed();
                 }
             }
+            Tooltip.Instance.Draw("This will run the game from menu.");
+            ImGui.SameLine();
             ImGui.Text("Run Completely:");
             ImGui.SameLine();
             if (EditorHandle._playTexture != IntPtr.Zero)
