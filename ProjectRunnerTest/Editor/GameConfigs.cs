@@ -147,7 +147,7 @@ namespace MonoEditorEndless.Editor
             audioCollided = "wall_hit";
             audioCollidedVolume = 1f;
             // HUD
-            healthIcon = "heart";
+            healthIcon = "spaceship";
             healthScale = 1f;
             healthPosition = new Vector2(200, 100);
             scorePosition = new Vector2(200, 50);

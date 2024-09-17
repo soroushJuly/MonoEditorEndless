@@ -64,7 +64,7 @@ namespace MonoEditorEndless.Editor
             _assets.Add(new AssetTexture("Coin2_BaseColor.jpg"));
             _assets.Add(new AssetTexture("ShipDiffuse.tga"));
             _assets.Add(new AssetTexture("ShipDiffuse_0.tga"));
-            _assets.Add(new AssetTexture("heart.png"));
+            _assets.Add(new AssetTexture("spaceship.png"));
             _assets.Add(new AssetTexture("grass.jpg"));
             _assets.Add(new AssetFont("File.spritefont"));
         }
