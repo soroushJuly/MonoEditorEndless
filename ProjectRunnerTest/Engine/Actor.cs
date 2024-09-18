@@ -280,8 +280,11 @@ namespace MonoEditorEndless.Engine
                     // Use the matrices provided by the chase camera
                     effect.View = view;
                     effect.Projection = projection;
-
                     effect.TextureEnabled = true;
+                    if (effect.Texture == null)
+                    {
+                        effect.TextureEnabled = false;
+                    }
                     effect.FogEnabled = Application._project._gameConfigs.fogEnable;
                     effect.FogColor = Application._project._gameConfigs.fogColor; // For best results, make this color whatever your background is.
                     effect.FogStart = Application._project._gameConfigs.fogStartDistance;

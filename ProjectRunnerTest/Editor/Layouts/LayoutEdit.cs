@@ -120,7 +120,7 @@ namespace MonoEditorEndless.Editor.Layouts
                         Tooltip.Instance.Draw("Change how far from the character the camera should look at.");
                         ImGui.InputFloat("##camera_look_distance_input", ref Application._project._gameConfigs.cameraLookDistance, 5f);
                     }
-                    if (ImGui.CollapsingHeader("Gameplay", ImGuiTreeNodeFlags.DefaultOpen))
+                    if (ImGui.CollapsingHeader("Gameplay", ImGuiTreeNodeFlags.None))
                     {
                         // Character
                         ImGui.SeparatorText("Character");
