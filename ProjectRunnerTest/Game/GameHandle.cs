@@ -172,6 +172,7 @@ namespace MonoEditorEndless.Game
             _isPlaying = false;
             _isFinish = false;
             _isFromStartPlaying = false;
+            _isSpectate = true;
         }
         public void Spectate()
         {
