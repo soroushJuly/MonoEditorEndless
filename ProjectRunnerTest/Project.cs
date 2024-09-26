@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using MonoEditorEndless.Editor;
 
-namespace MonoEditorEndless.Editor
+namespace MonoEditorEndless
 {
     public class AssetAdditionArgs : EventArgs
     {
