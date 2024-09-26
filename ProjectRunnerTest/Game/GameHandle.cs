@@ -97,7 +97,7 @@ namespace MonoEditorEndless.Game
             hudMaker.AddTransition(new Transition(spectate, () => { return _isSpectate; }));
             hudMaker.AddTransition(new Transition(menuMaker, () => { return _isMenuMaking; }));
             hudMaker.AddTransition(new Transition(play, () => { return _isPlaying; }));
-            hudMaker.AddTransition(new Transition(play, () => { return _isFromStartPlaying; }));
+            hudMaker.AddTransition(new Transition(menu, () => { return _isFromStartPlaying; }));
             menuMaker.AddTransition(new Transition(spectate, () => { return _isSpectate; }));
             menuMaker.AddTransition(new Transition(hudMaker, () => { return _isHUDMaking; }));
             menuMaker.AddTransition(new Transition(play, () => { return _isPlaying; }));
@@ -172,7 +172,8 @@ namespace MonoEditorEndless.Game
             _isPlaying = false;
             _isFinish = false;
             _isFromStartPlaying = false;
-            _isSpectate = true;
+            if (!_isHUDMaking && !_isMenuMaking)
+                _isSpectate = true;
         }
         public void Spectate()
         {
