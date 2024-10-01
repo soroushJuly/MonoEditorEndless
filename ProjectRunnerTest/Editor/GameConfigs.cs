@@ -1,6 +1,4 @@
-﻿
-using Microsoft.Xna.Framework.Graphics;
-using System.Numerics;
+﻿using System.Numerics;
 
 namespace MonoEditorEndless.Editor
 {

@@ -11,6 +11,7 @@ namespace MonoEditorEndless.Editor.ImGuiTools
 {
     /// <summary>
     /// ImGui renderer for use with XNA-likes (FNA & MonoGame)
+    /// From https://github.com/ImGuiNET/ImGui.NET/blob/master/src/ImGui.NET.SampleProgram.XNA/ImGuiRenderer.cs
     /// </summary>
     public class ImGuiRenderer
     {

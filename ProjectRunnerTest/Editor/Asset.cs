@@ -1,14 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml;
-using System.Xml.Schema;
-using System.Xml.Serialization;
-using Forms = System.Windows.Forms;
+﻿using System.IO;
 
 
 namespace MonoEditorEndless.Editor
@@ -20,6 +10,9 @@ namespace MonoEditorEndless.Editor
         MODEL,
         FONT
     }
+    /// <summary>
+    /// Basic class for assets in the application
+    /// </summary>
     public abstract class Asset
     {
         public readonly string _name;

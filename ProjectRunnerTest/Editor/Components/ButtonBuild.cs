@@ -9,6 +9,9 @@ using Forms = System.Windows.Forms;
 
 namespace MonoEditorEndless.Editor.Components
 {
+    /// <summary>
+    /// The button that will build the publishable version of the game
+    /// </summary>
     internal class ButtonBuild
     {
         private FileHandler _fileHandler;
@@ -25,9 +28,6 @@ namespace MonoEditorEndless.Editor.Components
             _fileHandler = new FileHandler();
             _folderPath = "-";
             _showModal = false;
-
-
-            //_buildThread.SetApartmentState(ApartmentState.STA); //Set the thread to STA
         }
         public void Draw()
         {
@@ -92,12 +92,6 @@ namespace MonoEditorEndless.Editor.Components
                 {
                     ImGui.TextWrapped("Game built successfully at the address below:");
                     ImGui.TextWrapped(_folderPath);
-                    // Needs admin permission
-                    //ImGui.SameLine();
-                    //if (ImGui.Button("Open file location"))
-                    //{
-                    //    Process.Start(_folderPath);
-                    //}
                     if (ImGui.Button("Close"))
                     {
                         ImGui.CloseCurrentPopup();

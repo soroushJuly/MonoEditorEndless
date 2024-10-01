@@ -3,6 +3,9 @@ using Num = System.Numerics;
 
 namespace MonoEditorEndless.Editor.Components
 {
+    /// <summary>
+    /// The loading pop-up. used across the project
+    /// </summary>
     public class ModalLoading
     {
         private bool showModal;

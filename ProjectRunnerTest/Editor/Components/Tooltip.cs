@@ -4,6 +4,9 @@ using Num = System.Numerics;
 
 namespace MonoEditorEndless.Editor.Components
 {
+    /// <summary>
+    /// Tooltips showed to give small tips.
+    /// </summary>
     internal class Tooltip
     {
         private bool showModal;

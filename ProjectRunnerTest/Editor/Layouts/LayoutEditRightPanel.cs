@@ -7,6 +7,9 @@ using Num = System.Numerics;
 
 namespace MonoEditorEndless.Editor.Layouts
 {
+    /// <summary>
+    /// Right side panel of the editor
+    /// </summary>
     internal class LayoutEditRightPanel
     {
         private GraphicsDeviceManager _graphics;

@@ -1,16 +1,14 @@
 ﻿using ImGuiNET;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using MonoEditorEndless.Editor.ImGuiTools;
 using System;
-using System.Diagnostics;
-using System.IO;
-using System.Threading;
 using Num = System.Numerics;
 
 namespace MonoEditorEndless.Editor.Layouts
 {
+    /// <summary>
+    /// The layout of editor during test run 
+    /// </summary>
     internal class LayoutPlay
     {
         private GraphicsDeviceManager _graphics;
