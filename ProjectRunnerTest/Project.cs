@@ -16,9 +16,11 @@ namespace MonoEditorEndless
             this.name = name;
         }
     }
+    /// <summary>
+    /// This class contains the details of the project 
+    /// </summary>
     public class Project
     {
-
         public List<Asset> _assets;
         public List<AssetAudio> _audioList;
         public List<AssetModel> _modelList;

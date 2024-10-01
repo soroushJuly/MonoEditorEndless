@@ -1,9 +1,10 @@
 ﻿using System;
-using MonoEditorEndless.Engine.StateManager;
-using Microsoft.Xna.Framework;
 
 namespace MonoEditorEndless.Engine.StateManager
 {
+    /// <summary>
+    /// Code from "Computer Games Technology" module, City,University of London
+    /// </summary>
     public class Transition
     {
         public readonly State NextState;
